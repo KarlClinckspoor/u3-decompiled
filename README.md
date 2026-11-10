@@ -11,6 +11,7 @@ release, byte for byte.
 | ULTIMA.COM | intro and title animation; loads BOOTUP.BIN over itself | **rebuilds identical** (36692 bytes) from `src/ultima/` |
 | BOOTUP.BIN | main menu, party and roster, character creation; loads EXODUS.BIN over itself | **rebuilds identical** (19572 bytes) from `src/bootup/` |
 | EXODUS.BIN | the game | **rebuilds identical** (44234 bytes) from `src/exodus/` |
+| DUNGEON.DAT | the 3D dungeon view: a code overlay EXODUS loads at 0100 | **rebuilds identical** (1866 bytes) from `src/dungeon/` |
 
 All three link the same library module (screen, text, keyboard, files, sound), one source in
 `src/LIB.INC`; EXODUS's slightly different version is two `IFDEF PROG_EXODUS` blocks.
@@ -19,7 +20,7 @@ The game is hand-written 8086 assembly. There is no compiler output and no prote
 The sources were generated from the files (`tools/gen.py`, `tools/genlib.py`) and are now
 edited by hand. Every address is a symbol (`Lxxxx` in the programs, `Kxxxx` in the library),
 so code can be added or removed (`tools/shift.py` proves it), and no instruction is written
-as `db`. Next: play-test a shifted build, DUNGEON.DAT (a code overlay), modules, names (docs/PLAN.md,
+as `db`. Next: play-test a shifted build, modules, names (docs/PLAN.md,
 docs/HANDOFF.md).
 
 ## Toolchain

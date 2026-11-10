@@ -82,6 +82,11 @@ TARGETS = {
                    immaddr=[0x24D4, 0x24DF],       # int 23h/24h handlers
                    dsforeign=[(0x717C, 0x71BA), (0x71C6, 0x71E7), (0x71F0, 0x722F), (0xA496, 0xA4B3)],
                    bufrel=[(0x24C4, 0x253D, 0x2574)]),     # the combat file's tail (FORMATS.md 5, 9)
+    # the dungeon view: not data but a code overlay that EXODUS loads at 0100 (docs/FORMATS.md 8).
+    # equs: addresses of the running EXODUS.BIN that it reads (the dungeon map; the screen row table).
+    'dungeon': dict(file='DUNGEON.DAT', sha1='2d04c79751fa1e1b27f14922d0d9e17872173028',
+                    entries=[0x100, 0x447], tables={}, inline={}, data=[(0x103, 0x447)],
+                    equs={0x0900: 'DMAP', 0x132A: 'ROWTAB'}),
 }
 
 md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_16)

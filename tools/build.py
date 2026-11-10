@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build the Ultima III images from src/ with the original tools and compare them with GOG's.
 
-    python3 tools/build.py [TARGET ...] [--out DIR]     TARGET: ultima, bootup, exodus (default all)
+    python3 tools/build.py [TARGET ...] [--out DIR]     TARGET: ultima, bootup, exodus, dungeon (default all)
 
 For each target, src/TARGET/NAME.lnk lists the modules in link order. Each is assembled with
 MASM 4.00 (ASM=MASM3 in the environment for MASM 3.00: same bytes), the objects are linked
@@ -77,7 +77,7 @@ def main():
         i = args.index('--out')
         out_root = os.path.abspath(args[i + 1])
         del args[i:i + 2]
-    targets = args or ['ultima', 'bootup', 'exodus']
+    targets = args or ['ultima', 'bootup', 'exodus', 'dungeon']
     ok = True
     for target in targets:
         t = u3an.TARGETS[target]

@@ -1,13 +1,13 @@
 # Handoff: Ultima III decompilation (u3-decompiled)
 
-State as of 2026-11-09: phases 0-4 of docs/PLAN.md done (phase 3 statically; the play test of a
+State as of 2026-11-09: phases 0-4b of docs/PLAN.md done (phase 3 statically; the play test of a
 shifted build is still to do). Read this first, then docs/PLAN.md and docs/FORMATS.md.
 The sister projects `../u1-decompiled` and `../u2-decompiled` are the models for conventions
 and tools.
 
 ## Headline
 
-**All three files rebuild byte-identical** from `src/` with `python3 tools/build.py` (~8 s),
+**All four files (three programs and the DUNGEON.DAT overlay) rebuild byte-identical** from `src/` with `python3 tools/build.py` (~8 s),
 with MASM 4.00 and with MASM 3.00 (`ASM=MASM3`). **The shared library is one source**,
 `src/LIB.INC`, linked into each program as a module of its own:
 
@@ -137,8 +137,10 @@ are the game's art). Highlights:
   keys, powders, torches, marks/cards, armour and weapon tables) is decoded from the code; the
   shipped files are empty, so **no real character was available to check it against**.
 - **DUNGEON.DAT is machine code** (`jmp 0447` first): an overlay loaded over the map buffer at
-  0100 in a dungeon that draws the 3D view into B800. It is a fourth program that has not been
-  rebuilt yet (phase 4b below).
+  0100 in a dungeon that draws the 3D view into B800. It is a fourth program and rebuilds
+  identical from `src/dungeon/DUNGEON.ASM` (phase 4b: gen.py and regen.py unchanged apart from
+  the `equs` of its two EXODUS addresses, `DMAP`=0900 and `ROWTAB`=132A; no library, no external
+  calls; shifting it moves only address operands, 12 of them, checked).
 - ANIMATE.DAT = 4 pictures x 4 one-pixel shifts of the party facing the dragon (16 rows of 23
   bytes). NAME.DAT = the title's wave line (266 points). MOVES.ULT/DEMO.ULT = the menu's
   scrolling scenery script.
@@ -194,13 +196,9 @@ Git: `master`, local only.
    town (map load), talk, buy in a shop (the menus), cast a spell (spell names), fight
    (combat map), enter a dungeon. Anything that breaks points at an address still written as
    a number.
-2. **Phase 4b: DUNGEON.DAT** as a fourth program: gen.py with origin 0100, no library, references
-   into EXODUS and the library as absolute addresses (EXTRN/PUBLIC equates from EXODUS's
-   symbols, or a fixed ORG and EQUs, since it is loaded at a fixed address by EXODUS). Same
-   gate: rebuild identical. Its first 0447-0103 bytes are tables.
-3. Check the character record against a real save: play a game for a minute, copy ROSTER.ULT
+2. Check the character record against a real save: play a game for a minute, copy ROSTER.ULT
    and PARTY.ULT from `build/play*/` and run `u3fmt.py roster FILE` / `party FILE`.
-4. Phase 5 (modules by subsystem) in docs/PLAN.md.
-5. Later (readability): name the library first. It is called from everywhere: print string
+3. Phase 5 (modules by subsystem) in docs/PLAN.md.
+4. Later (readability): name the library first. It is called from everywhere: print string
    at row DH, column DL K2C7E (BOOTUP 4ABE), put character K25CC (440C), read key K29BD,
    load file K2BF0 (4A30), sound K2D59 (4B99), ...

@@ -251,9 +251,11 @@ instructions are `pushf; push ax; push es; mov [0103],bx; mov [0105],al; mov [01
 ax,0B800h; mov es,ax`)
 
 This makes **DUNGEON.DAT a fourth program** of the game, in the same position as the three COM
-images: it should be rebuilt from source too (docs/PLAN.md, phase 4b). Its references to EXODUS
-(calls into EXODUS and the library, the map buffer) are absolute addresses into the running
-EXODUS.BIN.
+images, and it is rebuilt from `src/dungeon/DUNGEON.ASM` (phase 4b). It is self-contained: no call
+leaves it, and it reads only two things of EXODUS, written as the constants `DMAP EQU 900h` (the
+dungeon map) and `ROWTAB EQU 132Ah` (EXODUS's table of screen row offsets, L132A). 0103-0106 are
+its variables (the position, facing and level it is given), 0107-0446 byte tables (the 3D
+view's wall coordinates; none holds an address), the code 0447-084A.
 
 ## 9. Memory overlays: what shares an address
 
