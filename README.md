@@ -20,7 +20,7 @@ The game is hand-written 8086 assembly. There is no compiler output and no prote
 The sources were generated from the files (`tools/gen.py`, `tools/genlib.py`) and are now
 edited by hand. Every address is a symbol (`Lxxxx` in the programs, `Kxxxx` in the library),
 so code can be added or removed (`tools/shift.py` proves it), and no instruction is written
-as `db`. Next: play-test a shifted build, modules, names (docs/PLAN.md,
+as `db`, in modules named for their subsystem. Next: play-test a shifted build, then names (docs/PLAN.md,
 docs/HANDOFF.md).
 
 ## Toolchain
@@ -45,7 +45,8 @@ neither is set. The analysis tools need `capstone` (on Karl's machine:
 
 ## Layout
 
-- `src/TARGET/`: the sources of one file, `NAME.lnk` lists its modules in link order;
+- `src/TARGET/`: the sources of one file in modules named for their subsystem
+  (`docs/MAP.md`), `NAME.lnk` lists them in link order;
   `src/LIB.INC` the shared library, included by each `src/TARGET/LIB.ASM`. MASM needs CRLF line
   ends (.gitattributes keeps them)
 - `tools/build.py`: assemble, link, cut the image, compare; `tools/dos.py`: headless DOSBox;

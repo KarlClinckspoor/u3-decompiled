@@ -28,7 +28,8 @@ GAMEDATA = os.path.join(ROOT, 'gamedata')
 # routines reached only through pointers). tables: jump tables {addr: words}. inline: calls
 # whose target reads data after the return address {target: 'z' (ASCIIZ) or byte count}.
 # data: ranges that are data even if something branches there. lib: links the shared library
-# as its own module (tools/genlib.py). limit: rough module size for the split.
+# as its own module (tools/genlib.py). limit: rough module size for the split. modules: {start:
+# NAME}, the program's modules (phase 5), each start moved down to where a module may begin.
 # Phase 3 (relocatable), each checked by hand (docs/HANDOFF.md):
 # ptrs: tables of data pointers {addr: words}, written dw Lxxxx (a 0000 word stays 0).
 # immaddr: instructions whose 16-bit immediate is an address in the image (offset Lxxxx).
@@ -39,12 +40,19 @@ GAMEDATA = os.path.join(ROOT, 'gamedata')
 TARGETS = {
     'ultima': dict(file='ULTIMA.COM', sha1='2736836127771823f9ed1463f306400a36bde0e2',
                    entries=[0x100, 0x5CDD, 0x5CDF], tables={0x8E61: 12}, inline={}, data=[], lib=True,
+                   modules={0x0100: 'UDATA',       # buffers, strings, tables
+                            0x5CDD: 'INTRO'},      # the title animation, sound and the chain load of BOOTUP.BIN
+
                    ptrs={},
                    immaddr=[0x5CF1, 0x5CFC,        # int 23h/24h handlers
                             0x5F8E],               # picture buffer L0115 + row offset
                    dsforeign=[]),
     'bootup': dict(file='BOOTUP.BIN', sha1='d30df2917fbeae202f62dbf34c1ab41ba4988983',
                    entries=[0x100, 0x1207, 0x1209], tables={0x4B81: 12}, inline={}, data=[], lib=True,
+                   modules={0x0100: 'BDATA',       # tables, strings and the roster/party buffers
+                            0x1209: 'TITLE',       # start-up and the scrolling title picture
+                            0x14C9: 'ORGANIZE',    # the party menu: look, form, disperse
+                            0x194B: 'CREATE'},     # register, terminate, create a character, then load EXODUS.BIN
                    ptrs={0x0D61: 4,                # status: Good Poisoned Dead Ashes
                          0x0DFF: 24,               # weapons (16), armour (8, also used from 0E1F)
                          0x0E87: 4,                # menu: Return Organize Journey
@@ -60,7 +68,25 @@ TARGETS = {
                    tables={0x56C1: 12, 0x190B: 33, 0x85BB: 33, 0x774A: 33, 0x76F8: 8, 0x85FD: 4,
                            0x77CE: 8, 0x654C: 5, 0x794D: 7, 0x594B: 16, 0x596B: 16,
                            0xA3A7: 6, 0x9BEC: 4}, inline={},
-                   data=[(0x100, 0x1328)], limit=9000, lib=True,   # 0100: SOSARIA.ULT is loaded there
+                   data=[(0x100, 0x1328)], lib=True,   # 0100: SOSARIA.ULT is loaded there
+                   modules={0x0100: 'EXDATA',      # map buffer, entry vector, tables and strings
+                            0x1BD5: 'LOOP',        # main loop and the surface commands
+                            0x207D: 'WORLD',       # moons, moon gates, creatures, start-up
+                            0x259E: 'VIEW',        # the map window and map access
+                            0x58B4: 'ITEMS',       # chests, torches, negate time
+                            0x5D83: 'MAGIC',       # casting and the spells
+                            0x62FD: 'SHRINE',      # stats header, shrines, leaving a dungeon
+                            0x6B91: 'PARTY',       # names, status lines, hit points, food, poison
+                            0x7458: 'ACTIONS',     # Word, Cmd, Insert, Dig, Search, Bribe, Pray
+                            0x7AEA: 'TRANSACT',    # the Transact command and its menus
+                            0x7D1A: 'EQUIP',       # ready weapon and armour, talk, gold
+                            0x8190: 'DUNMOVE',     # dungeon: traps, darkness, turning, advancing
+                            0x84DB: 'CMDTAB',      # tables of the combat commands
+                            0x888B: 'COMBAT',      # fights
+                            0x941E: 'DUNEVENT',    # dungeon events: fountains, the rod, gremlins
+                            0x964F: 'TEXT',        # long messages, shop and verse text
+                            0xA46F: 'ENDING',      # the move count and the end of the game
+                            0xA5AC: 'TOWNS'},      # pub, grocer, temple, weapons, armour, guild, horses
                    ptrs={0x1328: 1,                # the entry vector BOOTUP jumps through
                          0x16BB: 19,               # map file names
                          0x18C9: 33,               # command prompts (dispatch 190B)

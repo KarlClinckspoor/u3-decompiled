@@ -217,6 +217,8 @@ class Gen:
     def choose_cuts(self, limit, forced=()):
         """Module starts at routine entries (call targets) no short branch crosses, so that no
         module holds much more than `limit` bytes (zero runs count 1/16), plus `forced`."""
+        if self.t.get('modules'):                # explicit: named modules at given addresses
+            return self.module_cuts(forced)
         if not limit:
             return sorted(forced)
         bad = self.crossing()
@@ -240,6 +242,33 @@ class Gen:
                 last = best
                 weight = sum(wt[best:pc + 1])
         return cuts
+
+    def module_cuts(self, forced=()):
+        """TARGETS[...]['modules'] = {start: NAME}: each start is moved down to the nearest address
+        where a module may begin (not inside an instruction or a jump-table word, and not crossed
+        by an 8-bit relative branch), which is reported when it differs."""
+        bad = self.crossing()
+        units = set(self.units)
+        tw = set(self.tablewords) | set(self.ptrwords)
+
+        def ok(c):
+            if bad[c] or c in tw or (c - 1) in tw and (c - 1) in units:
+                return False
+            return c in units or self.a.kind[c] in (0, 3)
+        cuts = set(forced)
+        self.module_names = {}
+        for start, name in sorted(self.t['modules'].items()):
+            c = start
+            while c > 0x100 and not ok(c):
+                c -= 1
+            if c != start:
+                print('module %s: %04X moved to %04X' % (name, start, c))
+            if c in cuts and c != 0x100:
+                print('module %s: %04X is also a library bound' % (name, c))
+            if c != 0x100:
+                cuts.add(c)
+            self.module_names[c] = name
+        return sorted(cuts)
 
     def run(self, limit=0):
         a = self.a
@@ -268,6 +297,7 @@ class Gen:
             m = LINEADDR.search(line) or re.match(r'L([0-9A-F]{4})', line)
             return int(m.group(1), 16)
         bounds = [0x100] + self.cuts + [self.end]
+        self.bounds = bounds
         mods = [[] for _ in range(len(bounds) - 1)]
         k = 0
         for line in body:
@@ -421,12 +451,14 @@ def main():
     stem = os.path.splitext(g.t['file'])[0]
     nprog = sum(1 for m in mods if m is not None)
     names, k = [], 0
-    for m in mods:
+    named = getattr(g, 'module_names', {})
+    for i, m in enumerate(mods):
         if m is None:
             names.append('LIB.ASM')
         else:
             k += 1
-            names.append(stem + '.ASM' if nprog == 1 else '%s%d.ASM' % (stem, k))
+            nm = named.get(g.bounds[i]) or named.get(0x100) if i == 0 else named.get(g.bounds[i])
+            names.append(nm + '.ASM' if nm else stem + '.ASM' if nprog == 1 else '%s%d.ASM' % (stem, k))
     os.makedirs(outdir, exist_ok=True)
     for n, lines in zip(names, mods):
         if lines is None:

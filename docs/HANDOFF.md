@@ -1,6 +1,6 @@
 # Handoff: Ultima III decompilation (u3-decompiled)
 
-State as of 2026-11-09: phases 0-4b of docs/PLAN.md done (phase 3 statically; the play test of a
+State as of 2026-11-09: phases 0-5 of docs/PLAN.md done (phase 3 statically; the play test of a
 shifted build is still to do). Read this first, then docs/PLAN.md and docs/FORMATS.md.
 The sister projects `../u1-decompiled` and `../u2-decompiled` are the models for conventions
 and tools.
@@ -11,11 +11,12 @@ and tools.
 with MASM 4.00 and with MASM 3.00 (`ASM=MASM3`). **The shared library is one source**,
 `src/LIB.INC`, linked into each program as a module of its own:
 
-| file | bytes | sha1 | modules (`src/TARGET/NAME.lnk`) |
+| file | bytes | sha1 | modules |
 |---|---|---|---|
-| ULTIMA.COM | 36692 | 2736836127771823f9ed1463f306400a36bde0e2 | ULTIMA (0100-6113), LIB (6120-9054) |
-| BOOTUP.BIN | 19572 | d30df2917fbeae202f62dbf34c1ab41ba4988983 | BOOTUP (0100-1E34), LIB (1E40-4D74) |
-| EXODUS.BIN | 44234 | 06f5ef9b9dfb4f86a0edf1e723e90a34df651705 | EXODUS1 (0100-298E), LIB (2990-58B4), EXODUS2 (58B4-7D74), EXODUS3 (-9630), EXODUS4 (-ADCA) |
+| ULTIMA.COM | 36692 | 2736836127771823f9ed1463f306400a36bde0e2 | UDATA, INTRO, LIB (3) |
+| BOOTUP.BIN | 19572 | d30df2917fbeae202f62dbf34c1ab41ba4988983 | BDATA, TITLE, ORGANIZE, CREATE, LIB (5) |
+| EXODUS.BIN | 44234 | 06f5ef9b9dfb4f86a0edf1e723e90a34df651705 | 18 subsystem modules and LIB (19), docs/MAP.md |
+| DUNGEON.DAT | 1866 | 2d04c79751fa1e1b27f14922d0d9e17872173028 | DUNGEON (1) |
 
 Each `src/TARGET/LIB.ASM` is three lines: it defines `PROG_ULTIMA`, `PROG_BOOTUP` or
 `PROG_EXODUS` and includes `LIB.INC`. No instruction is written as `db`. `src/` is frozen and
@@ -118,6 +119,21 @@ What phase 3 had to find by hand (all in `u3an.TARGETS`, each checked against it
 - No program operand with a cs:/ss:/es: prefix points into the image, and no DS operand
   points past the end of a file.
 
+## Modules (phase 5)
+
+Every program is split into modules named for their subsystem; docs/MAP.md lists them (address
+range, size, what is in them, with the command key tables). EXODUS: EXDATA, LOOP, WORLD, VIEW,
+[LIB], ITEMS, MAGIC, SHRINE, PARTY, ACTIONS, TRANSACT, EQUIP, DUNMOVE, CMDTAB, COMBAT, DUNEVENT,
+TEXT, ENDING, TOWNS. The cut addresses are `modules` in `tools/u3an.py`; gen.py snaps each to a
+valid place (none needed moving). `tools/routines.py TARGET [FROM [TO]]` is the survey they came
+from (routines, callers, dispatch entries, strings) and `tools/modmap.py` prints the module
+table. Module headers say what the module is. The first module of each program (EXDATA, BDATA,
+UDATA) holds the program's data, and TEXT, CMDTAB are data-only modules, so the data is where
+the original source had it, not split by use. shift.py pads every module (it passes with 18
+paddings in EXODUS). A remaining weakness of the split: data in the middle of the code (the
+tables at 6493-6B91, 7708-7AEA, 84DB-888B, A3A7) belongs to the module it sits in even where one
+routine of another module uses it; moving it is a hand job for the readability pass.
+
 ## Data formats (phase 4)
 
 docs/FORMATS.md describes every data file (loader, address, layout, with sure/likely/open marks)
@@ -183,6 +199,7 @@ are the game's art). Highlights:
 | `tools/shift.py` | relocation test: pads every program module, rebuilds into build/shift/, checks that only addresses moved (`--pad 19,5,7,11`) |
 | `tools/play.py` | play a build in a DOSBox window with GOG's settings, from a copy of the data files (`play.py [BUILDDIR] [--dir DIR]`) |
 | `tools/u3fmt.py` | readers and PNG renderers for every data file (docs/FORMATS.md); `u3fmt.py check` |
+| `tools/routines.py`, `tools/modmap.py` | the routine survey for the split, and the module table of docs/MAP.md |
 | `tools/cands.py`, `tools/ptrtabs.py` | phase 3 surveys: immediates and operands that might be addresses; indexed word tables and what they point to |
 | `tools/dos.py`, `setup.py`, `fat12.py` | DOSBox runner and toolchain unpacking (from u2) |
 
@@ -198,7 +215,12 @@ Git: `master`, local only.
    a number.
 2. Check the character record against a real save: play a game for a minute, copy ROSTER.ULT
    and PARTY.ULT from `build/play*/` and run `u3fmt.py roster FILE` / `party FILE`.
-3. Phase 5 (modules by subsystem) in docs/PLAN.md.
-4. Later (readability): name the library first. It is called from everywhere: print string
-   at row DH, column DL K2C7E (BOOTUP 4ABE), put character K25CC (440C), read key K29BD,
-   load file K2BF0 (4A30), sound K2D59 (4B99), ...
+3. **Phase 6, the readable pass** (docs/PLAN.md): names and comments, module by module, with
+   the parallel-agent method of U1 (a brief per module, disjoint files, one integrator):
+   - first the library, which every module calls (print string at row DH, column DL K2C7E
+     (BOOTUP 4ABE), put character K25CC (440C), read key K29BD, load file K2BF0 (4A30), sound
+     K2D59 (4B99), ...), and the variables of docs/FORMATS.md (party fields at 14BA, the
+     character record offsets, the moon state at 1320, the combat arrays);
+   - then the modules in docs/MAP.md, one agent each, renaming `Lxxxx` by `.syms`-style tables
+     as U6/U2 did (`../u2-decompiled/tools/rename.py`, `syms.py`, `lint.py` are the models).
+4. The combat and dungeon open questions of docs/FORMATS.md section 10 are answered by that pass.

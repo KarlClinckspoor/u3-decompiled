@@ -1,6 +1,6 @@
 # Plan: Ultima III decompilation (u3-decompiled)
 
-Written 2026-11-09. **Status: phases 0-4b done (2026-11-09), phase 3 statically: all four
+Written 2026-11-09. **Status: phases 0-5 done (2026-11-09), phase 3 statically: all four
 files rebuild byte-identical from `src/` with MASM 3.00 and 4.00, no `db` instructions, one
 shared library source (`src/LIB.INC`), and every address a symbol (tools/shift.py). A play test
 of a shifted build is still to do. See docs/HANDOFF.md for the results and what changed against
@@ -161,7 +161,7 @@ checked against the manual (`gamedata/Ultima_3_manual.pdf`).
 (docs/FORMATS.md section 8). Rebuild it identical like the three COM images (gen.py with
 origin 0100, fixed addresses of EXODUS and the library as symbols).
 
-**Phase 5: modules by subsystem.** Split EXODUS along the command dispatch (the A-Z prompt
+**Phase 5 (done, docs/MAP.md): modules by subsystem.** Split EXODUS along the command dispatch (the A-Z prompt
 table at ~1619), plus movement, combat, dungeon view, towns and talk, shops, magic, moongates
 and the endgame. Split BOOTUP (menu, character creation, roster) and ULTIMA (intro, animation)
 the same way. Parallel agents with disjoint ranges and a BRIEF.md adapted from U1's.
