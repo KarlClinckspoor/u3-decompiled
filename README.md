@@ -19,7 +19,7 @@ The game is hand-written 8086 assembly. There is no compiler output and no prote
 The sources were generated from the files (`tools/gen.py`, `tools/genlib.py`) and are now
 edited by hand. Every address is a symbol (`Lxxxx` in the programs, `Kxxxx` in the library),
 so code can be added or removed (`tools/shift.py` proves it), and no instruction is written
-as `db`. Next: play-test a shifted build, then data formats, modules and names (docs/PLAN.md,
+as `db`. Next: play-test a shifted build, DUNGEON.DAT (a code overlay), modules, names (docs/PLAN.md,
 docs/HANDOFF.md).
 
 ## Toolchain
@@ -54,6 +54,8 @@ neither is set. The analysis tools need `capstone` (on Karl's machine:
 - `tools/gen.py`, `tools/genlib.py`, `tools/regen.py`: generate the program and library sources
   from the files and iterate until they assemble identically (for re-deriving pieces; `src/` is
   the source of truth)
+- `tools/u3fmt.py`: readers and PNG renderers for every data file (`docs/FORMATS.md`);
+  `u3fmt.py check` parses them all
 - `tools/shift.py`: relocation test (pad every module, rebuild, check only addresses moved);
   `tools/play.py`: play a build in DOSBox with GOG's settings; `tools/cands.py`,
   `tools/ptrtabs.py`: surveys for addresses still written as numbers

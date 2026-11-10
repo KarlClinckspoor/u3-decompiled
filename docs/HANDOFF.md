@@ -1,7 +1,7 @@
 # Handoff: Ultima III decompilation (u3-decompiled)
 
-State as of 2026-11-09, phase 3 of docs/PLAN.md (relocatable) done statically; the play test
-of a shifted build is still to do. Read this first, then docs/PLAN.md.
+State as of 2026-11-09: phases 0-4 of docs/PLAN.md done (phase 3 statically; the play test of a
+shifted build is still to do). Read this first, then docs/PLAN.md and docs/FORMATS.md.
 The sister projects `../u1-decompiled` and `../u2-decompiled` are the models for conventions
 and tools.
 
@@ -118,6 +118,34 @@ What phase 3 had to find by hand (all in `u3an.TARGETS`, each checked against it
 - No program operand with a cs:/ss:/es: prefix points into the image, and no DS operand
   points past the end of a file.
 
+## Data formats (phase 4)
+
+docs/FORMATS.md describes every data file (loader, address, layout, with sure/likely/open marks)
+and `tools/u3fmt.py` reads and renders them: `shapes`, `chars`, `cga FILE.IBM`, `map FILE`,
+`dungeon FILE`, `combat FILE`, `demo`, `animate`, `name`, `moves`, `party [FILE]`, `roster
+[FILE]`, and `check` (parses all 45 data files). PNGs go to build/formats/ (not committed: they
+are the game's art). Highlights:
+- Tiles are 16x16, 64 bytes, **even scan lines first, then odd** (the two CGA banks); the map
+  byte is a multiple of 4 and `byte >> 2` is the shape number. Rendering BRITISH.ULT gives
+  Lord British's castle at once, which confirms the layout.
+- A town file is the 4096-byte map, 4 to 8 speeches (offset table + strings), five arrays of
+  32 creature slots (tile, movement, x, y, talk code) and 8 state bytes (the two moons'
+  phases and counters on Sosaria). Dungeons: eight 16x16 levels (bit 10h ladder up, 20h ladder
+  down, 80h wall) and one message per level.
+- PARTY.ULT = 18-byte header + four 64-byte characters; ROSTER.ULT = 20 characters. The record
+  layout (name, status, stats, race/class/sex letters, HP, MP, experience, food, gold, gems,
+  keys, powders, torches, marks/cards, armour and weapon tables) is decoded from the code; the
+  shipped files are empty, so **no real character was available to check it against**.
+- **DUNGEON.DAT is machine code** (`jmp 0447` first): an overlay loaded over the map buffer at
+  0100 in a dungeon that draws the 3D view into B800. It is a fourth program that has not been
+  rebuilt yet (phase 4b below).
+- ANIMATE.DAT = 4 pictures x 4 one-pixel shifts of the party facing the dragon (16 rows of 23
+  bytes). NAME.DAT = the title's wave line (266 points). MOVES.ULT/DEMO.ULT = the menu's
+  scrolling scenery script.
+- **Hazard found and fixed**: EXODUS loads the combat maps over its own start-up code (24C4-2574)
+  and the sources addressed them through labels inside that code. They are now `L24C4+offset`
+  (`bufrel`), so the start-up code can change size (docs/FORMATS.md section 9).
+
 ## Findings about the program
 
 - **Three COM images, each loading the next over itself.** The running program opens the next
@@ -152,6 +180,7 @@ What phase 3 had to find by hand (all in `u3an.TARGETS`, each checked against it
 | `tools/regen.py` | gen → MASM with listings → LINK → compare, forcing differing lines to `db` (none needed); `regen.py TARGET [WORKDIR] [MASM4/MASM3]` |
 | `tools/shift.py` | relocation test: pads every program module, rebuilds into build/shift/, checks that only addresses moved (`--pad 19,5,7,11`) |
 | `tools/play.py` | play a build in a DOSBox window with GOG's settings, from a copy of the data files (`play.py [BUILDDIR] [--dir DIR]`) |
+| `tools/u3fmt.py` | readers and PNG renderers for every data file (docs/FORMATS.md); `u3fmt.py check` |
 | `tools/cands.py`, `tools/ptrtabs.py` | phase 3 surveys: immediates and operands that might be addresses; indexed word tables and what they point to |
 | `tools/dos.py`, `setup.py`, `fat12.py` | DOSBox runner and toolchain unpacking (from u2) |
 
@@ -165,7 +194,13 @@ Git: `master`, local only.
    town (map load), talk, buy in a shop (the menus), cast a spell (spell names), fight
    (combat map), enter a dungeon. Anything that breaks points at an address still written as
    a number.
-2. Phase 4 (data formats) and phase 5 (modules by subsystem) in docs/PLAN.md.
-3. Later (readability): name the library first. It is called from everywhere: print string
+2. **Phase 4b: DUNGEON.DAT** as a fourth program: gen.py with origin 0100, no library, references
+   into EXODUS and the library as absolute addresses (EXTRN/PUBLIC equates from EXODUS's
+   symbols, or a fixed ORG and EQUs, since it is loaded at a fixed address by EXODUS). Same
+   gate: rebuild identical. Its first 0447-0103 bytes are tables.
+3. Check the character record against a real save: play a game for a minute, copy ROSTER.ULT
+   and PARTY.ULT from `build/play*/` and run `u3fmt.py roster FILE` / `party FILE`.
+4. Phase 5 (modules by subsystem) in docs/PLAN.md.
+5. Later (readability): name the library first. It is called from everywhere: print string
    at row DH, column DL K2C7E (BOOTUP 4ABE), put character K25CC (440C), read key K29BD,
    load file K2BF0 (4A30), sound K2D59 (4B99), ...

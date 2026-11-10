@@ -88,8 +88,6 @@ EXTRN L2097:NEAR
 EXTRN L2168:NEAR
 EXTRN L24C0:BYTE
 EXTRN L24C4:NEAR
-EXTRN L2564:NEAR
-EXTRN L2568:NEAR
 EXTRN L259D:BYTE
 EXTRN L259E:NEAR
 EXTRN L26A9:NEAR
@@ -813,8 +811,8 @@ L5F2D:	mov di, ax	;@5F2D
 	mov cx, dx	;@5F45
 	mov bl, byte ptr L84E1	;@5F47
 	mov bh, 0	;@5F4B
-	mov dh, byte ptr L2568[bx]	;@5F4D
-	mov dl, byte ptr L2564[bx]	;@5F51
+	mov dh, byte ptr L24C4+0A4h[bx]	;@5F4D
+	mov dl, byte ptr L24C4+0A0h[bx]	;@5F51
 	call L8E7A	;@5F55
 	cmp bx, -1	;@5F58
 	je L5F78	;@5F5B

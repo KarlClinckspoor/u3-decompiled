@@ -55,14 +55,6 @@ EXTRN L1B61:BYTE
 EXTRN L1BD5:NEAR
 EXTRN L2018:NEAR
 EXTRN L24C4:NEAR
-EXTRN L2542:NEAR
-EXTRN L254C:NEAR
-EXTRN L2554:NEAR
-EXTRN L255C:NEAR
-EXTRN L2564:NEAR
-EXTRN L2568:NEAR
-EXTRN L256C:NEAR
-EXTRN L2570:NEAR
 EXTRN L259D:BYTE
 EXTRN L26A9:NEAR
 EXTRN L26F4:NEAR
@@ -1251,7 +1243,7 @@ L8A23:	sub si, 40h	;@8A23
 	dec di	;@8A26
 	loop L89EC	;@8A27
 	cld	;@8A29
-	lea di, L255C	;@8A2A
+	lea di, L24C4+98h	;@8A2A
 	mov cx, 8	;@8A2E
 	mov al, 0	;@8A31
 	rep stosb	;@8A33
@@ -1412,9 +1404,9 @@ L8BA7:	call K29AA	;@8BA7
 	jne L8BA7	;@8BB2
 	mov bl, byte ptr L84E1	;@8BB4
 	mov bh, 0	;@8BB8
-	mov ah, byte ptr L2570[bx]	;@8BBA
-	mov al, byte ptr L2568[bx]	;@8BBE
-	mov bl, byte ptr L2564[bx]	;@8BC2
+	mov ah, byte ptr L24C4+0ACh[bx]	;@8BBA
+	mov al, byte ptr L24C4+0A4h[bx]	;@8BBE
+	mov bl, byte ptr L24C4+0A0h[bx]	;@8BC2
 	mov bh, al	;@8BC6
 	call K2CC5	;@8BC8
 	mov byte ptr [bx], ah	;@8BCB
@@ -1446,7 +1438,7 @@ L8C0B:	mov al, byte ptr L84E1	;@8C0B
 	inc al	;@8C0E
 	call L71ED	;@8C10
 	mov cx, 8	;@8C13
-	lea di, L255C	;@8C16
+	lea di, L24C4+98h	;@8C16
 	mov al, 0	;@8C1A
 	repe scasb	;@8C1C
 	je L8C36	;@8C1E
@@ -1868,14 +1860,14 @@ L903D:	xchg word ptr [bp], bx	;@903D
 	xchg word ptr [bp], bx	;@9043
 	je L904B	;@9046
 	jmp L90DA	;@9048
-L904B:	mov dl, byte ptr L2564[bx]	;@904B
-	sub dl, byte ptr L2542+2[di]	;@904F
+L904B:	mov dl, byte ptr L24C4+0A0h[bx]	;@904B
+	sub dl, byte ptr L24C4+80h[di]	;@904F
 	mov cl, dl	;@9053
 	test cl, 0FFh	;@9055
 	jns L905C	;@9058
 	neg cl	;@905A
-L905C:	mov dh, byte ptr L2568[bx]	;@905C
-	sub dh, byte ptr L254C[di]	;@9060
+L905C:	mov dh, byte ptr L24C4+0A4h[bx]	;@905C
+	sub dh, byte ptr L24C4+88h[di]	;@9060
 	mov ch, dh	;@9064
 	test ch, 0FFh	;@9066
 	jns L906D	;@9069
@@ -1897,8 +1889,8 @@ L9078:	mov al, cl	;@9078
 	mov al, dh	;@9089
 	call K2C87	;@908B
 	mov ch, ah	;@908E
-	mov dl, byte ptr L2542+2[di]	;@9090
-	mov dh, byte ptr L254C[di]	;@9094
+	mov dl, byte ptr L24C4+80h[di]	;@9090
+	mov dh, byte ptr L24C4+88h[di]	;@9094
 	add dl, cl	;@9098
 	add dh, ch	;@909A
 	mov bx, dx	;@909C
@@ -1906,14 +1898,14 @@ L9078:	mov al, cl	;@9078
 	call L8FEB	;@90A1
 	cmp al, 0FFh	;@90A4
 	je L90CE	;@90A6
-	mov dl, byte ptr L2542+2[di]	;@90A8
+	mov dl, byte ptr L24C4+80h[di]	;@90A8
 	mov bx, dx	;@90AC
 	call K2CC5	;@90AE
 	call L8FEB	;@90B1
 	cmp al, 0FFh	;@90B4
 	je L90CE	;@90B6
 	add dl, cl	;@90B8
-	mov dh, byte ptr L254C[di]	;@90BA
+	mov dh, byte ptr L24C4+88h[di]	;@90BA
 	mov bx, dx	;@90BE
 	call K2CC5	;@90C0
 	call L8FEB	;@90C3
@@ -1950,8 +1942,8 @@ L90FD:	pushf	;@90FD
 	push dx	;@9100
 	mov al, 0FBh	;@9101
 	call K2D59	;@9103
-	mov dl, byte ptr L2542+2[di]	;@9106
-	mov dh, byte ptr L254C[di]	;@910A
+	mov dl, byte ptr L24C4+80h[di]	;@9106
+	mov dh, byte ptr L24C4+88h[di]	;@910A
 L910E:	add dl, cl	;@910E
 	cmp dl, 0Bh	;@9110
 	jae L9147	;@9113
@@ -1962,9 +1954,9 @@ L910E:	add dl, cl	;@910E
 	mov ah, 0	;@911F
 	dec ax	;@9121
 	mov bx, ax	;@9122
-L9124:	cmp dl, byte ptr L2564[bx]	;@9124
+L9124:	cmp dl, byte ptr L24C4+0A0h[bx]	;@9124
 	jne L9135	;@9128
-	cmp dh, byte ptr L2568[bx]	;@912A
+	cmp dh, byte ptr L24C4+0A4h[bx]	;@912A
 	jne L9135	;@912E
 	call L92AF	;@9130
 	jmp short L9147	;@9133
@@ -1987,7 +1979,7 @@ L914F:	cmp byte ptr L15D0, 0	;@914F
 	dec byte ptr L15D0	;@9156
 	jmp L9212	;@915A
 L915D:	mov di, 0	;@915D
-L9160:	cmp byte ptr L255C[di], 0	;@9160
+L9160:	cmp byte ptr L24C4+98h[di], 0	;@9160
 	jne L916A	;@9165
 	jmp L9209	;@9167
 L916A:	call L9020	;@916A
@@ -2064,16 +2056,16 @@ L9209:	inc di	;@9209
 L9212:	jmp L8B52	;@9212
 L9215:	push ax	;@9215
 	push bx	;@9216
-	mov bh, byte ptr L254C[di]	;@9217
-	mov bl, byte ptr L2542+2[di]	;@921B
+	mov bh, byte ptr L24C4+88h[di]	;@9217
+	mov bl, byte ptr L24C4+80h[di]	;@921B
 	call K2CC5	;@921F
-	mov al, byte ptr L2554[di]	;@9222
+	mov al, byte ptr L24C4+90h[di]	;@9222
 	mov byte ptr [bx], al	;@9226
-	mov byte ptr L2542+2[di], dl	;@9228
-	mov byte ptr L254C[di], dh	;@922C
+	mov byte ptr L24C4+80h[di], dl	;@9228
+	mov byte ptr L24C4+88h[di], dh	;@922C
 	mov bx, dx	;@9230
 	call K2CC5	;@9232
-	mov byte ptr L2554[di], al	;@9235
+	mov byte ptr L24C4+90h[di], al	;@9235
 	mov al, byte ptr L84E2	;@9239
 	mov byte ptr [bx], al	;@923C
 	call K2CAA	;@923E
@@ -2163,15 +2155,15 @@ L92AF:	pushf	;@92AF
 	mov ax, si	;@92FC
 	call L7176	;@92FE
 	mov dx, bx	;@9301
-	mov bl, byte ptr L2564[si]	;@9303
-	mov bh, byte ptr L2568[si]	;@9307
+	mov bl, byte ptr L24C4+0A0h[si]	;@9303
+	mov bh, byte ptr L24C4+0A4h[si]	;@9307
 	call K2CC5	;@930B
 	mov al, byte ptr L84E0	;@930E
 	mov byte ptr [bx], al	;@9311
 	call K2CAA	;@9313
 	mov al, 0F7h	;@9316
 	call K2D59	;@9318
-	mov al, byte ptr L2570[si]	;@931B
+	mov al, byte ptr L24C4+0ACh[si]	;@931B
 	mov byte ptr [bx], al	;@931F
 	call K2CAA	;@9321
 	mov ax, si	;@9324
@@ -2179,13 +2171,13 @@ L92AF:	pushf	;@92AF
 	mov bx, dx	;@9329
 	cmp byte ptr [bx+11h], 44h	;@932B
 	jne L9356	;@932F
-	mov bl, byte ptr L2564[si]	;@9331
-	mov bh, byte ptr L2568[si]	;@9335
+	mov bl, byte ptr L24C4+0A0h[si]	;@9331
+	mov bh, byte ptr L24C4+0A4h[si]	;@9335
 	call K2CC5	;@9339
-	mov al, byte ptr L256C[si]	;@933C
+	mov al, byte ptr L24C4+0A8h[si]	;@933C
 	mov byte ptr [bx], al	;@9340
-	mov byte ptr L2564[si], 0FFh	;@9342
-	mov byte ptr L2568[si], 0FFh	;@9347
+	mov byte ptr L24C4+0A0h[si], 0FFh	;@9342
+	mov byte ptr L24C4+0A4h[si], 0FFh	;@9347
 	lea si, L8796	;@934C
 	call L26A9	;@9350
 	call L6C29	;@9353

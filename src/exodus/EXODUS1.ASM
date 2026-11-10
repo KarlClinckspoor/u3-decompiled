@@ -159,14 +159,6 @@ PUBLIC L2097
 PUBLIC L2168
 PUBLIC L24C0
 PUBLIC L24C4
-PUBLIC L2542
-PUBLIC L254C
-PUBLIC L2554
-PUBLIC L255C
-PUBLIC L2564
-PUBLIC L2568
-PUBLIC L256C
-PUBLIC L2570
 PUBLIC L259D
 PUBLIC L259E
 PUBLIC L26A9
@@ -1511,24 +1503,24 @@ L2509:	lea dx, L15D4	;@2509
 	mov word ptr L15CC, ax	;@2535
 	mov byte ptr L24C0, 0FFh	;@2538
 	mov byte ptr K2D40, 0FFh	;@253D
-L2542:	mov byte ptr L64A4, 1	;@2542
+	mov byte ptr L64A4, 1	;@2542
 	mov byte ptr L15D0, 0	;@2547
-L254C:	mov byte ptr L15CE, 0	;@254C
+	mov byte ptr L15CE, 0	;@254C
 	call L6C53	;@2551
-L2554:	mov ah, 2Ch	;@2554
+	mov ah, 2Ch	;@2554
 	int 21h	;@2556
 	mov word ptr K0111, dx	;@2558
-L255C:	mov word ptr K0109, dx	;@255C
+	mov word ptr K0109, dx	;@255C
 	mov word ptr K010F, cx	;@2560
 X01A9 label byte	;@2564
-L2564:	mov word ptr K0107, cx	;@2564
+	mov word ptr K0107, cx	;@2564
 X01AD label byte	;@2568
-L2568:	mov ah, 2Ah	;@2568
+	mov ah, 2Ah	;@2568
 	int 21h	;@256A
 X01B1 label byte	;@256C
-L256C:	mov word ptr K010D, dx	;@256C
+	mov word ptr K010D, dx	;@256C
 X01B5 label byte	;@2570
-L2570:	mov word ptr K0105, dx	;@2570
+	mov word ptr K0105, dx	;@2570
 	mov word ptr K010B, cx	;@2574
 	mov word ptr K0103, cx	;@2578
 	call L26F4	;@257C

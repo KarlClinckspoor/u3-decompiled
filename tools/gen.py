@@ -20,8 +20,10 @@ Symbols:
             placed with ORG before the ORG 100h of the first module (a relocatable symbol
             also keeps MASM from shortening [bx+0000] to [bx]).
 Addresses the code does not show as such are listed in TARGETS by hand: data-pointer tables
-(ptrs, dw Lxxxx), immediates that are addresses (immaddr, offset Lxxxx), and ranges where DS
-is video memory (dsforeign: their operands stay numbers). 8-bit displacements, other
+(ptrs, dw Lxxxx), immediates that are addresses (immaddr, offset Lxxxx), ranges where DS
+is video memory (dsforeign: their operands stay numbers), and buffers that overlay code
+(bufrel: EXODUS's combat arrays are written L24C4+0A0h, not as a label inside the start-up
+code they overwrite; docs/FORMATS.md section 9). 8-bit displacements, other
 immediates and es:/ss:/cs: operands are numbers (no program address was found among them). Jump tables
 (TARGETS[...]['tables']) are dw Lxxxx. A call or jump into a data area (EXODUS calls 0100,
 where SOSARIA.ULT is loaded) is written near ptr to that data label.
@@ -107,6 +109,9 @@ class Gen:
             return None
         regs = [r for r in (op.base, op.index) if r]
         idx = '[' + '+'.join(regs) + ']' if regs else ''
+        for base, lo, hi in self.t.get('bufrel', ()):
+            if lo <= op.disp < hi:             # a buffer that overlays code: base label + offset
+                return 'L%04X+%s' % (base, hx(op.disp - base)) + idx
         if op.disp < 0x100:                    # the PSP (a label placed with ORG)
             self.low.add(op.disp)
             return 'L%04X' % op.disp + idx

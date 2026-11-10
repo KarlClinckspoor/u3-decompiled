@@ -34,6 +34,8 @@ GAMEDATA = os.path.join(ROOT, 'gamedata')
 # immaddr: instructions whose 16-bit immediate is an address in the image (offset Lxxxx).
 # dsforeign: ranges where DS is not the program's segment (DS = video memory there): their
 # memory operands are offsets in that segment and stay numbers.
+# bufrel: (base label, first, last) address ranges of a buffer that is loaded over code: its
+# operands are written base+offset so that editing the code does not move them.
 TARGETS = {
     'ultima': dict(file='ULTIMA.COM', sha1='2736836127771823f9ed1463f306400a36bde0e2',
                    entries=[0x100, 0x5CDD, 0x5CDF], tables={0x8E61: 12}, inline={}, data=[], lib=True,
@@ -78,7 +80,8 @@ TARGETS = {
                          0xA1B0: 10,               # the "And so thou ..." verses
                          0xA39B: 6},               # menu: Gems Keys Powders Torches Quit Quit
                    immaddr=[0x24D4, 0x24DF],       # int 23h/24h handlers
-                   dsforeign=[(0x717C, 0x71BA), (0x71C6, 0x71E7), (0x71F0, 0x722F), (0xA496, 0xA4B3)]),
+                   dsforeign=[(0x717C, 0x71BA), (0x71C6, 0x71E7), (0x71F0, 0x722F), (0xA496, 0xA4B3)],
+                   bufrel=[(0x24C4, 0x253D, 0x2574)]),     # the combat file's tail (FORMATS.md 5, 9)
 }
 
 md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_16)

@@ -1,6 +1,6 @@
 # Plan: Ultima III decompilation (u3-decompiled)
 
-Written 2026-11-09. **Status: phases 0-3 done (2026-11-09), phase 3 statically: all three
+Written 2026-11-09. **Status: phases 0-4 done (2026-11-09), phase 3 statically: all three
 files rebuild byte-identical from `src/` with MASM 3.00 and 4.00, no `db` instructions, one
 shared library source (`src/LIB.INC`), and every address a symbol (tools/shift.py). A play test
 of a shifted build is still to do. See docs/HANDOFF.md for the results and what changed against
@@ -155,6 +155,11 @@ menu → party → game in GOG's DOSBox. Each image must still chain-load the ne
 **Phase 4: data formats.** Read the loaders and users of each file in §2.6. Write
 `docs/FORMATS.md` and small viewers/dumpers in `tools/` (maps to PNG, roster/party fields),
 checked against the manual (`gamedata/Ultima_3_manual.pdf`).
+
+**Phase 4b (found in phase 4): DUNGEON.DAT.** It is not data but a 1866-byte code overlay
+(`jmp 0447` first) that EXODUS loads at 0100 in a dungeon and calls to draw the 3D view
+(docs/FORMATS.md section 8). Rebuild it identical like the three COM images (gen.py with
+origin 0100, fixed addresses of EXODUS and the library as symbols).
 
 **Phase 5: modules by subsystem.** Split EXODUS along the command dispatch (the A-Z prompt
 table at ~1619), plus movement, combat, dungeon view, towns and talk, shops, magic, moongates
