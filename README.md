@@ -8,15 +8,19 @@ release, byte for byte.
 
 | file | what | status |
 |---|---|---|
-| ULTIMA.COM | intro and title animation; loads BOOTUP.BIN over itself | **rebuilds identical** (36692 bytes) from `src/ultima/ULTIMA.ASM` |
-| BOOTUP.BIN | main menu, party and roster, character creation; loads EXODUS.BIN over itself | **rebuilds identical** (19572 bytes) from `src/bootup/BOOTUP.ASM` |
-| EXODUS.BIN | the game | **rebuilds identical** (44234 bytes) from `src/exodus/EXODUS1-4.ASM` |
+| ULTIMA.COM | intro and title animation; loads BOOTUP.BIN over itself | **rebuilds identical** (36692 bytes) from `src/ultima/` |
+| BOOTUP.BIN | main menu, party and roster, character creation; loads EXODUS.BIN over itself | **rebuilds identical** (19572 bytes) from `src/bootup/` |
+| EXODUS.BIN | the game | **rebuilds identical** (44234 bytes) from `src/exodus/` |
+
+All three link the same library module (screen, text, keyboard, files, sound), one source in
+`src/LIB.INC`; EXODUS's slightly different version is two `IFDEF PROG_EXODUS` blocks.
 
 The game is hand-written 8086 assembly. There is no compiler output and no protection envelope.
-The sources were generated from the files (`tools/gen.py`) and are now edited by hand. Every
-branch target and memory operand inside the image is a label (`Lxxxx`), and no instruction is
-written as `db`. Immediates are still numbers. Next: make the sources relocatable, then names
-(docs/PLAN.md, docs/HANDOFF.md).
+The sources were generated from the files (`tools/gen.py`, `tools/genlib.py`) and are now
+edited by hand. Every branch target and memory operand inside the image is a label (`Lxxxx` in
+the programs, `Kxxxx` in the library), and no instruction is written as `db`. In the programs,
+immediates are still numbers; in the library every address is symbolic. Next: make the
+programs relocatable, then names (docs/PLAN.md, docs/HANDOFF.md).
 
 ## Toolchain
 
@@ -40,12 +44,14 @@ neither is set. The analysis tools need `capstone` (on Karl's machine:
 
 ## Layout
 
-- `src/TARGET/`: the sources of one file, `NAME.lnk` lists its modules in link order. MASM
-  needs CRLF line ends (.gitattributes keeps them)
+- `src/TARGET/`: the sources of one file, `NAME.lnk` lists its modules in link order;
+  `src/LIB.INC` the shared library, included by each `src/TARGET/LIB.ASM`. MASM needs CRLF line
+  ends (.gitattributes keeps them)
 - `tools/build.py`: assemble, link, cut the image, compare; `tools/dos.py`: headless DOSBox;
   `tools/setup.py`, `fat12.py`: toolchain
 - `tools/u3an.py`: recursive disassembly and per-file facts (entry points, jump tables, data
   areas); `python3 tools/u3an.py` prints coverage and indirect branches
-- `tools/gen.py`, `tools/regen.py`: generate a source from a file and iterate until it assembles
-  identically (for re-deriving pieces; `src/` is the source of truth)
+- `tools/gen.py`, `tools/genlib.py`, `tools/regen.py`: generate the program and library sources
+  from the files and iterate until they assemble identically (for re-deriving pieces; `src/` is
+  the source of truth)
 - `docs/PLAN.md`: the plan; `docs/HANDOFF.md`: state, findings and next steps

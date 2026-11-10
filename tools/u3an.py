@@ -29,15 +29,15 @@ GAMEDATA = os.path.join(ROOT, 'gamedata')
 # whose target reads data after the return address {target: 'z' (ASCIIZ) or byte count}.
 TARGETS = {
     'ultima': dict(file='ULTIMA.COM', sha1='2736836127771823f9ed1463f306400a36bde0e2',
-                   entries=[0x100, 0x5CDD, 0x5CDF], tables={0x8E61: 12}, inline={}, data=[]),
+                   entries=[0x100, 0x5CDD, 0x5CDF], tables={0x8E61: 12}, inline={}, data=[], lib=True),
     'bootup': dict(file='BOOTUP.BIN', sha1='d30df2917fbeae202f62dbf34c1ab41ba4988983',
-                   entries=[0x100, 0x1207, 0x1209], tables={0x4B81: 12}, inline={}, data=[]),
+                   entries=[0x100, 0x1207, 0x1209], tables={0x4B81: 12}, inline={}, data=[], lib=True),
     'exodus': dict(file='EXODUS.BIN', sha1='06f5ef9b9dfb4f86a0edf1e723e90a34df651705',
                    entries=[0x24C4, 0x24C1, 0x24C3],
                    tables={0x56C1: 12, 0x190B: 33, 0x85BB: 33, 0x774A: 33, 0x76F8: 8, 0x85FD: 4,
                            0x77CE: 8, 0x654C: 5, 0x794D: 7, 0x594B: 16, 0x596B: 16,
                            0xA3A7: 6, 0x9BEC: 4}, inline={},
-                   data=[(0x100, 0x1328)], limit=9000),   # 0100: SOSARIA.ULT is loaded there
+                   data=[(0x100, 0x1328)], limit=9000, lib=True),   # 0100: SOSARIA.ULT is loaded there
 }
 
 md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_16)

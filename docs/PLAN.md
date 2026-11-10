@@ -1,7 +1,8 @@
 # Plan: Ultima III decompilation (u3-decompiled)
 
-Written 2026-11-09. **Status: phases 0 and 1 done (2026-11-09): all three files rebuild
-byte-identical from `src/`, no `db` instructions, MASM 3.00 and 4.00 both match. See
+Written 2026-11-09. **Status: phases 0-2 done (2026-11-09): all three files rebuild
+byte-identical from `src/` with MASM 3.00 and 4.00, no `db` instructions, and the shared
+library is one source (`src/LIB.INC`) linked into each program as its own module. See
 docs/HANDOFF.md for the results and what changed against the survey below.**
 
 It draws on the two sister projects: `../u1-decompiled` (docs/HANDOFF.md,

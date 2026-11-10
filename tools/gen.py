@@ -46,15 +46,16 @@ OK = set('''mov add adc sub sbb and or xor cmp test inc dec neg not push pop cal
  shl shr sal sar rol ror rcl rcr mul imul div idiv cbw cwd lea xchg in out int nop
  stc clc cmc std cld sti cli pushf popf lahf sahf jcxz loop loope loopne iret daa das aaa aas
  jo jno jb jae je jne jbe ja js jns jp jnp jl jge jle jg hlt'''.split())
-LABEL = re.compile(r'\bL[0-9A-F]{4}\b')
-DEFLABEL = re.compile(r'^(L[0-9A-F]{4})\b')
+LABEL = re.compile(r'\b[LKX][0-9A-F]{4}\b')
+DEFLABEL = re.compile(r'^([LX][0-9A-F]{4})\b')
 LINEADDR = re.compile(r';@([0-9A-F]{4})')
 
 
 class Gen:
-    def __init__(self, name, force):
+    def __init__(self, name, force, analysis=None):
+        self.name = name
         self.t = u3an.TARGETS[name]
-        self.a = u3an.analyse(name)
+        self.a = analysis or u3an.analyse(name)
         self.img, self.end = self.a.img, self.a.end
         self.force = force
         self.starts = sorted(self.a.insn)
@@ -72,9 +73,16 @@ class Gen:
         self.cuts = []
         self.low = set()                       # offsets below 0100 (PSP) that get a label
         self.lowcode = set()                   # ... of which branch targets
+        self.dataptr = {}                      # addr -> text of a data word that holds an address
+        self.special = {}                      # addr -> (lines, next addr): text instead of the bytes
+        self.aliases = {}                      # addr -> [names]: extra PUBLIC labels there
+        self.lib = None                        # genlib.Lib when the library is a module of its own
+        self.skip = None                       # (padding start, library end) left to that module
 
     def sym(self, t):
         """Symbol text for offset t inside the image (registers the label)."""
+        if self.skip and self.skip[0] <= t < self.skip[1]:
+            return self.lib.ref(self.name, t)
         i = bisect.bisect_right(self.units, t) - 1
         if i >= 0:
             u = self.units[i]
@@ -134,8 +142,7 @@ class Gen:
                     if t < self.end:           # into a data area (a file is loaded there)
                         return '%s near ptr %s' % (m, self.sym(t))
                     return None
-                self.labels.add(t)
-                lab = 'L%04X' % t
+                lab = self.sym(t)
                 if m == 'jmp':
                     op, fwd = ins.bytes[0], t > ins.address
                     if op == 0xEB:
@@ -185,21 +192,27 @@ class Gen:
                     bad[c] = 1
         return bad
 
-    def choose_cuts(self, limit):
+    def choose_cuts(self, limit, forced=()):
         """Module starts at routine entries (call targets) no short branch crosses, so that no
-        module holds much more than `limit` bytes (zero runs count 1/16)."""
+        module holds much more than `limit` bytes (zero runs count 1/16), plus `forced`."""
         if not limit:
-            return []
+            return sorted(forced)
         bad = self.crossing()
         calls = {u3an.direct_target(i) for i in self.a.insn.values() if i.mnemonic == 'call'}
         cand = sorted(c for c in calls if c in self.a.insn and not bad[c])
         wt = [1.0 if b else 1.0 / 16 for b in self.img]
         cuts, last, weight, best, ci = [], 0x100, 0.0, None, 0
         for pc in range(0x100, self.end):
+            if pc in forced:
+                cuts.append(pc)
+                last, weight, best = pc, 0.0, None
             weight += wt[pc]
             while ci < len(cand) and cand[ci] <= pc:
                 best = cand[ci]
                 ci += 1
+            if self.skip and self.skip[0] <= pc < self.skip[1]:
+                best = None
+                continue
             if weight > limit and best and best > last:
                 cuts.append(best)
                 last = best
@@ -208,10 +221,20 @@ class Gen:
 
     def run(self, limit=0):
         a = self.a
+        if 'lib' in self.t:                    # the library is a module of its own
+            import genlib
+            self.lib = genlib.get()
+            pad, lo, hi = genlib.RANGE[self.name]
+            self.skip = (pad, hi)
+            for name, vals in self.lib.ext.items():
+                self.aliases.setdefault(vals[self.name], []).append(name)
+                if vals[self.name] < 0x100:    # in the PSP: placed with ORG
+                    self.low.add(vals[self.name])
         for pc in self.starts:                 # pass 1: collect labels
-            if pc not in self.force:
+            if pc not in self.force and not (self.skip and self.skip[0] <= pc < self.skip[1]):
                 self.conv(a.insn[pc])
-        self.cuts = self.choose_cuts(limit)
+        forced = [x for x in (self.skip or ()) if x < self.end]
+        self.cuts = self.choose_cuts(limit, forced)
         self.breaks = set(self.cuts)
         self.labels |= self.breaks
         body = []
@@ -229,9 +252,16 @@ class Gen:
             mods[k].append(line)
         defs = [set(DEFLABEL.match(l).group(1) for l in m if DEFLABEL.match(l)) for m in mods]
         defs[0] |= {'L%04X' % x for x in self.low}    # placed with ORG in the first module
+        for x in self.low:
+            defs[0] |= set(self.aliases.get(x, ()))
+        alias = set(n for v in self.aliases.values() for n in v)
         uses = [set(x for l in m for x in LABEL.findall(DEFLABEL.sub('', l).split(';')[0])) for m in mods]
         out = []
         for i, m in enumerate(mods):
+            if self.skip and bounds[i] == self.skip[0]:
+                assert not m
+                out.append(None)
+                continue
             L = []
             w = L.append
             w('; %s: Ultima III (Origin 1983, PC version by James R. Van Artsdalen).' % self.t['file'])
@@ -245,13 +275,19 @@ class Gen:
                 if j != i:
                     others |= uses[j]
             for x in sorted(uses[i] - defs[i]):
-                w('EXTRN %s:%s' % (x, 'NEAR' if int(x[1:], 16) in a.insn else 'BYTE'))
-            for x in sorted(defs[i] & others):
+                if x[0] == 'K':
+                    near = self.lib.is_code(x)
+                else:
+                    near = int(x[1:], 16) in a.insn
+                w('EXTRN %s:%s' % (x, 'NEAR' if near else 'BYTE'))
+            for x in sorted((defs[i] & others) | (defs[i] & alias)):
                 w('PUBLIC %s' % x)
             if i == 0:
-                for x in sorted(self.low):     # branch targets in the PSP
+                for x in sorted(self.low):     # PSP offsets
                     w('ORG %s' % hx(x))
                     w("L%04X label %s" % (x, "near" if x in self.lowcode else "byte"))
+                    for n in self.aliases.get(x, ()):
+                        w('%s label byte' % n)
                 w('ORG 100h')
             L.extend(m)
             w('CODE ENDS')
@@ -274,20 +310,41 @@ class Gen:
             w('\tdb ' + ','.join(hx(b) for b in bs[i:k]) + '\t;@%04X' % (at + i))
             i = k
 
-    def emit(self, w):
+    def emit(self, w, lo=0x100, hi=None):
         a, img = self.a, self.img
-        pc, buf, nforced = 0x100, [], 0
-        start = [0x100]
+        hi = hi or self.end
+        pc, buf, nforced = lo, [], 0
+        start = [lo]
 
         def flush():
             if buf:
                 self.dbl(w, bytes(buf), start[0])
                 del buf[:]
-        if 0x100 not in a.insn:
+        if lo == 0x100 and 0x100 not in a.insn:
             self.labels.add(0x100)
-        while pc < self.end:
+        while pc < hi:
             if pc in self.breaks:
                 flush()
+            if self.skip and pc == self.skip[0]:
+                flush()
+                pc = self.skip[1]
+                continue
+            if pc in self.special:
+                flush()
+                lines, pc = self.special[pc]
+                for l in lines:
+                    w(l)
+                continue
+            if pc in self.aliases and pc >= 0x100:
+                flush()
+                for n in self.aliases[pc]:
+                    w('%s label byte\t;@%04X' % (n, pc))
+            if pc in self.dataptr:
+                flush()
+                lab = 'L%04X' % pc if pc in self.labels else ''
+                w(lab + '\t' + self.dataptr[pc] + '\t;@%04X' % pc)
+                pc += 2
+                continue
             if pc in self.tablewords:
                 flush()
                 v = self.tablewords[pc]
@@ -336,9 +393,19 @@ def main():
     g = Gen(name, force)
     mods = g.run(limit)
     stem = os.path.splitext(g.t['file'])[0]
-    names = [stem + '.ASM'] if len(mods) == 1 else ['%s%d.ASM' % (stem, i + 1) for i in range(len(mods))]
+    nprog = sum(1 for m in mods if m is not None)
+    names, k = [], 0
+    for m in mods:
+        if m is None:
+            names.append('LIB.ASM')
+        else:
+            k += 1
+            names.append(stem + '.ASM' if nprog == 1 else '%s%d.ASM' % (stem, k))
     os.makedirs(outdir, exist_ok=True)
     for n, lines in zip(names, mods):
+        if lines is None:
+            lines = g.lib.wrapper(name)
+            open(os.path.join(outdir, 'LIB.INC'), 'w', newline='').write(CRLF.join(g.lib.lines) + CRLF)
         open(os.path.join(outdir, n), 'w', newline='').write(CRLF.join(lines) + CRLF)
     open(os.path.join(outdir, stem + '.lnk'), 'w').write(''.join(n + '\n' for n in names))
     open(os.path.join(outdir, stem + '.ins'), 'w').write(' '.join(str(x) for x in g.units))
