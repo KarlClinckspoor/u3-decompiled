@@ -1,9 +1,10 @@
 # Plan: Ultima III decompilation (u3-decompiled)
 
-Written 2026-11-09. **Status: phases 0-2 done (2026-11-09): all three files rebuild
-byte-identical from `src/` with MASM 3.00 and 4.00, no `db` instructions, and the shared
-library is one source (`src/LIB.INC`) linked into each program as its own module. See
-docs/HANDOFF.md for the results and what changed against the survey below.**
+Written 2026-11-09. **Status: phases 0-3 done (2026-11-09), phase 3 statically: all three
+files rebuild byte-identical from `src/` with MASM 3.00 and 4.00, no `db` instructions, one
+shared library source (`src/LIB.INC`), and every address a symbol (tools/shift.py). A play test
+of a shifted build is still to do. See docs/HANDOFF.md for the results and what changed against
+the survey below.**
 
 It draws on the two sister projects: `../u1-decompiled` (docs/HANDOFF.md,
 MAP.md, MATCHING.md, build/pilot/BRIEF.md) and `../u2-decompiled` (docs/HANDOFF.md). It also

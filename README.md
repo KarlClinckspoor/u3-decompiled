@@ -17,10 +17,10 @@ All three link the same library module (screen, text, keyboard, files, sound), o
 
 The game is hand-written 8086 assembly. There is no compiler output and no protection envelope.
 The sources were generated from the files (`tools/gen.py`, `tools/genlib.py`) and are now
-edited by hand. Every branch target and memory operand inside the image is a label (`Lxxxx` in
-the programs, `Kxxxx` in the library), and no instruction is written as `db`. In the programs,
-immediates are still numbers; in the library every address is symbolic. Next: make the
-programs relocatable, then names (docs/PLAN.md, docs/HANDOFF.md).
+edited by hand. Every address is a symbol (`Lxxxx` in the programs, `Kxxxx` in the library),
+so code can be added or removed (`tools/shift.py` proves it), and no instruction is written
+as `db`. Next: play-test a shifted build, then data formats, modules and names (docs/PLAN.md,
+docs/HANDOFF.md).
 
 ## Toolchain
 
@@ -54,4 +54,7 @@ neither is set. The analysis tools need `capstone` (on Karl's machine:
 - `tools/gen.py`, `tools/genlib.py`, `tools/regen.py`: generate the program and library sources
   from the files and iterate until they assemble identically (for re-deriving pieces; `src/` is
   the source of truth)
+- `tools/shift.py`: relocation test (pad every module, rebuild, check only addresses moved);
+  `tools/play.py`: play a build in DOSBox with GOG's settings; `tools/cands.py`,
+  `tools/ptrtabs.py`: surveys for addresses still written as numbers
 - `docs/PLAN.md`: the plan; `docs/HANDOFF.md`: state, findings and next steps

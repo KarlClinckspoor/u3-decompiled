@@ -1,6 +1,7 @@
 # Handoff: Ultima III decompilation (u3-decompiled)
 
-State as of 2026-11-09, after phase 2 of docs/PLAN.md. Read this first, then docs/PLAN.md.
+State as of 2026-11-09, phase 3 of docs/PLAN.md (relocatable) done statically; the play test
+of a shifted build is still to do. Read this first, then docs/PLAN.md.
 The sister projects `../u1-decompiled` and `../u2-decompiled` are the models for conventions
 and tools.
 
@@ -74,6 +75,49 @@ generators re-derive pieces; they never write to src/.
 - The library's text is BOOTUP's copy, disassembled with the union of what the three
   programs reach. The programs reference 81 of its labels (the PUBLICs in LIB.INC).
 
+## Relocatable (phase 3)
+
+Every address the code uses is now a symbol. Proof so far: `tools/shift.py` pads every program
+module (19/5/7/11 NOPs by default; also checked with 3/13/21/9), rebuilds, and finds only
+addresses moved. The library moved by one or two paragraphs with it. The shifted files are
+runnable in build/shift/; `tools/play.py build/shift --dir build/play_shift` plays them. **Not
+yet played**: a play-through of the shifted build is what catches an address still written as
+a number. That needs Karl, or a session with screen access.
+
+What phase 3 had to find by hand (all in `u3an.TARGETS`, each checked against its use):
+- **Immediates that are addresses** (`immaddr`, written `offset Lxxxx`): the int 23h/24h
+  handler offsets in all three, ULTIMA 5F8E (`add si, offset L0115`: the picture buffer plus a
+  row offset), BOOTUP 1D69 (`mov bx, offset L02CE`: the roster, 40h bytes per character). The
+  survey (`tools/cands.py`) lists every 16-bit immediate in the image range. All the others are
+  constants: sizes (1228h = a map file, 4000h, 1400h, ...), CGA screen offsets (1CC0h, 0530h,
+  0DC2h, ...; DI for the library's tile drawer K26E8 is a screen offset), row/column pairs in
+  DX, key codes (3920h, 011Bh, ...), delay counts (ULTIMA 9FFh, 9000h), BIOS 0040:0010 (410h),
+  the planted `int 21h` (21CDh) and `jmp word ptr [1328h]` (26FFh, 1328h), and the DTA/load
+  address 100h (the next program always loads at 0100, so it stays a number).
+- **Data-pointer tables** (`ptrs`, written `dw Lxxxx`): 7 in BOOTUP (status, weapons and
+  armour, two menus, sexes, races, classes) and 18 in EXODUS (map file names, command prompts,
+  spell names, the 136 tile/monster/item/spell names at 6556, menus, marks and cards, long
+  messages and verses; plus the entry vector at 1328). Found from indexed word loads
+  (`tools/ptrtabs.py`) and from `lea si, table` passed to the menu routine; lengths from the
+  strings and the code. The menus' tables end with two "Quit" pointers followed by their key
+  string (e.g. 7928 "Q",1Bh,"ABCD...").
+- **DS is video memory** in four short EXODUS routines (`dsforeign`: 717C-71BA, 71C6-71E7,
+  71F0-722F, A496-A4B3: `push ds` / `mov ds, K25A9` / XOR on the screen / `pop ds`). Their
+  operands are screen offsets. The generator had made labels of them (L2000, L204F+1, L00A0);
+  they are numbers now.
+- In EXODUS, `L0100`..`L1327` (the map buffer, where SOSARIA.ULT and the other maps are
+  loaded) is addressed with labels inside the buffer: L0900, L1100 (the talk-string offsets in
+  a town file), L1280 (monsters). They move with the buffer, which is right as long as the
+  buffer stays first. The entry code at 24C4 is reused as a buffer after start-up
+  (`lea bx, L24C4[bx]`; also the library's X0109 in EXODUS).
+- **Cross-program constants**, which stay numbers and must not move: BOOTUP plants
+  `jmp word ptr [1328h]` to enter EXODUS. 1328h is EXODUS's entry vector, right after the
+  1228h-byte map buffer at 0100. So EXODUS1.ASM must keep the buffer and the vector first,
+  and shift.py pads EXODUS only after the vector. Every program is loaded at 0100 and
+  ULTIMA's/BOOTUP's entry is the `jmp` at 0100.
+- No program operand with a cs:/ss:/es: prefix points into the image, and no DS operand
+  points past the end of a file.
+
 ## Findings about the program
 
 - **Three COM images, each loading the next over itself.** The running program opens the next
@@ -93,8 +137,7 @@ generators re-derive pieces; they never write to src/.
   EXODUS 56C1, indexed by `not al` for codes F4-FF; now in LIB.INC); EXODUS command dispatch
   190B (33 keys at 1887, prompt-string pointers at 18C9), 774A (keys 7708, strings 778C), 85BB
   (keys 8579), spells 594B/596B (16 each; names via 590B), and 76F8, 85FD, 77CE, 654C, 794D,
-  A3A7, 9BEC. The string-pointer tables in the programs (18C9, 778C, 590B, 6540) are still
-  plain data words; they become `dw Lxxxx` in phase 3. (The library's are already symbolic.)
+  A3A7, 9BEC.
 
 ## Repository
 
@@ -107,22 +150,22 @@ generators re-derive pieces; they never write to src/.
 | `tools/gen.py` | the program generator (labels, modules, PSP labels, xchg order, the library as its own module, aliases for the library's externals) |
 | `tools/genlib.py` | the library generator: ranges, alignment of the three copies, internal/external address words, the EXODUS conditionals |
 | `tools/regen.py` | gen → MASM with listings → LINK → compare, forcing differing lines to `db` (none needed); `regen.py TARGET [WORKDIR] [MASM4/MASM3]` |
+| `tools/shift.py` | relocation test: pads every program module, rebuilds into build/shift/, checks that only addresses moved (`--pad 19,5,7,11`) |
+| `tools/play.py` | play a build in a DOSBox window with GOG's settings, from a copy of the data files (`play.py [BUILDDIR] [--dir DIR]`) |
+| `tools/cands.py`, `tools/ptrtabs.py` | phase 3 surveys: immediates and operands that might be addresses; indexed word tables and what they point to |
 | `tools/dos.py`, `setup.py`, `fat12.py` | DOSBox runner and toolchain unpacking (from u2) |
 
 Git: `master`, local only.
 
 ## Next steps
 
-Phase 3 (relocatable) in docs/PLAN.md. Concretely:
-1. Immediates that are addresses in the program modules: the int 23h/24h handler offsets
-   (`mov word ptr es:[8Ch], 1209h`), loads like ULTIMA 5DBC `mov si,9FFh`, the chain-load
-   constants (BOOTUP's 1328h is EXODUS's entry vector, a cross-program constant), the
-   string-pointer tables. Check each 16-bit immediate as U2 did. The library needs none of
-   this: its addresses are already proven and symbolic.
-2. Program operands with a segment prefix (`ss:`, `cs:`, `es:` on program addresses) and
-   displacements past the end of the file (buffers beyond the image) are still numbers.
-3. Then the NOP test: insert a byte near the start of each program module and play through
-   intro → menu → game in DOSBox.
-4. Later (readability): name the library first. It is called from everywhere: print string
+1. **Play the shifted build** (`tools/play.py build/shift --dir build/play_shift`): intro
+   (animation and sound), menu, roster (view a character: the status, weapon and armour
+   names come from the pointer tables), journey onward into EXODUS. In the game: walk, enter a
+   town (map load), talk, buy in a shop (the menus), cast a spell (spell names), fight
+   (combat map), enter a dungeon. Anything that breaks points at an address still written as
+   a number.
+2. Phase 4 (data formats) and phase 5 (modules by subsystem) in docs/PLAN.md.
+3. Later (readability): name the library first. It is called from everywhere: print string
    at row DH, column DL K2C7E (BOOTUP 4ABE), put character K25CC (440C), read key K29BD,
    load file K2BF0 (4A30), sound K2D59 (4B99), ...

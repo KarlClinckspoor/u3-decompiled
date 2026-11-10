@@ -27,17 +27,58 @@ GAMEDATA = os.path.join(ROOT, 'gamedata')
 # entries: where execution starts (0100, interrupt handlers stored into the vector table,
 # routines reached only through pointers). tables: jump tables {addr: words}. inline: calls
 # whose target reads data after the return address {target: 'z' (ASCIIZ) or byte count}.
+# data: ranges that are data even if something branches there. lib: links the shared library
+# as its own module (tools/genlib.py). limit: rough module size for the split.
+# Phase 3 (relocatable), each checked by hand (docs/HANDOFF.md):
+# ptrs: tables of data pointers {addr: words}, written dw Lxxxx (a 0000 word stays 0).
+# immaddr: instructions whose 16-bit immediate is an address in the image (offset Lxxxx).
+# dsforeign: ranges where DS is not the program's segment (DS = video memory there): their
+# memory operands are offsets in that segment and stay numbers.
 TARGETS = {
     'ultima': dict(file='ULTIMA.COM', sha1='2736836127771823f9ed1463f306400a36bde0e2',
-                   entries=[0x100, 0x5CDD, 0x5CDF], tables={0x8E61: 12}, inline={}, data=[], lib=True),
+                   entries=[0x100, 0x5CDD, 0x5CDF], tables={0x8E61: 12}, inline={}, data=[], lib=True,
+                   ptrs={},
+                   immaddr=[0x5CF1, 0x5CFC,        # int 23h/24h handlers
+                            0x5F8E],               # picture buffer L0115 + row offset
+                   dsforeign=[]),
     'bootup': dict(file='BOOTUP.BIN', sha1='d30df2917fbeae202f62dbf34c1ab41ba4988983',
-                   entries=[0x100, 0x1207, 0x1209], tables={0x4B81: 12}, inline={}, data=[], lib=True),
+                   entries=[0x100, 0x1207, 0x1209], tables={0x4B81: 12}, inline={}, data=[], lib=True,
+                   ptrs={0x0D61: 4,                # status: Good Poisoned Dead Ashes
+                         0x0DFF: 24,               # weapons (16), armour (8, also used from 0E1F)
+                         0x0E87: 4,                # menu: Return Organize Journey
+                         0x0F62: 9,                # menu: Examine Create Form Disperse ...
+                         0x1048: 3,                # sexes
+                         0x1070: 5,                # races
+                         0x10DB: 11},              # classes
+                   immaddr=[0x121A, 0x1225,        # int 23h/24h handlers
+                            0x1D69],               # roster L02CE + 40h*(n-1)
+                   dsforeign=[]),
     'exodus': dict(file='EXODUS.BIN', sha1='06f5ef9b9dfb4f86a0edf1e723e90a34df651705',
                    entries=[0x24C4, 0x24C1, 0x24C3],
                    tables={0x56C1: 12, 0x190B: 33, 0x85BB: 33, 0x774A: 33, 0x76F8: 8, 0x85FD: 4,
                            0x77CE: 8, 0x654C: 5, 0x794D: 7, 0x594B: 16, 0x596B: 16,
                            0xA3A7: 6, 0x9BEC: 4}, inline={},
-                   data=[(0x100, 0x1328)], limit=9000, lib=True),   # 0100: SOSARIA.ULT is loaded there
+                   data=[(0x100, 0x1328)], limit=9000, lib=True,   # 0100: SOSARIA.ULT is loaded there
+                   ptrs={0x1328: 1,                # the entry vector BOOTUP jumps through
+                         0x16BB: 19,               # map file names
+                         0x18C9: 33,               # command prompts (dispatch 190B)
+                         0x590B: 32,               # spell names
+                         0x598B: 8,                # directions, then attribute names (also 5993)
+                         0x6540: 5,                # INSERT DIG SEARCH BRIBE PRAY (then a 0 word)
+                         0x6556: 136,              # tile, monster, item and spell names
+                         0x6B08: 6,                # menu: Moons Death Love Sol Quit Quit
+                         0x6DB1: 8,                # marks and cards
+                         0x778C: 33,               # dungeon command prompts (dispatch 774A)
+                         0x78BB: 7,                # menu: Food Gold Equipment Weapons Armour Quit Quit
+                         0x78E6: 6,                # menu: Gems Keys Powder Torch Quit Quit
+                         0x7904: 18,               # menu: Quit Quit and the weapons
+                         0x7932: 10,               # menu: Quit Quit and the armour
+                         0x9979: 10,               # long messages (endgame, shrines, ...)
+                         0x9C1D: 4,                # menu: Buy Sell Quit Quit
+                         0xA1B0: 10,               # the "And so thou ..." verses
+                         0xA39B: 6},               # menu: Gems Keys Powders Torches Quit Quit
+                   immaddr=[0x24D4, 0x24DF],       # int 23h/24h handlers
+                   dsforeign=[(0x717C, 0x71BA), (0x71C6, 0x71E7), (0x71F0, 0x722F), (0xA496, 0xA4B3)]),
 }
 
 md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_16)

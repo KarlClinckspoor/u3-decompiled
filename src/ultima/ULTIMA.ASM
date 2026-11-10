@@ -88,8 +88,8 @@ L5CBA label byte
 	db 55h,6Eh,61h,62h,6Ch,65h,20h,74h,6Fh,20h,61h,63h,63h,65h,73h,73h	;@5CBA
 	db 20h,67h,72h,61h,70h,68h,69h,63h,73h,20h,64h,69h,73h,70h,6Ch,61h	;@5CCA
 	db 79h,2Eh,0h	;@5CDA
-	mov al, 1	;@5CDD
-	iret	;@5CDF
+L5CDD:	mov al, 1	;@5CDD
+L5CDF:	iret	;@5CDF
 L5CE0:	cld	;@5CE0
 	lea sp, K0000	;@5CE1
 	add sp, 100h	;@5CE5
@@ -97,9 +97,9 @@ L5CE0:	cld	;@5CE0
 	push es	;@5CEC
 	mov es, ax	;@5CED
 	mov ax, cs	;@5CEF
-	mov word ptr es:[8Ch], 5CDFh	;@5CF1
+	mov word ptr es:[8Ch], offset L5CDF	;@5CF1
 	mov word ptr es:[8Eh], ax	;@5CF8
-	mov word ptr es:[90h], 5CDDh	;@5CFC
+	mov word ptr es:[90h], offset L5CDD	;@5CFC
 	mov word ptr es:[92h], ax	;@5D03
 	pop es	;@5D07
 	mov al, 1	;@5D08
@@ -368,7 +368,7 @@ L5F81:	mov ax, word ptr [bp+2]	;@5F81
 	mov bh, 0	;@5F86
 	shl bx, 1	;@5F88
 	mov si, word ptr L5A62[bx]	;@5F8A
-	add si, 115h	;@5F8E
+	add si, offset L0115	;@5F8E
 	add si, word ptr [bp+0Eh]	;@5F92
 	mov bl, ah	;@5F95
 	mov bh, 0	;@5F97

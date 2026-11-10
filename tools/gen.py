@@ -19,8 +19,10 @@ Symbols:
   L00xx     offsets in the PSP (below 0100) that a DS operand or a branch names: labels
             placed with ORG before the ORG 100h of the first module (a relocatable symbol
             also keeps MASM from shortening [bx+0000] to [bx]).
-Displacements past the end of the file, 8-bit displacements, immediates and es:/ss:/cs:
-operands stay numbers for now (making them symbols is phase 3 of docs/PLAN.md). Jump tables
+Addresses the code does not show as such are listed in TARGETS by hand: data-pointer tables
+(ptrs, dw Lxxxx), immediates that are addresses (immaddr, offset Lxxxx), and ranges where DS
+is video memory (dsforeign: their operands stay numbers). 8-bit displacements, other
+immediates and es:/ss:/cs: operands are numbers (no program address was found among them). Jump tables
 (TARGETS[...]['tables']) are dw Lxxxx. A call or jump into a data area (EXODUS calls 0100,
 where SOSARIA.ULT is loaded) is written near ptr to that data label.
 Modules start at routine entries that no 8-bit relative branch crosses (MASM cannot make a
@@ -63,10 +65,15 @@ class Gen:
         for tb, n in self.t['tables'].items():
             for i in range(n):
                 self.tablewords[tb + 2 * i] = int.from_bytes(self.img[tb + 2 * i:tb + 2 * i + 2], 'little')
+        self.ptrwords = {}                     # addr -> value of each data-pointer table word
+        for tb, n in self.t.get('ptrs', {}).items():
+            for i in range(n):
+                self.ptrwords[tb + 2 * i] = int.from_bytes(self.img[tb + 2 * i:tb + 2 * i + 2], 'little')
         # atomic units (a label can only sit at their start): instructions and table words
-        self.units = sorted(set(self.starts) | set(self.tablewords))
+        self.units = sorted(set(self.starts) | set(self.tablewords) | set(self.ptrwords))
         self.usize = {pc: self.a.insn[pc].size for pc in self.starts}
         self.usize.update({pc: 2 for pc in self.tablewords})
+        self.usize.update({pc: 2 for pc in self.ptrwords})
         self.labels = {x for x in self.a.targets if x in self.a.insn}
         self.labels |= {v for v in self.tablewords.values() if v in self.a.insn}
         self.breaks = set()
@@ -94,6 +101,8 @@ class Gen:
 
     def memtext(self, ins, op):
         """Symbolic text for a memory operand, or None to keep it numeric."""
+        if any(r0 <= ins.address < r1 for r0, r1 in self.t.get('dsforeign', ())):
+            return None                        # DS is video memory here
         if op.disp_size != 2 or op.seg != 'ds' or u3an.prefix_seg(ins) is not None:
             return None
         regs = [r for r in (op.base, op.index) if r]
@@ -178,7 +187,13 @@ class Gen:
                 o = re.sub(r'((?:cs|ds|es|ss):)?\[([^\]]+)\]', lambda mm: new, o, count=1)
             if m == 'lea' and ' ptr ' in o:
                 o = re.sub(r'\b(byte|word|dword) ptr ', '', o)
-        return (m + ' ' + o).strip()
+        r = (m + ' ' + o).strip()
+        if ins.address in self.t.get('immaddr', ()):
+            imm = [p for p in ops if p.type == 'imm'][0].imm
+            h = hx(imm)
+            i = r.rindex(h)
+            r = r[:i] + 'offset ' + self.sym(imm) + r[i + len(h):]
+        return r
 
     # ---- modules
     def crossing(self):
@@ -230,6 +245,8 @@ class Gen:
                 self.aliases.setdefault(vals[self.name], []).append(name)
                 if vals[self.name] < 0x100:    # in the PSP: placed with ORG
                     self.low.add(vals[self.name])
+        for p, v in self.ptrwords.items():     # data-pointer tables
+            self.dataptr[p] = 'dw ' + (self.sym(v) if v else '0')
         for pc in self.starts:                 # pass 1: collect labels
             if pc not in self.force and not (self.skip and self.skip[0] <= pc < self.skip[1]):
                 self.conv(a.insn[pc])

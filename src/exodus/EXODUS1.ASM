@@ -93,7 +93,6 @@ PUBLIC L00A0
 PUBLIC L00A4
 PUBLIC L00A8
 PUBLIC L00AC
-PUBLIC L00F0
 PUBLIC L0100
 PUBLIC L1100
 PUBLIC L1280
@@ -128,6 +127,19 @@ PUBLIC L15D0
 PUBLIC L15EA
 PUBLIC L16E3
 PUBLIC L1719
+PUBLIC L1721
+PUBLIC L1735
+PUBLIC L1782
+PUBLIC L178F
+PUBLIC L179B
+PUBLIC L17AE
+PUBLIC L17CA
+PUBLIC L17DA
+PUBLIC L17FC
+PUBLIC L1813
+PUBLIC L182D
+PUBLIC L185C
+PUBLIC L1869
 PUBLIC L194D
 PUBLIC L1955
 PUBLIC L1B4D
@@ -140,14 +152,10 @@ PUBLIC L1D4E
 PUBLIC L1E55
 PUBLIC L1E9B
 PUBLIC L1EFD
-PUBLIC L2000
 PUBLIC L2018
-PUBLIC L204F
 PUBLIC L2068
 PUBLIC L207D
 PUBLIC L2097
-PUBLIC L209F
-PUBLIC L20F0
 PUBLIC L2168
 PUBLIC L24C0
 PUBLIC L24C4
@@ -190,8 +198,6 @@ ORG 0A8h
 L00A8 label byte
 ORG 0ACh
 L00AC label byte
-ORG 0F0h
-L00F0 label byte
 ORG 100h
 L0100 label byte
 	db 2048 dup (0)	;@0100
@@ -226,7 +232,8 @@ L1325 label byte
 L1326 label byte
 	db 0h	;@1326
 L1327 label byte
-	db 0h,0C4h,24h	;@1327
+	db 0h	;@1327
+	dw L24C4	;@1328
 L132A label byte
 	db 0h,0h,0h,20h,50h,0h,50h,20h,0A0h,0h,0A0h,20h,0F0h,0h,0F0h,20h	;@132A
 	db 40h,1h,40h,21h,90h,1h,90h,21h,0E0h,1h,0E0h,21h,30h,2h,30h,22h	;@133A
@@ -313,52 +320,130 @@ L15DE label byte
 L15EA label byte
 	db 53h,4Fh,53h,41h,52h,49h,41h,2Eh,55h,4Ch,54h,0h	;@15EA
 L15F6 label byte
-	db 41h,4Dh,42h,52h,4Fh,53h,49h,41h,2Eh,55h,4Ch,54h,0h,42h,52h,49h	;@15F6
-	db 54h,49h,53h,48h,2Eh,55h,4Ch,54h,0h,45h,58h,4Fh,44h,55h,53h,2Eh	;@1606
-	db 55h,4Ch,54h,0h,4Ch,43h,42h,2Eh,55h,4Ch,54h,0h,4Dh,4Fh,4Fh,4Eh	;@1616
-	db 2Eh,55h,4Ch,54h,0h,59h,45h,57h,2Eh,55h,4Ch,54h,0h,4Dh,4Fh,4Eh	;@1626
-	db 54h,4Fh,52h,5Fh,45h,2Eh,55h,4Ch,54h,0h,4Dh,4Fh,4Eh,54h,4Fh,52h	;@1636
-	db 5Fh,57h,2Eh,55h,4Ch,54h,0h,47h,52h,45h,59h,2Eh,55h,4Ch,54h,0h	;@1646
-	db 44h,41h,57h,4Eh,2Eh,55h,4Ch,54h,0h,44h,45h,56h,49h,4Ch,2Eh,55h	;@1656
-	db 4Ch,54h,0h,46h,41h,57h,4Eh,2Eh,55h,4Ch,54h,0h,44h,45h,41h,54h	;@1666
-	db 48h,2Eh,55h,4Ch,54h,0h,4Dh,2Eh,55h,4Ch,54h,0h,46h,49h,52h,45h	;@1676
-	db 2Eh,55h,4Ch,54h,0h,54h,49h,4Dh,45h,2Eh,55h,4Ch,54h,0h,50h,2Eh	;@1686
-	db 55h,4Ch,54h,0h,50h,45h,52h,49h,4Eh,49h,41h,4Eh,2Eh,55h,4Ch,54h	;@1696
-	db 0h,4Dh,49h,4Eh,45h,2Eh,55h,4Ch,54h,0h,44h,41h,52h,44h,49h,4Eh	;@16A6
-	db 2Eh,55h,4Ch,54h,0h	;@16B6
-L16BB label byte
-	db 3h,16h,0Fh,16h,1Ah,16h,22h,16h,2Bh,16h,33h,16h,40h,16h,4Dh,16h	;@16BB
-	db 56h,16h,5Fh,16h,69h,16h,72h,16h,7Ch,16h,82h,16h,8Bh,16h,94h,16h	;@16CB
-	db 9Ah,16h,0A7h,16h,0B0h,16h	;@16DB
+	db 41h,4Dh,42h,52h,4Fh,53h,49h,41h,2Eh,55h,4Ch,54h,0h	;@15F6
+L1603 label byte
+	db 42h,52h,49h,54h,49h,53h,48h,2Eh,55h,4Ch,54h,0h	;@1603
+L160F label byte
+	db 45h,58h,4Fh,44h,55h,53h,2Eh,55h,4Ch,54h,0h	;@160F
+L161A label byte
+	db 4Ch,43h,42h,2Eh,55h,4Ch,54h,0h	;@161A
+L1622 label byte
+	db 4Dh,4Fh,4Fh,4Eh,2Eh,55h,4Ch,54h,0h	;@1622
+L162B label byte
+	db 59h,45h,57h,2Eh,55h,4Ch,54h,0h	;@162B
+L1633 label byte
+	db 4Dh,4Fh,4Eh,54h,4Fh,52h,5Fh,45h,2Eh,55h,4Ch,54h,0h	;@1633
+L1640 label byte
+	db 4Dh,4Fh,4Eh,54h,4Fh,52h,5Fh,57h,2Eh,55h,4Ch,54h,0h	;@1640
+L164D label byte
+	db 47h,52h,45h,59h,2Eh,55h,4Ch,54h,0h	;@164D
+L1656 label byte
+	db 44h,41h,57h,4Eh,2Eh,55h,4Ch,54h,0h	;@1656
+L165F label byte
+	db 44h,45h,56h,49h,4Ch,2Eh,55h,4Ch,54h,0h	;@165F
+L1669 label byte
+	db 46h,41h,57h,4Eh,2Eh,55h,4Ch,54h,0h	;@1669
+L1672 label byte
+	db 44h,45h,41h,54h,48h,2Eh,55h,4Ch,54h,0h	;@1672
+L167C label byte
+	db 4Dh,2Eh,55h,4Ch,54h,0h	;@167C
+L1682 label byte
+	db 46h,49h,52h,45h,2Eh,55h,4Ch,54h,0h	;@1682
+L168B label byte
+	db 54h,49h,4Dh,45h,2Eh,55h,4Ch,54h,0h	;@168B
+L1694 label byte
+	db 50h,2Eh,55h,4Ch,54h,0h	;@1694
+L169A label byte
+	db 50h,45h,52h,49h,4Eh,49h,41h,4Eh,2Eh,55h,4Ch,54h,0h	;@169A
+L16A7 label byte
+	db 4Dh,49h,4Eh,45h,2Eh,55h,4Ch,54h,0h	;@16A7
+L16B0 label byte
+	db 44h,41h,52h,44h,49h,4Eh,2Eh,55h,4Ch,54h,0h	;@16B0
+L16BB	dw L1603	;@16BB
+	dw L160F	;@16BD
+	dw L161A	;@16BF
+	dw L1622	;@16C1
+	dw L162B	;@16C3
+	dw L1633	;@16C5
+	dw L1640	;@16C7
+	dw L164D	;@16C9
+	dw L1656	;@16CB
+	dw L165F	;@16CD
+	dw L1669	;@16CF
+	dw L1672	;@16D1
+	dw L167C	;@16D3
+	dw L1682	;@16D5
+	dw L168B	;@16D7
+	dw L1694	;@16D9
+	dw L169A	;@16DB
+	dw L16A7	;@16DD
+	dw L16B0	;@16DF
 L16E1 label byte
 	db 2Dh,12h	;@16E1
 L16E3 label byte
 	db 0Ah,35h,2Eh,13h,6h,0Dh,22h,10h,31h,3Ah,2Fh,3Ah,7h,2Ch,25h,35h	;@16E3
 	db 12h,1Fh,1Eh,2h,38h,1Fh,13h,39h,31h,22h,3Ah,1Eh,3Ah,2Ch,38h,6h	;@16F3
-	db 9h,1Ch,2Eh,7h,50h,61h,73h,73h,0Ah,0h,42h,6Fh,61h,72h,64h,0h	;@1703
+	db 9h,1Ch,2Eh,7h	;@1703
+L1707 label byte
+	db 50h,61h,73h,73h,0Ah,0h	;@1707
+L170D label byte
+	db 42h,6Fh,61h,72h,64h,0h	;@170D
+L1713 label byte
 	db 58h,2Dh,69h,74h,20h,0h	;@1713
 L1719 label byte
-	db 56h,6Fh,6Ch,75h,6Dh,65h,20h,0h,5Ah,74h,61h,74h,73h,20h,66h,6Fh	;@1719
-	db 72h,20h,23h,20h,0h,45h,6Eh,74h,65h,72h,20h,0h,48h,61h,6Eh,64h	;@1729
-	db 20h,45h,71h,75h,69h,70h,6Dh,65h,6Eh,74h,21h,0Ah,46h,72h,6Fh,6Dh	;@1739
-	db 20h,50h,6Ch,61h,79h,65h,72h,3Ah,20h,0h,4Ch,6Fh,6Fh,6Bh,2Dh,0h	;@1749
+	db 56h,6Fh,6Ch,75h,6Dh,65h,20h,0h	;@1719
+L1721 label byte
+	db 5Ah,74h,61h,74h,73h,20h,66h,6Fh,72h,20h,23h,20h,0h	;@1721
+L172E label byte
+	db 45h,6Eh,74h,65h,72h,20h,0h	;@172E
+L1735 label byte
+	db 48h,61h,6Eh,64h,20h,45h,71h,75h,69h,70h,6Dh,65h,6Eh,74h,21h,0Ah	;@1735
+	db 46h,72h,6Fh,6Dh,20h,50h,6Ch,61h,79h,65h,72h,3Ah,20h,0h	;@1745
+L1753 label byte
+	db 4Ch,6Fh,6Fh,6Bh,2Dh,0h	;@1753
+L1759 label byte
 	db 57h,68h,6Fh,20h,77h,69h,6Ch,6Ch,0Ah,54h,72h,61h,6Eh,73h,61h,63h	;@1759
-	db 74h,3Fh,20h,0h,55h,6Eh,6Ch,6Fh,63h,6Bh,2Dh,0h,51h,75h,69h,74h	;@1769
-	db 20h,26h,20h,53h,61h,76h,65h,0Ah,0h,52h,65h,61h,64h,79h,20h,66h	;@1779
-	db 6Fh,72h,20h,23h,20h,0h,57h,65h,61h,72h,20h,66h,6Fh,72h,20h,23h	;@1789
-	db 20h,0h,43h,61h,73h,74h,20h,62h,79h,20h,77h,68h,6Fh,6Dh,2Dh,0h	;@1799
-	db 46h,69h,72h,65h,0h,4Ah,6Fh,69h,6Eh,20h,67h,6Fh,6Ch,64h,20h,74h	;@17A9
-	db 6Fh,3Ah,0h,44h,65h,73h,63h,65h,6Eh,64h,0h,4Bh,6Ch,69h,6Dh,62h	;@17B9
-	db 0h,49h,67h,6Eh,69h,74h,65h,20h,61h,20h,74h,6Fh,72h,63h,68h,0Ah	;@17C9
-	db 0h,4Eh,65h,67h,61h,74h,65h,20h,54h,69h,6Dh,65h,21h,0Ah,57h,68h	;@17D9
-	db 6Fh,73h,65h,20h,50h,6Fh,77h,64h,3Fh,20h,0h,41h,74h,74h,61h,63h	;@17E9
-	db 6Bh,2Dh,0h,4Dh,6Fh,64h,69h,66h,79h,20h,6Fh,72h,64h,65h,72h,21h	;@17F9
-	db 0Ah,50h,6Ch,61h,79h,65h,72h,3Ah,20h,0h,47h,65h,74h,20h,43h,68h	;@1809
-	db 65h,73h,74h,21h,0Ah,50h,6Ch,72h,20h,74h,6Fh,20h,73h,65h,61h,72h	;@1819
-	db 63h,68h,2Dh,0h,50h,65h,65h,72h,20h,61h,74h,20h,67h,65h,6Dh,21h	;@1829
-	db 0Ah,57h,68h,6Fh,73h,65h,20h,67h,65h,6Dh,3Fh,20h,0h,53h,74h,65h	;@1839
-	db 61h,6Ch,20h,43h,68h,65h,73h,74h,21h,0Ah,50h,6Ch,61h,79h,65h,72h	;@1849
-	db 3Fh,20h,0h,59h,65h,6Ch,6Ch,2Ch,20h,77h,68h,6Fh,6Dh,3Fh,20h,0h	;@1859
+	db 74h,3Fh,20h,0h	;@1769
+L176D label byte
+	db 55h,6Eh,6Ch,6Fh,63h,6Bh,2Dh,0h	;@176D
+L1775 label byte
+	db 51h,75h,69h,74h,20h,26h,20h,53h,61h,76h,65h,0Ah,0h	;@1775
+L1782 label byte
+	db 52h,65h,61h,64h,79h,20h,66h,6Fh,72h,20h,23h,20h,0h	;@1782
+L178F label byte
+	db 57h,65h,61h,72h,20h,66h,6Fh,72h,20h,23h,20h,0h	;@178F
+L179B label byte
+	db 43h,61h,73h,74h,20h,62h,79h,20h,77h,68h,6Fh,6Dh,2Dh,0h	;@179B
+L17A9 label byte
+	db 46h,69h,72h,65h,0h	;@17A9
+L17AE label byte
+	db 4Ah,6Fh,69h,6Eh,20h,67h,6Fh,6Ch,64h,20h,74h,6Fh,3Ah,0h	;@17AE
+L17BC label byte
+	db 44h,65h,73h,63h,65h,6Eh,64h,0h	;@17BC
+L17C4 label byte
+	db 4Bh,6Ch,69h,6Dh,62h,0h	;@17C4
+L17CA label byte
+	db 49h,67h,6Eh,69h,74h,65h,20h,61h,20h,74h,6Fh,72h,63h,68h,0Ah,0h	;@17CA
+L17DA label byte
+	db 4Eh,65h,67h,61h,74h,65h,20h,54h,69h,6Dh,65h,21h,0Ah,57h,68h,6Fh	;@17DA
+	db 73h,65h,20h,50h,6Fh,77h,64h,3Fh,20h,0h	;@17EA
+L17F4 label byte
+	db 41h,74h,74h,61h,63h,6Bh,2Dh,0h	;@17F4
+L17FC label byte
+	db 4Dh,6Fh,64h,69h,66h,79h,20h,6Fh,72h,64h,65h,72h,21h,0Ah,50h,6Ch	;@17FC
+	db 61h,79h,65h,72h,3Ah,20h,0h	;@180C
+L1813 label byte
+	db 47h,65h,74h,20h,43h,68h,65h,73h,74h,21h,0Ah,50h,6Ch,72h,20h,74h	;@1813
+	db 6Fh,20h,73h,65h,61h,72h,63h,68h,2Dh,0h	;@1823
+L182D label byte
+	db 50h,65h,65h,72h,20h,61h,74h,20h,67h,65h,6Dh,21h,0Ah,57h,68h,6Fh	;@182D
+	db 73h,65h,20h,67h,65h,6Dh,3Fh,20h,0h	;@183D
+L1846 label byte
+	db 53h,74h,65h,61h,6Ch,20h,43h,68h,65h,73h,74h,21h,0Ah,50h,6Ch,61h	;@1846
+	db 79h,65h,72h,3Fh,20h,0h	;@1856
+L185C label byte
+	db 59h,65h,6Ch,6Ch,2Ch,20h,77h,68h,6Fh,6Dh,3Fh,20h,0h	;@185C
+L1869 label byte
 	db 4Fh,74h,68h,65h,72h,20h,63h,6Fh,6Dh,6Dh,61h,6Eh,64h,21h,0Ah,57h	;@1869
 	db 68h,6Fh,73h,65h,20h,61h,63h,74h,69h,6Fh,6Eh,3Fh,20h,0h	;@1879
 L1887 label byte
@@ -367,12 +452,39 @@ L1887 label byte
 	db 48h,23h,54h,14h,55h,16h,49h,17h,51h,10h,52h,13h,57h,11h,43h,2Eh	;@18A7
 	db 46h,21h,4Ah,24h,44h,20h,4Eh,31h,47h,22h,50h,19h,53h,1Fh,59h,15h	;@18B7
 	db 4Fh,18h	;@18C7
-L18C9 label byte
-	db 4Dh,1Bh,0F4h,17h,54h,1Bh,5Bh,1Bh,61h,1Bh,7h,17h,0Dh,17h,13h,17h	;@18C9
-	db 19h,17h,19h,17h,21h,17h,2Eh,17h,53h,17h,0FCh,17h,19h,17h,0C4h,17h	;@18D9
-	db 35h,17h,59h,17h,6Dh,17h,0CAh,17h,75h,17h,82h,17h,8Fh,17h,9Bh,17h	;@18E9
-	db 0A9h,17h,0AEh,17h,0BCh,17h,0DAh,17h,13h,18h,2Dh,18h,46h,18h,5Ch,18h	;@18F9
-	db 69h,18h	;@1909
+L18C9	dw L1B4D	;@18C9
+	dw L17F4	;@18CB
+	dw L1B54	;@18CD
+	dw L1B5B	;@18CF
+	dw L1B61	;@18D1
+	dw L1707	;@18D3
+	dw L170D	;@18D5
+	dw L1713	;@18D7
+	dw L1719	;@18D9
+	dw L1719	;@18DB
+	dw L1721	;@18DD
+	dw L172E	;@18DF
+	dw L1753	;@18E1
+	dw L17FC	;@18E3
+	dw L1719	;@18E5
+	dw L17C4	;@18E7
+	dw L1735	;@18E9
+	dw L1759	;@18EB
+	dw L176D	;@18ED
+	dw L17CA	;@18EF
+	dw L1775	;@18F1
+	dw L1782	;@18F3
+	dw L178F	;@18F5
+	dw L179B	;@18F7
+	dw L17A9	;@18F9
+	dw L17AE	;@18FB
+	dw L17BC	;@18FD
+	dw L17DA	;@18FF
+	dw L1813	;@1901
+	dw L182D	;@1903
+	dw L1846	;@1905
+	dw L185C	;@1907
+	dw L1869	;@1909
 L190B	dw L1C7D	;@190B
 	dw L888B	;@190D
 	dw L1C9E	;@190F
@@ -893,7 +1005,7 @@ L1FD6:	call L26A9	;@1FD6
 	sub al, 1	;@1FFB
 	das	;@1FFD
 	jb L2015	;@1FFE
-L2000:	mov byte ptr [bx+26h], al	;@2000
+	mov byte ptr [bx+26h], al	;@2000
 	mov al, byte ptr L259D	;@2003
 	shl al, 1	;@2006
 	shl al, 1	;@2008
@@ -919,7 +1031,7 @@ L2035:	call L26A9	;@2035
 	ja L2065	;@2048
 	mov al, byte ptr L14BA	;@204A
 	shl al, 1	;@204D
-L204F:	shl al, 1	;@204F
+	shl al, 1	;@204F
 	mov byte ptr [bx], al	;@2051
 	mov byte ptr L14BA, 3Fh	;@2053
 	lea si, L19AC	;@2058
@@ -954,7 +1066,7 @@ L2097:	push ax	;@2097
 	push cx	;@2099
 	push dx	;@209A
 	lea bx, L14BA	;@209B
-L209F:	mov cx, 112h	;@209F
+	mov cx, 112h	;@209F
 	lea dx, L15D4	;@20A2
 	call K2BA0	;@20A6
 	pop dx	;@20A9
@@ -984,7 +1096,7 @@ L20E5:	pop dx	;@20E5
 	je L212E	;@20EA
 	mov bl, dl	;@20EC
 	mov bh, 0	;@20EE
-L20F0:	mov al, byte ptr L1955[bx]	;@20F0
+	mov al, byte ptr L1955[bx]	;@20F0
 	mov bl, byte ptr L194D[bx]	;@20F4
 	mov bh, al	;@20F8
 	call L28DF	;@20FA
@@ -1360,8 +1472,8 @@ L24AB:	pop si	;@24AB
 	db 0h,0h,0h,0h,0h,0h,0h,0h,0h,0h,0h,0h,0h	;@24B3
 L24C0 label byte
 	db 0FFh	;@24C0
-	mov al, 1	;@24C1
-	iret	;@24C3
+L24C1:	mov al, 1	;@24C1
+L24C3:	iret	;@24C3
 X0109 label byte	;@24C4
 L24C4:	lea sp, K0000	;@24C4
 	add sp, 100h	;@24C8
@@ -1369,9 +1481,9 @@ L24C4:	lea sp, K0000	;@24C4
 	push es	;@24CF
 	mov es, ax	;@24D0
 	mov ax, cs	;@24D2
-	mov word ptr es:[8Ch], 24C3h	;@24D4
+	mov word ptr es:[8Ch], offset L24C3	;@24D4
 	mov word ptr es:[8Eh], ax	;@24DB
-	mov word ptr es:[90h], 24C1h	;@24DF
+	mov word ptr es:[90h], offset L24C1	;@24DF
 	mov word ptr es:[92h], ax	;@24E6
 	pop es	;@24EA
 	call L2716	;@24EB
