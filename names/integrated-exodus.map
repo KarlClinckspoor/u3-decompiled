@@ -1,0 +1,580 @@
+MonMove MonUnder ; proposed-integrator.map:2 ; the map byte under the creature, put back when it leaves (x1, x4)
+WeaponFlag1 ExoticWeaponFound ; proposed-integrator.map:3 ; 0FFh once Dig found the Exotic weapon: the weapon menus list it
+ArmourFlag1 ExoticArmourFound ; proposed-integrator.map:4 ; 0FFh once Dig found the Exotic armour
+WeaponFlag2 ExtraWeaponsOk ; proposed-integrator.map:5 ; 0FFh: the +2/+4 weapons are for sale (Dig, Dawn's weapon shop)
+ArmourFlag2 ExtraArmoursOk ; proposed-integrator.map:6 ; 0FFh: the +2 armours are for sale (Dig, Dawn's armour shop)
+L1C77 CmdPass ; proposed-x1.map:3 ; Space / timeout: print "Pass"
+L1C7D CmdNorth ; proposed-x1.map:4 ; Up arrow: move north
+L1C9E CmdSouth ; proposed-x1.map:5 ; Down arrow
+L1CBF CmdEast ; proposed-x1.map:6 ; Right arrow
+L1CE0 CmdWest ; proposed-x1.map:7 ; Left arrow
+L1D01 CmdBoard ; proposed-x1.map:8 ; B: mount a horse / board a frigate
+L1D4E CmdCast ; proposed-x1.map:9 ; C: cast (surface and dungeon)
+L1D69 CmdEnter ; proposed-x1.map:10 ; E: enter a town, castle, dungeon or (Ambrosia) shrine
+L1E55 CmdHand ; proposed-x1.map:11 ; H: hand equipment to another player
+L1E7A CmdLook ; proposed-x1.map:12 ; L: name the shape in a direction
+L1E9B CmdModify ; proposed-x1.map:13 ; M: modify order (exchange two players)
+L1EFD CmdPeer ; proposed-x1.map:14 ; P: peer at a gem (the map)
+L1F25 CmdQuit ; proposed-x1.map:15 ; Q: quit & save (on Sosaria
+L1F53 CmdSteal ; proposed-x1.map:16 ; S: steal a chest behind a shop counter
+L1FD6 CmdUnlock ; proposed-x1.map:17 ; U: unlock a door east or west
+L2018 CmdVolume ; proposed-x1.map:18 ; V, Alt-S, Alt-V: sound on/off
+L2035 CmdXit ; proposed-x1.map:19 ; X: leave the horse or frigate
+L2068 CmdZtats ; proposed-x1.map:20 ; Z: Ztats of a player
+L207D SaveSosaria ; proposed-x1.map:22 ; write SOSARIA.ULT (map, creatures, moons) and PARTY.ULT
+L2097 SaveParty ; proposed-x1.map:23 ; write PARTY.ULT
+L20AE AdvanceMoons ; proposed-x1.map:24 ; one moon step: moon gate, Dawn, print the phases
+L2168 Whirlpool ; proposed-x1.map:25 ; a whirlpool takes the frigate: Sosaria <-> Ambrosia (not the moon gate: that is ITEMS 5B51)
+L226C MonTurn ; proposed-x1.map:26 ; the creatures' turn after MainLoop, then BuildView and the key loop
+L24C0 MapWraps ; proposed-x1.map:27 ; 0FFh: the map wraps (Sosaria, Ambrosia)
+L24F5 ViewCell31 ; proposed-x1.map:28 ; start-up instruction = ViewTiles+31h, the cell north of the party
+L24FF ViewCell3B ; proposed-x1.map:29 ; start-up instruction = ViewTiles+3Bh (west
+L2509 ViewCell45 ; proposed-x1.map:30 ; start-up instruction = ViewTiles+45h (+2 = 47h, south)
+L2599 TileEast ; proposed-x1.map:31 ; shape east of the party (BuildView)
+L259A TileWest ; proposed-x1.map:32 ; shape west of the party
+L259B TileNorth ; proposed-x1.map:33 ; shape north of the party
+L259C TileSouth ; proposed-x1.map:34 ; shape south of the party
+L259D TileHere ; proposed-x1.map:35 ; shape under the party
+L259E ShowGemMap ; proposed-x1.map:37 ; Peer at gem on the surface / in a town: the 64 x 64 map in pixels
+L2716 DrawFrame ; proposed-x1.map:38 ; clear the screen and draw the frame lines
+L2909 ShowDungeonMap ; proposed-x1.map:39 ; Peer at gem in a dungeon: the level as characters
+L58CB SavedLocation ; proposed-x2.map:4 ; Location before a fight (COMBAT 89CA saves it, sets Location 80h)
+L58CD RaceLetters ; proposed-x2.map:5 ; "HEDBF": the five race letters
+L58D2 RaceStatMax ; proposed-x2.map:6 ; 5 races x 4 BCD maxima of Str, Dex, Int, Wis (the shrines' cap)
+L598B FacingNames ; proposed-x2.map:7 ; pointers to North, -East, South, -West (by Facing)
+L5993 ShrineStatNames ; proposed-x2.map:8 ; pointers to the shrine names Strength ... Wisdom (by x & 3)
+L599B MsgNotAMage ; proposed-x2.map:9 ; "Not a mage!"
+L59A8 MsgSpellType ; proposed-x2.map:10 ; "Spell type W/C-"
+L59B8 MsgClericSpell ; proposed-x2.map:11 ; "Cleric spell-"
+L59C6 MsgWizardSpell ; proposed-x2.map:12 ; "Wizard spell-"
+L59D4 MsgMPTooLow ; proposed-x2.map:13 ; "M.P. too low!"
+L59E3 MsgFailed ; proposed-x2.map:14 ; "Failed!"
+L59EC MsgHealWhom ; proposed-x2.map:15 ; "Heal whom? "
+L59F8 MsgCureWhom ; proposed-x2.map:16 ; "Cure whom? "
+L5A04 MsgResurectWhom ; proposed-x2.map:17 ; "Resurect whom? " (the game's spelling)
+L5A14 MsgRecallWhom ; proposed-x2.map:18 ; "Recall whom? "
+L5A22 MsgExitToSosaria ; proposed-x2.map:19 ; "Exit to Sosaria!/Please wait..."
+L5A43 MsgSpellDirect ; proposed-x2.map:20 ; "Direct? " (directed spells)
+L5A4C MsgLvl ; proposed-x2.map:21 ; "LVL:0" (dungeon level heading)
+L5A52 MsgHead ; proposed-x2.map:22 ; "Head-" (dungeon facing heading)
+L5A74 MsgWelcomeShrine ; proposed-x2.map:23 ; "/ Welcome to the/   Shrine of/"
+L5AD0 MsgOffering ; proposed-x2.map:24 ; "Offering*100-"
+L5ADE MsgThenBeOff ; proposed-x2.map:25 ; "/Then be off!/"
+L5AED MsgCantCheat ; proposed-x2.map:26 ; "/You can not cheat/the Gods!/"
+L5B09 MsgShazam ; proposed-x2.map:27 ; "/Shazam!/"
+L5B13 MsgShrineWho ; proposed-x2.map:28 ; "shrine!/Who enters? "
+L5B28 InExodusCastle ; proposed-x2.map:30 ; ZF set in the castle of Exodus (or in a fight there)
+L5B51 MoonGateJump ; proposed-x2.map:31 ; step on a moon gate: move to the gate of Moon2Phase
+L5B85 DexRoll ; proposed-x2.map:32 ; ZF set if a roll against the dexterity (+class bonus) of BX succeeds
+L5BCF CmdFire ; proposed-x2.map:33 ; F: fire the frigate's cannons
+L5C73 CmdJoinGold ; proposed-x2.map:34 ; J: Join gold to one player
+L5CC3 CmdKlimbDescend ; proposed-x2.map:35 ; K and D on the surface: prompt, then What?
+L5CC9 CmdIgnite ; proposed-x2.map:36 ; I: Ignite a torch
+L5CF8 CmdNegate ; proposed-x2.map:37 ; N: Negate time (a powder)
+L5D16 ReadKeyUpper ; proposed-x2.map:38 ; ReadKey, AH = the key upper-cased
+L5D2B AddHitPoints ; proposed-x2.map:39 ; add AL (BCD) to the hit points of BX, at most the maximum
+L5D4B AddExp ; proposed-x2.map:40 ; add AL (BCD) to the experience of BX, at most 9999
+L5D67 AddGold ; proposed-x2.map:41 ; add AL (BCD) to the gold of BX, at most 9999
+L5D83 CastSpell ; proposed-x2.map:43 ; the Cast command for the player at BX (menus, MP, dispatch)
+L5F9F SpellRepond ; proposed-x2.map:44 ; wizard A: kill orcs (fight against orcs, once a fight)
+L5FD4 SpellMittar ; proposed-x2.map:45 ; wizard B: directed 16-55 damage
+L5FE3 SpellLorum ; proposed-x2.map:46 ; wizard C, cleric D (Luminae): light for 10
+L5FEE SpellDorAcron ; proposed-x2.map:47 ; wizard D, cleric F (Rec Du): down a dungeon level
+L600C SpellSurAcron ; proposed-x2.map:48 ; wizard E, cleric E (Rec Su): up a level (level 1: out)
+L602F SpellFulgar ; proposed-x2.map:49 ; wizard F: directed 75 damage
+L6034 SpellDagAcron ; proposed-x2.map:50 ; wizard G: random teleport in Sosaria
+L606A SpellMentar ; proposed-x2.map:51 ; wizard H: directed 2 x Int damage
+L608A SpellDagLorum ; proposed-x2.map:52 ; wizard I, cleric J (Sominae): light for 250
+L6095 SpellFalDivi ; proposed-x2.map:53 ; wizard J: cast a cleric spell
+L60A5 SpellNoxum ; proposed-x2.map:54 ; wizard K: 75 damage to all monsters
+L60BA SpellDecorp ; proposed-x2.map:55 ; wizard L, cleric M (Excuun): kill one monster (directed)
+L60BF SpellAltair ; proposed-x2.map:56 ; wizard M: stop time (TimeStop 10)
+L60CA SpellDagMentar ; proposed-x2.map:57 ; wizard N: 2 x Int damage to all monsters
+L60FA SpellNecorp ; proposed-x2.map:58 ; wizard O: every monster's hit points to 5
+L613E SpellZxkuqyb ; proposed-x2.map:59 ; cleric O and the nameless wizard P: kill all monsters
+L6153 SpellPontori ; proposed-x2.map:60 ; cleric A: kill undead (fight against skeletons, once a fight)
+L6188 SpellApparUnem ; proposed-x2.map:61 ; cleric B: open a chest safely
+L61DC SpellSanctu ; proposed-x2.map:62 ; cleric C: heal 10-29
+L61F6 SpellLibRec ; proposed-x2.map:63 ; cleric G: random teleport on the dungeon level
+L6209 SpellAlcort ; proposed-x2.map:64 ; cleric H: cure poison
+L623C SpellSequitu ; proposed-x2.map:65 ; cleric I: leave the dungeon
+L624F SpellSanctuMani ; proposed-x2.map:66 ; cleric K: heal 20-99
+L6269 SpellVieda ; proposed-x2.map:67 ; cleric L: view the map (like a gem)
+L6288 SpellSurmandum ; proposed-x2.map:68 ; cleric N: resurrect (1 in 4: ashes)
+L62C4 SpellAnjuSermani ; proposed-x2.map:69 ; cleric P: recall from ashes, caster loses 5 Wis
+L62FD PrintLevelHead ; proposed-x2.map:71 ; dungeon headings "LVL:0n" and "Head-<facing>"
+L633B MonStepToPlayer ; proposed-x2.map:72 ; DL,DH = monster SI's x,y one step toward the party
+L6366 EnterShrine ; proposed-x2.map:73 ; a shrine of Ambrosia: offer gold, raise a stat
+L6458 ExitToSosaria ; proposed-x2.map:74 ; leave a dungeon: reload SOSARIA.ULT at PartyXY
+L64A0 CardsInserted ; proposed-x2.map:76 ; word: cards inserted at Exodus so far (4 = the end)
+L64A2 UpkeepTick ; proposed-x2.map:77 ; off the surface the upkeep (PARTY 6FDF) runs every 4th turn
+L64A3 RegenTick ; proposed-x2.map:78 ; counts 9..0: hit points regenerate at 0
+L64A4 WhirlpoolTick ; proposed-x2.map:79 ; the whirlpool moves every 4th turn (PARTY 7357)
+L64A5 MsgNoOneThere ; proposed-x2.map:80 ; "/No one there!"
+L64B4 MsgAllPlayersOut ; proposed-x2.map:81 ; "//All Players Out!/"
+L64C8 MsgShipDestroyed ; proposed-x2.map:82 ; " A ship was/   Destroyed!/"
+L64E4 MsgStarving ; proposed-x2.map:83 ; "Starving!/"
+L64EF MsgPoisoned ; proposed-x2.map:84 ; "Poisoned!/"
+L64FA WordEvocare ; proposed-x2.map:85 ; "EVOCARE   " (the Word of power)
+L6540 OtherWords ; proposed-x2.map:86 ; the Other command's words, 0-ended (INSERT DIG SEARCH BRIBE PRAY)
+L654C OtherCmds ; proposed-x2.map:87 ; their handlers (ACTIONS)
+L67BD NameHand ; proposed-x2.map:88 ; NameTbl 64-79: weapons
+L67C2 NameDagger ; proposed-x2.map:89
+L67C9 NameMace ; proposed-x2.map:90
+L67CE NameSling ; proposed-x2.map:91
+L67D4 NameAxe ; proposed-x2.map:92
+L67D8 NameBow ; proposed-x2.map:93
+L67DC NameSword ; proposed-x2.map:94
+L67E2 Name2HSwd ; proposed-x2.map:95 ; "2-H-Swd"
+L67EA NamePlus2Axe ; proposed-x2.map:96
+L67F1 NamePlus2Bow ; proposed-x2.map:97
+L67F8 NamePlus2Swd ; proposed-x2.map:98
+L67FF NameGloves ; proposed-x2.map:99
+L6806 NamePlus4Axe ; proposed-x2.map:100
+L680D NamePlus4Bow ; proposed-x2.map:101
+L6814 NamePlus4Swd ; proposed-x2.map:102
+L681B NameExotic ; proposed-x2.map:103 ; weapon 79 and armour 87
+L6822 NameSkin ; proposed-x2.map:104 ; NameTbl 80-87: armours
+L6827 NameCloth ; proposed-x2.map:105
+L682D NameLeather ; proposed-x2.map:106
+L6835 NameChain ; proposed-x2.map:107
+L683B NamePlate ; proposed-x2.map:108
+L6841 NamePlus2Chain ; proposed-x2.map:109
+L684A NamePlus2Plate ; proposed-x2.map:110
+L6853 NameRepond ; proposed-x2.map:111 ; NameTbl 88-103: wizard spells
+L685A NameMittar ; proposed-x2.map:112
+L6861 NameLorum ; proposed-x2.map:113
+L6867 NameDorAcron ; proposed-x2.map:114
+L6871 NameSurAcron ; proposed-x2.map:115
+L687B NameFulgar ; proposed-x2.map:116
+L6882 NameDagAcron ; proposed-x2.map:117
+L688C NameMentar ; proposed-x2.map:118
+L6893 NameDagLorum ; proposed-x2.map:119
+L689D NameFalDivi ; proposed-x2.map:120
+L68A6 NameNoxum ; proposed-x2.map:121
+L68AC NameDecorp ; proposed-x2.map:122
+L68B3 NameAltair ; proposed-x2.map:123
+L68BA NameDagMentar ; proposed-x2.map:124
+L68C5 NameNecorp ; proposed-x2.map:125
+L68CC NameNoSpell ; proposed-x2.map:126 ; "" (wizard spell P has no name)
+L68CD NamePontori ; proposed-x2.map:127 ; NameTbl 104-119: cleric spells
+L68D5 NameApparUnem ; proposed-x2.map:128
+L68E0 NameSanctu ; proposed-x2.map:129
+L68E7 NameLuminae ; proposed-x2.map:130
+L68EF NameRecSu ; proposed-x2.map:131
+L68F6 NameRecDu ; proposed-x2.map:132
+L68FD NameLibRec ; proposed-x2.map:133
+L6905 NameAlcort ; proposed-x2.map:134
+L690C NameSequitu ; proposed-x2.map:135
+L6914 NameSominae ; proposed-x2.map:136
+L691C NameSanctuMani ; proposed-x2.map:137
+L6928 NameVieda ; proposed-x2.map:138
+L692E NameExcuun ; proposed-x2.map:139
+L6935 NameSurmandum ; proposed-x2.map:140
+L693F NameZxkuqyb ; proposed-x2.map:141
+L6947 NameAnjuSermani ; proposed-x2.map:142
+L69C2 MsgZtStr ; proposed-x2.map:143 ; Ztats screen: "/Str..."
+L69CA MsgZtDex ; proposed-x2.map:144
+L69D2 MsgZtInt ; proposed-x2.map:145
+L69DA MsgZtWis ; proposed-x2.map:146
+L69E2 MsgZtHP ; proposed-x2.map:147 ; "/H.P..."
+L69EA MsgZtHM ; proposed-x2.map:148 ; "/H.M..." (maximum hit points)
+L69F2 MsgZtGold ; proposed-x2.map:149
+L69FA MsgZtExp ; proposed-x2.map:150
+L6A02 MsgZtGems ; proposed-x2.map:151
+L6A0A MsgZtKeys ; proposed-x2.map:152
+L6A12 MsgZtPowd ; proposed-x2.map:153
+L6A1A MsgZtTrch ; proposed-x2.map:154
+L6A22 MsgCardOfDeath ; proposed-x2.map:155
+L6A31 MsgCardOfSol ; proposed-x2.map:156
+L6A3E MsgCardOfLove ; proposed-x2.map:157
+L6A4C MsgCardOfMoons ; proposed-x2.map:158
+L6A5B MsgMarkOfForce ; proposed-x2.map:159
+L6A6A MsgMarkOfFire ; proposed-x2.map:160
+L6A78 MsgMarkOfSnake ; proposed-x2.map:161
+L6A87 MsgMarkOfKings ; proposed-x2.map:162
+L6A96 MsgZtWeapon ; proposed-x2.map:163 ; "/Weapon:"
+L6A9F MsgZtArmour ; proposed-x2.map:164 ; "/Armour:"
+L6AA8 MsgZtWeapons ; proposed-x2.map:165 ; "/***Weapons***"
+L6AB7 MsgZtHandsArmour ; proposed-x2.map:166 ; "/02-Hands-(A)/**Armour**"
+L6AD0 MsgZtSkin ; proposed-x2.map:167 ; "/01-Skin-(A)/"
+L6ADE MsgStatM ; proposed-x2.map:168 ; status line " M:" (magic points)
+L6AE2 MsgStatL ; proposed-x2.map:169 ; " L:" (level)
+L6AE6 MsgStatH ; proposed-x2.map:170 ; "H:" (hit points)
+L6AE9 MsgStatF ; proposed-x2.map:171 ; " F:" (food)
+L6B02 CardKeys ; proposed-x2.map:172 ; "MDLSQ",Esc: the Insert menu keys
+L6B08 CardNames ; proposed-x2.map:173 ; pointers to Moons, Death, Love, Sol, Quit, Quit
+L6B14 CardOrder ; proposed-x2.map:174 ; "LSMD": the order the cards must go in
+L6B18 MsgCmd ; proposed-x2.map:175 ; "Cmd: " (Other command)
+L6B1E MsgNoEffect ; proposed-x2.map:176 ; "No effect!"
+L6B2A MsgOtherDirect ; proposed-x2.map:177 ; "Direct? " (Bribe, Insert)
+L6B33 MsgCardMenu ; proposed-x2.map:178 ; "D, S, L, M:"
+L6B40 MsgStrangeCard ; proposed-x2.map:179 ; "A card, with/strange marks!"
+L6B5D MsgExotics ; proposed-x2.map:180 ; "Exotics!"
+L6B67 MsgYellEvocare ; proposed-x2.map:181 ; "Yell 'Evocare'"
+L6B78 MsgWord ; proposed-x2.map:182 ; "Word: "
+L6B7F MsgNotEnoughGold ; proposed-x2.map:183 ; "Not enough gold!"
+L6B91 SaveGame ; proposed-x3.map:4 ; write PARTY.ULT (and SOSARIA.ULT on the surface), Location saved as 0
+L6BC9 HurtPlayer ; proposed-x3.map:5 ; subtract BCD AL from the hit points at BX
+L6C29 CheckAllOut ; proposed-x3.map:6 ; nobody Good/Poisoned: "All Players Out!", save, Hang
+L6D58 DrawPlayerNums ; proposed-x3.map:7 ; the four player numbers (10h n 11h) beside the status boxes
+L6DC1 ShowZtats ; proposed-x3.map:8 ; the Ztats screen of player DH ('1'-'4'), record DI
+L6FB1 WaitMore ; proposed-x3.map:9 ; wait for Enter/Down/Space (AL=0) or Esc (AL=0FFh)
+L6FDF PartyUpkeep ; proposed-x3.map:10 ; once a turn: magic regen, food, poison, hit point regen
+L7176 FlashPlayer ; proposed-x3.map:11 ; invert the status box of player AL (0-3)
+L71C1 FlashView ; proposed-x3.map:12 ; invert the map window
+L71ED InvertPlayerNum ; proposed-x3.map:13 ; invert the number of player AL (1-4): marks whose turn it is
+L7233 AgainstWind ; proposed-x3.map:14 ; ZF clear when the frigate cannot sail in direction AL
+L7252 Hang ; proposed-x3.map:15 ; jmp $: the game stops (all players out, end of the game)
+L7254 CheckTerrain ; proposed-x3.map:16 ; ZF set when the party may enter shape AL (force field, lava effects)
+L7347 MoveWhirlpool ; proposed-x3.map:17 ; move the whirlpool one step (every 4th call, on Sosaria)
+L740A UpcaseBuf ; proposed-x3.map:18 ; upper-case the CX characters at DI
+L7423 MatchWord ; proposed-x3.map:19 ; AL=0FFh if the CX characters at DI spell the space-ended word at SI
+L7458 CmdYell ; proposed-x3.map:21 ; Y: Yell a word
+L74D5 CmdOther ; proposed-x3.map:22 ; O: Other command: a typed word dispatched by the table at 6540/654C
+L7534 CmdDig ; proposed-x3.map:23 ; Other DIG: the exotic weapon (21h,3) or armour (13h,2Ch)
+L7580 CmdPray ; proposed-x3.map:24 ; Other PRAY: the hint "Yell 'Evocare'" at one place in one town
+L75A9 CmdBribe ; proposed-x3.map:25 ; Other BRIBE: 100 gold removes a guard
+L7607 CmdSearch ; proposed-x3.map:26 ; Other SEARCH: at a shrine (Ambrosia) gives a card
+L762F CmdInsert ; proposed-x3.map:27 ; Other INSERT: put the four cards into Exodus
+L76F0 FacingDxTbl ; proposed-x3.map:28 ; dungeon step x by Facing 0-3 (0,1,0,-1)
+L76F4 FacingDyTbl ; proposed-x3.map:29 ; dungeon step y by Facing 0-3 (-1,0,1,0)
+L76F8 DungeonEventCmds ; proposed-x3.map:30 ; handlers of the special dungeon cells 1-8 (7 unused)
+L77CE ShopCmds ; proposed-x3.map:31 ; the 8 town services by player y & 7: Pub ... Equine Emporium
+L77DE MsgItsDark ; proposed-x3.map:32 ; "It's dark!"
+L7839 MsgHandMenu ; proposed-x3.map:33 ; "F, G, E, W, A:"
+L7849 MsgHandEquipMenu ; proposed-x3.map:34 ; "G, K, P, T:"
+L7857 MsgHowMuch ; proposed-x3.map:35 ; "How much? "
+L7863 MsgNotEnough ; proposed-x3.map:36 ; "Not enough!"
+L7870 MsgDone ; proposed-x3.map:37 ; "Done!"
+L7877 MsgHowMany ; proposed-x3.map:38 ; "How many? "
+L7883 MsgInUse ; proposed-x3.map:39 ; "In use!"
+L78AF MsgQuit ; proposed-x3.map:40 ; "Quit" (menus' Q and Esc entries)
+L78B4 HandMenuKeys ; proposed-x3.map:41 ; F G E W A Q Esc
+L78BB HandMenuStrs ; proposed-x3.map:42 ; strings of HandMenuKeys
+L78E0 HandEquipKeys ; proposed-x3.map:43 ; G K P T Q Esc
+L78E6 HandEquipStrs ; proposed-x3.map:44 ; Gems Keys Powder Torch Quit Quit
+L78F2 WeaponMenuKeys ; proposed-x3.map:45 ; Q Esc A-P
+L7904 WeaponMenuStrs ; proposed-x3.map:46 ; Quit Quit Hand ... Exotic
+L7928 ArmourMenuKeys ; proposed-x3.map:47 ; Q Esc A-H
+L7932 ArmourMenuStrs ; proposed-x3.map:48 ; Quit Quit Skin ... Exotic
+L7946 HandCmdKeys ; proposed-x3.map:49 ; G F E W A Q Esc: the order of HandCmds
+L794D HandCmds ; proposed-x3.map:50 ; Hand Equipment handlers: gold, food, equipment, weapons, armour, quit x2
+L795B TxtNoneLeft ; proposed-x3.map:51 ; "None Left!" (MsgNoneLeft prints it)
+L7967 TxtWhat ; proposed-x3.map:52 ; "<-What?", then an unused "No One There"
+L797E TxtInvalidMove ; proposed-x3.map:53 ; "Invalid Move!"
+L798D TxtNotHere ; proposed-x3.map:54 ; "Not Here!"
+L7998 TxtIncapacitated ; proposed-x3.map:55 ; "Incapacitated!"
+L79A8 MsgNoMoreRoom ; proposed-x3.map:56 ; "No more room!"
+L79B7 MsgNoneOwned ; proposed-x3.map:57 ; "None owned"
+L79C3 MsgWeaponPrompt ; proposed-x3.map:58 ; "Weapon:"
+L79CC MsgNotAllowed ; proposed-x3.map:59 ; "Not allowed!"
+L79DB MsgReadied ; proposed-x3.map:60 ; "Readied!"
+L79E6 MsgArmourPrompt ; proposed-x3.map:61 ; "Armour:"
+L79EF MaxWeaponTbl ; proposed-x3.map:62 ; per class (ClassLetters order): first weapon key not allowed
+L79FA MaxArmourTbl ; proposed-x3.map:63 ; per class: first armour key not allowed
+L7A05 ClassLetters ; proposed-x3.map:64 ; F C W T P B L I D A R
+L7A10 MsgTalkDirect ; proposed-x3.map:65 ; "Direct? " (Transact)
+L7A19 MsgGoodDay ; proposed-x3.map:66 ; "Good day!"
+L7A26 MsgWelcomeChild ; proposed-x3.map:67 ; "Welcome my child"
+L7A39 MsgNoMore ; proposed-x3.map:68 ; "No more!"
+L7A43 MsgSeekKings ; proposed-x3.map:69 ; "Seek ye the Mark of Kings!"
+L7A60 MsgThouGreater ; proposed-x3.map:70 ; "Thou art greater"
+L7A73 MsgExpMore ; proposed-x3.map:71 ; "Experience more!"
+L7A86 MsgEatDeath ; proposed-x3.map:72 ; "Eat Death Scum!"
+L7A99 MsgGoldPlus ; proposed-x3.map:73 ; "Gold+"
+L7A9F MsgAndA ; proposed-x3.map:74 ; "and a "
+L7AA6 MsgAnd ; proposed-x3.map:75 ; "and "
+L7AAB MsgTrapEvaded ; proposed-x3.map:76 ; "Trap evaded!"
+L7AB9 MsgAcidTrap ; proposed-x3.map:77 ; "Acid trap!"
+L7AC5 MsgPoisonTrap ; proposed-x3.map:78 ; "Poison trap!"
+L7AD3 MsgBombTrap ; proposed-x3.map:79 ; "Bomb trap!"
+L7ADF MsgGasTrap ; proposed-x3.map:80 ; "Gas trap!"
+L7AEA AskDirection ; proposed-x3.map:82 ; arrow key: BX = PlayerXY + step (wrapped), DX = step, ZF on Esc
+L7B54 HandEquip ; proposed-x3.map:83 ; the Hand Equipment menu, from player SI to player DI
+L7B95 HandQuit ; proposed-x3.map:84 ; menu exit (Q/Esc) of HandEquip
+L7BA4 HandGold ; proposed-x3.map:85 ; hand gold (record 23h)
+L7BA9 HandFood ; proposed-x3.map:86 ; hand food (record 21h)
+L7BD0 HandItems ; proposed-x3.map:87 ; hand gems, keys, powders or torches
+L7C61 HandWeapons ; proposed-x3.map:88 ; hand weapons
+L7C85 HandArmour ; proposed-x3.map:89 ; hand armour
+L7D1A ReadAmount ; proposed-x3.map:91 ; read a number of up to 4 digits at the cursor: AX (BCD)
+L7D74 TransferBcd ; proposed-x3.map:92 ; move AX from CX to DX (BCD)
+L7E33 CmdReady ; proposed-x3.map:93 ; R: Ready for #
+L7E48 ReadyWeapon ; proposed-x3.map:94 ; the weapon menu for the player at BX
+L7EE4 CmdWear ; proposed-x3.map:95 ; W: Wear for #
+L7F96 FindMonster ; proposed-x3.map:96 ; BX = creature slot at DL,DH or 0FFFFh
+L7FC6 CmdTransact ; proposed-x3.map:97 ; T: Transact: talk to a creature or buy at a counter
+L80D9 ChestLoot ; proposed-x3.map:98 ; "Gold+nn" to the player at DI, and sometimes a weapon or armour
+L8190 CmdGetChest ; proposed-x4.map:3 ; Get Chest (surface 190B and dungeon 774A tables): open, trap or gold
+L82C6 DamageParty ; proposed-x4.map:4 ; hurt every up player (bomb trap, dungeon trap, cannon ball, ...)
+L8314 EnterDungeon ; proposed-x4.map:5 ; no torch, level 0, header, clear view, then DungeonLoop
+L8327 DungeonLoop ; proposed-x4.map:6 ; the dungeon's command loop (key, 5 s timeout = Pass, DungeonCmds)
+L838D DungeonTurnEnd ; proposed-x4.map:7 ; after a dungeon command: moves, food, torch, view, encounter, event
+L83F7 CmdKlimb ; proposed-x4.map:8 ; dungeon K: up a ladder (10h), out from level 0
+L841C CmdDescend ; proposed-x4.map:9 ; dungeon D: down a ladder (20h)
+L8438 CmdTurnRight ; proposed-x4.map:10 ; dungeon Right arrow
+L8455 CmdTurnLeft ; proposed-x4.map:11 ; dungeon Left arrow
+L8472 CmdNotDungeon ; proposed-x4.map:12 ; "Not a DNG cmd!" (B A E F L Q T U X S in a dungeon)
+L847D CmdAdvance ; proposed-x4.map:13 ; dungeon Up arrow
+L84A9 CmdRetreat ; proposed-x4.map:14 ; dungeon Down arrow
+L941E EventTimeVision ; proposed-x4.map:16 ; dungeon cell 1: TIME.IMG, the Time Lord's vision (cell cleared)
+L9457 EventFountain ; proposed-x4.map:17 ; dungeon cell 2: FOUNTAIN.IMG, drink (effect by x & 3)
+L94AB FountainCure ; proposed-x4.map:18 ; fountain effect 3: status G
+L94BB FountainPoison ; proposed-x4.map:19 ; fountain effect 0: status P
+L94DC FountainHeal ; proposed-x4.map:20 ; fountain effect 1: hit points = max
+L94EE FountainHurt ; proposed-x4.map:21 ; fountain effect 2: 25 damage
+L9517 EventWind ; proposed-x4.map:22 ; dungeon cell 3: "Strange wind!" puts the torch out
+L9529 EventTrap ; proposed-x4.map:23 ; dungeon cell 4: trap (player 1 may evade, else DamageParty)
+L9550 EventRod ; proposed-x4.map:24 ; dungeon cell 5: BRAND.IMG, the red hot rod gives a mark
+L95B3 EventGremlins ; proposed-x4.map:25 ; dungeon cell 6: gremlins eat a random player's food
+L960D EventWriting ; proposed-x4.map:26 ; dungeon cell 8: misty writing, the level's message (MapText)
+L9630 DrawDungeon ; proposed-x4.map:27 ; clear the view and call the DUNGEON.DAT overlay (if a torch burns)
+L888B CmdAttack ; proposed-x4.map:29 ; surface A: attack the creature in a direction
+L88AA FightCreature ; proposed-x4.map:30 ; fight creature slot BX (from CmdAttack and WORLD 23D0)
+L88EA StartCombat ; proposed-x4.map:31 ; fight FoeTile: choose and load the CNFLCT map, place everyone
+L8BFC PlayerTurnEnd ; proposed-x4.map:32 ; end of a player's combat turn (MainLoop jumps here in a fight)
+L8CBE CCmdNorth ; proposed-x4.map:33 ; combat Up arrow
+L8CC9 CCmdSouth ; proposed-x4.map:34 ; combat Down arrow
+L8CD4 CCmdEast ; proposed-x4.map:35 ; combat Right arrow
+L8CDF CCmdWest ; proposed-x4.map:36 ; combat Left arrow
+L8CEA CCmdVolume ; proposed-x4.map:37 ; combat V, Alt-S, Alt-V
+L8CF1 CCmdReady ; proposed-x4.map:38 ; combat R: ready a weapon
+L8D0B CCmdZtats ; proposed-x4.map:39 ; combat Z
+L8D38 CCmdCast ; proposed-x4.map:40 ; combat C
+L8D57 CCmdNegate ; proposed-x4.map:41 ; combat N: Negate Time (a powder, TimeStop = 10)
+L8D83 CCmdPass ; proposed-x4.map:42 ; combat Space
+L8D8D CCmdBad ; proposed-x4.map:43 ; "Not usable cmd!" (no turn spent)
+L8D9F CCmdAttack ; proposed-x4.map:44 ; combat A: melee, bow/sling or thrown dagger
+L8E7A ShootLine ; proposed-x4.map:45 ; missile from DL,DH stepping CL,CH: BX = foe hit or 0FFFFh
+L8F5A DamageFoe ; proposed-x4.map:46 ; AL damage to foe BX (= StartUp + slot), DI player gets the Exp
+L84E0 HitTile ; proposed-x4.map:48 ; tile flashed where a blow lands: 3Dh (fire) or 3Ch (magic)
+L84E2 FoeTile ; proposed-x4.map:50 ; shape number of this fight's foes (18h Orc ...)
+L84E3 KillSpellUsed ; proposed-x4.map:51 ; 0FFh once the orc/skeleton spell (MAGIC 5F9F, 6153) was tried
+L8504 FileConflictA ; proposed-x4.map:52 ; "CNFLCT_A.ULT" pirates fought from land
+L8511 FileConflictB ; proposed-x4.map:53 ; "CNFLCT_B.ULT" brush
+L851E FileConflictC ; proposed-x4.map:54 ; "CNFLCT_C.ULT" dungeon, floor, force field, lava
+L852B FileConflictF ; proposed-x4.map:55 ; "CNFLCT_F.ULT" forest
+L8545 FileConflictM ; proposed-x4.map:56 ; "CNFLCT_M.ULT" sea monster fought from land
+L8552 FileConflictQ ; proposed-x4.map:57 ; "CNFLCT_Q.ULT" sea monster fought from a frigate
+L855F FileConflictR ; proposed-x4.map:58 ; "CNFLCT_R.ULT" land monster fought from a frigate
+L856C FileConflictS ; proposed-x4.map:59 ; "CNFLCT_S.ULT" pirates fought from a frigate
+L85FD FountainCmds ; proposed-x4.map:60 ; the four fountain effects, by x & 3
+L8605 FoeHitPoints ; proposed-x4.map:61 ; 16 bytes by FoeTile & 0Fh: range of a foe's hit points (and blows)
+L8615 FoeExp ; proposed-x4.map:62 ; 16 bytes by FoeTile & 0Fh: experience for a kill (BCD)
+L8625 CombatClassLetters ; proposed-x4.map:63 ; "FCWTPBLIDA"
+L862F CombatClassTiles ; proposed-x4.map:64 ; the tile of each of those classes in a fight
+L8639 MsgMistyWriting ; proposed-x4.map:65 ; string
+L8649 MsgTimeVision ; proposed-x4.map:66 ; string
+L86B8 MsgArghTrap ; proposed-x4.map:67 ; string
+L86C9 MsgEvadedTrap ; proposed-x4.map:68 ; string
+L86D3 MsgFountain ; proposed-x4.map:69 ; string
+L86F2 MsgFountainCant ; proposed-x4.map:70 ; string
+L86FA MsgAhNice ; proposed-x4.map:71 ; string
+L870C MsgYuckHorrible ; proposed-x4.map:72 ; string
+L871D MsgHowWonderful ; proposed-x4.map:73 ; string
+L872D MsgArghBlah ; proposed-x4.map:74 ; string
+L873F MsgStrangeWind ; proposed-x4.map:75 ; string
+L874E MsgGremlins ; proposed-x4.map:76 ; string
+L8759 MsgRedHotRod ; proposed-x4.map:77 ; string
+L8785 MsgLeftMark ; proposed-x4.map:78 ; string
+L8796 MsgPlrKilled ; proposed-x4.map:79 ; "Killed!!!"
+L87A1 MsgPlrPoisoned ; proposed-x4.map:80 ; string
+L87AD MsgPlrN ; proposed-x4.map:81 ; "Plr "
+L87B2 MsgPlrPilfered ; proposed-x4.map:82 ; string
+L87BE MsgFoeMissed ; proposed-x4.map:83 ; string
+L87C8 MsgFoeHit ; proposed-x4.map:84 ; string
+L87CF MsgThieves ; proposed-x4.map:85 ; string
+L87D7 MsgPluralE ; proposed-x4.map:86 ; "e", runs on into MsgPluralS
+L87D8 MsgPluralS ; proposed-x4.map:87 ; "s", two line feeds
+L87DC MsgConflict ; proposed-x4.map:88 ; string
+L87F1 MsgPlayerBar ; proposed-x4.map:89 ; "----Player "
+L87FD MsgBarEnd ; proposed-x4.map:90 ; "----"
+L8803 MsgAttackDir ; proposed-x4.map:91 ; " Attack" / "Dir-" after the weapon's name
+L8810 MsgAttackMissed ; proposed-x4.map:92 ; string
+L8819 MsgAttackHit ; proposed-x4.map:93 ; string
+L8820 MsgKilledExp ; proposed-x4.map:94 ; "Killed! Exp.+"
+L882E MsgCombatReady ; proposed-x4.map:95 ; string
+L883F MsgCombatCast ; proposed-x4.map:96 ; string
+L884C MsgCombatNegate ; proposed-x4.map:97 ; string
+L885A MsgNotUsableCmd ; proposed-x4.map:98 ; string
+L886B MsgCombatZtats ; proposed-x4.map:99 ; string
+L8872 MsgVictory ; proposed-x4.map:100 ; string
+L8885 MsgCombatPass ; proposed-x4.map:101 ; string
+LA5AC ShopPub ; proposed-x5.map:4 ; the pub: drink 7 gp, tip by the tens digit of the payment (PubTips)
+LA630 ShopGrocer ; proposed-x5.map:5 ; rations 1 gp each, added to the buyer's food
+LA692 ShopTemple ; proposed-x5.map:6 ; the clerical sacraments menu (1-4), jumps through TempleCmds
+LA6D4 TempleCure ; proposed-x5.map:7 ; cure poison, 100 gp (status P -> G)
+LA761 TempleHeal ; proposed-x5.map:8 ; hit points = maximum, 200 gp
+LA7B6 TempleResurrect ; proposed-x5.map:9 ; dead -> good, 500 gp
+LA833 TempleRecall ; proposed-x5.map:10 ; ashes -> good, 900 gp
+LA8A5 ShopWeapons ; proposed-x5.map:11 ; the weapons shop: list, buy, sell
+LAA25 ShopArmour ; proposed-x5.map:12 ; the armour shop: list, buy, sell
+LAB93 ShopGuild ; proposed-x5.map:13 ; the Guild: gems, keys, powders, torches (menu GuildCmds)
+LABBD GuildGems ; proposed-x5.map:14 ; buy gems, 75 gp each
+LABFF GuildKeys ; proposed-x5.map:15 ; buy keys, 50 gp each
+LAC6B GuildPowders ; proposed-x5.map:16 ; buy powders, 90 gp each
+LACAC GuildTorches ; proposed-x5.map:17 ; buy torches, 6 gp each
+LACEF GuildDone ; proposed-x5.map:18 ; Guild exit: "Thank you, come again!" and return (Q, Esc)
+LACFC ShopRadrion ; proposed-x5.map:19 ; Radrion's shrine: offer hundreds of gold for a verse (OracleVerses)
+LAD70 ShopHorses ; proposed-x5.map:20 ; the Equine Emporium: a horse per member, 200 gp each (also called from EQUIP 8018)
+LA46F PrintMoves ; proposed-x5.map:22 ; print MoveCount (8 BCD digits) and " moves" (LOOP Quit & Save, EndGame)
+LA4B9 EndGame ; proposed-x5.map:23 ; the Congratulations screen, then hangs (ACTIONS 76BC, after Exodus falls)
+LA561 AskYesNo ; proposed-x5.map:24 ; menu Y/N/Q/Esc
+LA587 PayGold ; proposed-x5.map:25 ; DI = record, AX = BCD price: CF set if gold < price (nothing paid), else gold -= price
+L9657 YesNoMenuKeys ; proposed-x5.map:27 ; "YNQ",Esc: keys for AskYesNo (library K2AD8)
+L965B YesNoMenuStrs ; proposed-x5.map:28 ; 4 words (as db): MsgYesNo+1 "Yes", MsgYesNo+5 "No" x3
+L9663 ShopWeaponKeys ; proposed-x5.map:29 ; "Q",Esc,0,"B".."O": keys of the weapon menu (10 or 17 used)
+L9674 ShopArmourKeys ; proposed-x5.map:30 ; "Q",Esc,0,"B".."G": keys of the armour menu (7 or 9 used)
+L967D EndFlashPatterns ; proposed-x5.map:31 ; 21 words XORed over the map window by EndGame
+L96A7 MsgWelcomePub ; proposed-x5.map:32 ; "Welcome to the Pub!"
+L96C4 MsgHaveADrink ; proposed-x5.map:33 ; "Here, friend, have a drink! It costs 7 g.p. You pay?"
+L96FB MsgLeaveMyShop ; proposed-x5.map:34 ; "Leave my shop! You scum!!" (paid less than 7)
+L971B MsgCantPay ; proposed-x5.map:35 ; "What? Can't pay! Out you scum!" (pub, grocer, Radrion)
+L9956 MsgAnother ; proposed-x5.map:36 ; "Another?"
+L9961 MsgBeenAPleasure ; proposed-x5.map:37 ; "It's been a pleasure!!"
+L9979 PubTips ; proposed-x5.map:38 ; 10 pointers: the barkeeper's tips (MsgTipKindly ... MsgTipLordOfTime)
+L998D MsgGrocer ; proposed-x5.map:39 ; "Ye local Grocer / Rations: 1 g.p. each. How many would you like?"
+L99D7 MsgGrocerThanks ; proposed-x5.map:40 ; "Thank you, Come again!"
+L99F1 MsgTooMuchToCarry ; proposed-x5.map:41 ; "Too much to carry!" (grocer, Guild)
+L9A06 MsgSacraments ; proposed-x5.map:42 ; "Clerical Healing Sacraments: 1-Curing ... Your needs:"
+L9A68 MsgFareTheeWell ; proposed-x5.map:43 ; "Fare thee well my children."
+L9A86 MsgCuringCost ; proposed-x5.map:44 ; "A curing will cost 100 g.p. Wilt thou pay?"
+L9AB3 MsgTempleCureWhom ; proposed-x5.map:45 ; "Cure whom?"
+L9ABF MsgHealingCost ; proposed-x5.map:46 ; "Healings cost 200 g.p. Wilt thou pay?"
+L9AE8 MsgTempleHealWhom ; proposed-x5.map:47 ; "Heal whom?"
+L9AF4 MsgResurrectCost ; proposed-x5.map:48 ; "Resurrections cost 500 g.p. Wilt thou pay?"
+L9B21 MsgTempleResurrectWhom ; proposed-x5.map:49 ; "Resurrect whom?"
+L9B32 MsgRecallCost ; proposed-x5.map:50 ; "Recallings cost 900 g.p. Wilt thou pay?"
+L9B5B MsgTempleRecallWhom ; proposed-x5.map:51 ; "Recall whom?"
+L9B69 MsgNoOfferings ; proposed-x5.map:52 ; "Without proper offerings I cannot help!" (answered N)
+L9B93 MsgNotGoldEnough ; proposed-x5.map:53 ; "I'm sorry, but thou hast not gold enough." (temple, horses)
+L9BBE MsgNotInjured ; proposed-x5.map:54 ; "Not injured!"
+L9BCC MsgTempleFailed ; proposed-x5.map:55 ; "Failed!" (temple
+L9BD5 MsgNotDead ; proposed-x5.map:56 ; "Not dead!"
+L9BE0 MsgNotAshes ; proposed-x5.map:57 ; "Not ashes!"
+L9BEC TempleCmds ; proposed-x5.map:58 ; jump table of the four sacraments (TempleCure ... TempleRecall)
+L9BF4 TempleMenuKeys ; proposed-x5.map:59 ; "1234Q",Esc
+L9BFA TempleMenuStrs ; proposed-x5.map:60 ; 6 words (as db) pointing at the strings "1".."4","Q" that follow at +12
+L9C10 BuySellMenuKeys ; proposed-x5.map:61 ; "BSQ",Esc
+L9C1D BuySellMenuStrs ; proposed-x5.map:62 ; MsgBuy, MsgSell, and L78AF twice (Q, Esc)
+L9C25 MsgWeaponsShop ; proposed-x5.map:63 ; "Welcome to the Weapons Shop! List?"
+L9C4B MsgBuyOrSell ; proposed-x5.map:64 ; "Buy or sell?"
+L9C5A MsgYourInterest ; proposed-x5.map:65 ; "Your interest?" (buy)
+L9C6A MsgHaventTheGold ; proposed-x5.map:66 ; "I'm very sorry, but you haven't the gold!" (+2Ch: dead "Oh well, maybe next time.")
+L9CB1 MsgHereYouAre ; proposed-x5.map:67 ; "Here you are. May it serve you well."
+L9CD8 MsgForSale ; proposed-x5.map:68 ; "For sale?" (sell)
+L9CE3 MsgDontOwn ; proposed-x5.map:69 ; "You don't own one of those!"
+L9D01 MsgThankYou ; proposed-x5.map:70 ; "Thank you!" (after a sale)
+L9D0E MsgWeaponList1 ; proposed-x5.map:71 ; "Available: B:Dagger 5gp ... G:Sword 200gp"
+L9D7A MsgWeaponList2 ; proposed-x5.map:72 ; "H:2H Swd 250gp"
+L9D8C MsgWeaponList3 ; proposed-x5.map:73 ; "I:+2 Axe ... N:+4 Bow" (Dawn only)
+L9DEC MsgWeaponList4 ; proposed-x5.map:74 ; "O:+4 Swd 4550gp" (Dawn only)
+L9DFE MsgTooMuchGold ; proposed-x5.map:75 ; "Too much gold!" (a sale would pass 9999)
+L9E0F MsgShopNoMoreRoom ; proposed-x5.map:76 ; "No more room!" (already 99)
+L9E1F WeaponPrices ; proposed-x5.map:77 ; 14 BCD words: Dagger 5 ... +4 Swd 4550 (buy and sell price)
+L9E3B MsgArmourShop ; proposed-x5.map:78 ; "Welcome to the Armour Shop! List?"
+L9E60 MsgArmourList1 ; proposed-x5.map:79 ; "Available: B:Cloth 75gp ... E:Plate 2500gp"
+L9EB0 MsgArmourList2 ; proposed-x5.map:80 ; "F:+2Chain 6130gp G:+2Plate 8250gp" (Dawn only)
+L9ED3 ArmourPrices ; proposed-x5.map:81 ; 6 BCD words: Cloth 75 ... +2 Plate 8250
+L9EDF MsgRadrion ; proposed-x5.map:82 ; "Radrion: Prophet of Life!"
+L9EFF MsgHowMany100gp ; proposed-x5.map:83 ; "How many 100gp is your offering?"
+LA17F MsgMoreOffering ; proposed-x5.map:84 ; "More offering?"
+LA190 MsgGoodLuck ; proposed-x5.map:85 ; "Fare thee well and good luck!"
+LA1B0 OracleVerses ; proposed-x5.map:86 ; 10 pointers: Radrion's verses MsgVerse0-9, by the hundreds offered
+LA1C4 MsgEquineEmporium ; proposed-x5.map:87 ; "Equine Emporium:"
+LA1D9 MsgHorsesCost ; proposed-x5.map:88 ; " horses cost"
+LA1E7 MsgWillYouBuy ; proposed-x5.map:89 ; "00gp. Will you buy?"
+LA1FC MsgTooBad ; proposed-x5.map:90 ; "Ah, too bad. These are the best in town!"
+LA226 MsgRideFast ; proposed-x5.map:91 ; "May you ride fast and true friend!"
+LA24A MsgMoves ; proposed-x5.map:92 ; " moves"
+LA252 MsgCongratulations ; proposed-x5.map:93 ; "Congratulations! Thou hast compleated Exodus: Ultima 3 in"
+LA29B MsgReportThyFeat ; proposed-x5.map:94 ; "Report thy feat!"
+LA2AC MsgEndLine1 ; proposed-x5.map:95 ; the 10 lines of the final text: "And so it came to" ...
+LA2BE MsgEndLine2 ; proposed-x5.map:96 ; final text line 2
+LA2D3 MsgEndLine3 ; proposed-x5.map:97 ; final text line 3
+LA2E8 MsgEndLine4 ; proposed-x5.map:98 ; final text line 4
+LA2FD MsgEndLine5 ; proposed-x5.map:99 ; final text line 5
+LA312 MsgEndLine6 ; proposed-x5.map:100 ; final text line 6
+LA327 MsgEndLine7 ; proposed-x5.map:101 ; final text line 7
+LA33C MsgEndLine8 ; proposed-x5.map:102 ; final text line 8
+LA351 MsgEndLine9 ; proposed-x5.map:103 ; final text line 9
+LA366 MsgEndLine10 ; proposed-x5.map:104 ; "Onward to ULTIMA IV!"
+LA395 GuildMenuKeys ; proposed-x5.map:105 ; "GKPTQ",Esc
+LA39B GuildMenuStrs ; proposed-x5.map:106 ; MsgGems, MsgKeys, MsgPowders, MsgTorches, L78AF x2
+LA3A7 GuildCmds ; proposed-x5.map:107 ; GuildGems, GuildKeys, GuildPowders, GuildTorches, GuildDone x2
+LA3B3 MsgGuildShop ; proposed-x5.map:108 ; "The Guild shop: Keys 50gp ... Your needs:"
+LA410 MsgGuildThanks ; proposed-x5.map:109 ; "Thank you, come again!"
+LA429 MsgNotTheFunds ; proposed-x5.map:110 ; "I'm sorry, but you have not the funds!"
+LA452 MsgAnythingElse ; proposed-x5.map:111 ; "Anything else?"
+LA463 MsgGuildHowMany ; proposed-x5.map:112 ; "How many?"
+L0080 Ofs80h ; proposed-x5.map:114 ; offset 80h: of the combat area (monsters x) and of the creature arrays (MonTile+80h = MonTalk)
+L0088 CmbMonY ; proposed-x5.map:115 ; offset 88h: monsters' y
+L0090 CmbMonUnder ; proposed-x5.map:116 ; offset 90h: the tile under each monster (put back when it dies, COMBAT 8F80)
+L0098 CmbMonHP ; proposed-x5.map:117 ; offset 98h: monsters' hit points, 0 = dead (COMBAT 8F66 subtracts damage)
+L00A0 CmbPlrX ; proposed-x5.map:118 ; offset 0A0h: the four players' x (0FFh = not fighting)
+L00A4 CmbPlrY ; proposed-x5.map:119 ; offset 0A4h: players' y
+L00A8 CmbPlrUnder ; proposed-x5.map:120 ; offset 0A8h: the tile under each player (COMBAT 8A19, 8C78)
+L00AC CmbPlrTile ; proposed-x5.map:121 ; offset 0ACh: each player's own tile, from the class (COMBAT 8A0F)
+L0E65 DawnCell ; proposed-x5.map:122 ; MapBuf byte of Dawn at (37, 53): 18h Towne when both moons are 7, 0Ch Forest when both 0 (WORLD 211E)
+GateState WhirlpoolX ; proposed-x5.map:123 ; CORRECTION: 1320/1321 are the whirlpool's x, y (PARTY 736C-73DE moves it
+GatePos WhirlpoolY ; proposed-x5.map:124 ; see WhirlpoolX
+L1322 WhirlpoolDX ; proposed-x5.map:125 ; the whirlpool's step in x (-1, 0, 1, from table L7337
+L1323 WhirlpoolDY ; proposed-x5.map:126 ; the whirlpool's step in y (table L733F)
+L14BE MoveCountB1 ; proposed-x5.map:127 ; MoveCount byte 1 (BCD digits 3-2), carried into by AddMoves
+L14BF MoveCountB2 ; proposed-x5.map:128 ; MoveCount byte 2 (digits 5-4)
+L14C0 MoveCountB3 ; proposed-x5.map:129 ; MoveCount byte 3 (digits 7-6)
+L14DD PlrStatus ; proposed-x5.map:130 ; Players+11h: status letter, indexed by slot * 40h (COMBAT)
+L14E0 PlrInt ; proposed-x5.map:131 ; Players+14h: intelligence, indexed by slot * 40h (MAGIC 6073, 60DD)
+L158C Player4 ; proposed-x5.map:132 ; Players+0C0h: the fourth record (PARTY 6FF9 walks the party backwards)
+L15CD PlayerY ; proposed-x5.map:133 ; PlayerXY+1: the party's current y
+L15D1 RideToggle ; proposed-x5.map:134 ; negated every turn on horse or ship when moving: creatures move every other step (WORLD 2281)
+L15D2 LastKey ; proposed-x5.map:135 ; word: the key (scan code, char) of the command being run, set by ReadCommand
+L16E1 MapPosTbl ; proposed-x5.map:136 ; 19 words (x, y): where each MapFileNames entry is on the surface (LOOP 1D97, Enter)
+L16E3 ExodusCastleX ; proposed-x5.map:137 ; MapPosTbl+2: x of Castle Exodus (ITEMS 5B3A)
+L1719 MsgVolume ; proposed-x5.map:138 ; "Volume " (prompt
+L1721 MsgZtatsFor ; proposed-x5.map:139 ; "Ztats for # "
+L1735 MsgHandEquipment ; proposed-x5.map:140 ; "Hand Equipment! From Player: "
+L1782 MsgReadyFor ; proposed-x5.map:141 ; "Ready for # "
+L178F MsgWearFor ; proposed-x5.map:142 ; "Wear for # "
+L179B MsgCastByWhom ; proposed-x5.map:143 ; "Cast by whom-"
+L17AE MsgJoinGoldTo ; proposed-x5.map:144 ; "Join gold to:"
+L17CA MsgIgniteTorch ; proposed-x5.map:145 ; "Ignite a torch"
+L17DA MsgNegateTime ; proposed-x5.map:146 ; "Negate Time! Whose Powd? "
+L17FC MsgModifyOrder ; proposed-x5.map:147 ; "Modify order! Player: "
+L1813 MsgGetChest ; proposed-x5.map:148 ; "Get Chest! Plr to search-"
+L182D MsgPeerAtGem ; proposed-x5.map:149 ; "Peer at gem! Whose gem? "
+L185C MsgYellWhom ; proposed-x5.map:150 ; "Yell, whom? "
+L1869 MsgOtherCommand ; proposed-x5.map:151 ; "Other command! Whose action? "
+L195D ArrowKeys ; proposed-x5.map:152 ; 4 key words: Up, Down, Right, Left (WORLD 2279)
+L1965 SpawnTiles ; proposed-x5.map:153 ; 13 creature tiles (Orc ... Balron) for new surface monsters, index = rnd(13) AND rnd(13)
+L1972 SpawnMoves ; proposed-x5.map:154 ; their movement codes (0 for Serpent, Man-O-War, Pirate: the water ones
+L197F MsgArrow ; proposed-x5.map:155 ; "->" (Look)
+L1982 MsgMountHorse ; proposed-x5.map:156 ; "Mount Horse!"
+L1990 MsgBoardFrigate ; proposed-x5.map:157 ; "Board Frigate!"
+L19A0 MsgWhoseKey ; proposed-x5.map:158 ; "Whose key? "
+L19AC MsgCraft ; proposed-x5.map:159 ; "Craft"
+L19B3 MsgOn ; proposed-x5.map:160 ; "On!"
+L19B8 MsgOff ; proposed-x5.map:161 ; "Off!"
+L19BE MsgDungeon ; proposed-x5.map:162 ; "Dungeon!"
+L19C8 MsgTowne ; proposed-x5.map:163 ; "Towne!"
+L19D0 MsgCastle ; proposed-x5.map:164 ; "Castle!"
+L19D9 MsgPlayer ; proposed-x5.map:165 ; "Player: "
+L19E2 MsgExchanged ; proposed-x5.map:166 ; "Exchanged!"
+L19EE MsgToPlayer ; proposed-x5.map:167 ; "  To Player: "
+L19FC MsgDirect ; proposed-x5.map:168 ; "Direct? "
+L1A05 MsgStealFailed ; proposed-x5.map:169 ; "Failed!" (Steal)
+L1A0E MsgWatchOut ; proposed-x5.map:170 ; "Watch out!"
+L1A1A MsgOnlyOnSurface ; proposed-x5.map:171 ; "Only on surface!"
+L1A2C MsgWhirlpool ; proposed-x5.map:172 ; "A huge swirling --WhirlPool-- engulfs you ..."
+L1A90 MsgIntoDarkness ; proposed-x5.map:173 ; "As the water enters your lungs you pass into Darkness!"
+L1ACE MsgForgottenLand ; proposed-x5.map:174 ; "You awaken on the shores of a forgotten Land ..." (Ambrosia)
+L1B29 MsgAllIsDark ; proposed-x5.map:175 ; "All is Dark!"
+L1B3E MsgYouMadeIt ; proposed-x5.map:176 ; "You made it!"
+L1B4D MsgMoveNorth ; proposed-x5.map:177 ; "North"
+L1B54 MsgMoveSouth ; proposed-x5.map:178 ; "South"
+L1B5B MsgMoveEast ; proposed-x5.map:179 ; "East"
+L1B61 MsgMoveWest ; proposed-x5.map:180 ; "West"
+L1B67 MsgPleaseWait ; proposed-x5.map:181 ; "Please wait..."
+L1B77 ReadCommand ; proposed-x5.map:182 ; surface turn: draw the view, read a command key (Pass after ~5 s), jump to its handler
+L1B7A ReadCommandNoView ; proposed-x5.map:183 ; ReadCommand without redrawing the view (WORLD 22A2)

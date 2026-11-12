@@ -1,6 +1,6 @@
 # Handoff: Ultima III decompilation (u3-decompiled)
 
-State as of 2026-11-09: phases 0-5 of docs/PLAN.md done (phase 3 statically; the play test of a
+State as of 2026-11-12: phases 0-6 of docs/PLAN.md done (phase 3 statically; the play test of a
 shifted build is still to do). Read this first, then docs/PLAN.md and docs/FORMATS.md.
 The sister projects `../u1-decompiled` and `../u2-decompiled` are the models for conventions
 and tools.
@@ -119,6 +119,29 @@ What phase 3 had to find by hand (all in `u3an.TARGETS`, each checked against it
 - No program operand with a cs:/ss:/es: prefix points into the image, and no DS operand
   points past the end of a file.
 
+## Names and comments (phase 6)
+
+**Every label in all sources has a name** (`tools/dups.py`: 0 labels named after an address, no
+duplicates), every module has an overview header and every routine a header; all four files
+still rebuild identical with MASM 4.00 and 3.00, and shift.py passes. How it was done:
+- Tools: `tools/syms.py` (symbol table per scope, addresses from the `;@` tags), `tools/rename.py`
+  (checked renames; scope = a program for its own labels, `lib` for the shared library names and
+  the X symbols), `tools/lint.py` (CRLF, line length, tags; `--code-unchanged REV` checks that only
+  names and comments changed), `tools/dups.py`, `tools/applyprops.py`. Conventions:
+  docs/NAMING.md; the workers' brief: docs/BRIEF-naming.md.
+- 147 established names first (`names/*-core.map`), then eight workers in parallel on disjoint
+  files (the library; EXODUS in five groups; BOOTUP + ULTIMA; DUNGEON.DAT): about 1,240 local
+  renames with `--only`, and 710 proposals for names other modules use, applied centrally
+  (`names/proposed-*.map`, `names/integrated-*.map`). Every map is kept in `names/`.
+- Integration decisions: the library's X01BE and X0103 merged with the programs' own labels at
+  the same byte (now `Location` and `CombatPlayer` everywhere); corrections of earlier names that
+  the code contradicted (`GateState`/`GatePos` are the whirlpool: `WhirlpoolX/Y`; `MonMove` is
+  `MonUnder`; the four party flags are `ExoticWeaponFound`, `ExoticArmourFound`,
+  `ExtraWeaponsOk`, `ExtraArmoursOk`); the module TRANSACT is really the H command and is now
+  HAND; the offset label 80h is the neutral `Ofs80h` (it serves two arrays).
+- What the code revealed (mechanics, bugs, dead code, the protection removal): docs/FINDINGS.md,
+  and the workers' notes in `names/notes-*.md`. docs/FORMATS.md and docs/MAP.md are corrected.
+
 ## Modules (phase 5)
 
 Every program is split into modules named for their subsystem; docs/MAP.md lists them (address
@@ -200,6 +223,7 @@ are the game's art). Highlights:
 | `tools/play.py` | play a build in a DOSBox window with GOG's settings, from a copy of the data files (`play.py [BUILDDIR] [--dir DIR]`) |
 | `tools/u3fmt.py` | readers and PNG renderers for every data file (docs/FORMATS.md); `u3fmt.py check` |
 | `tools/routines.py`, `tools/modmap.py` | the routine survey for the split, and the module table of docs/MAP.md |
+| `tools/syms.py`, `rename.py`, `lint.py`, `dups.py`, `applyprops.py` | the naming tools (docs/NAMING.md) |
 | `tools/cands.py`, `tools/ptrtabs.py` | phase 3 surveys: immediates and operands that might be addresses; indexed word tables and what they point to |
 | `tools/dos.py`, `setup.py`, `fat12.py` | DOSBox runner and toolchain unpacking (from u2) |
 
@@ -207,20 +231,12 @@ Git: `master`, local only.
 
 ## Next steps
 
-1. **Play the shifted build** (`tools/play.py build/shift --dir build/play_shift`): intro
-   (animation and sound), menu, roster (view a character: the status, weapon and armour
-   names come from the pointer tables), journey onward into EXODUS. In the game: walk, enter a
-   town (map load), talk, buy in a shop (the menus), cast a spell (spell names), fight
-   (combat map), enter a dungeon. Anything that breaks points at an address still written as
-   a number.
-2. Check the character record against a real save: play a game for a minute, copy ROSTER.ULT
-   and PARTY.ULT from `build/play*/` and run `u3fmt.py roster FILE` / `party FILE`.
-3. **Phase 6, the readable pass** (docs/PLAN.md): names and comments, module by module, with
-   the parallel-agent method of U1 (a brief per module, disjoint files, one integrator):
-   - first the library, which every module calls (print string at row DH, column DL K2C7E
-     (BOOTUP 4ABE), put character K25CC (440C), read key K29BD, load file K2BF0 (4A30), sound
-     K2D59 (4B99), ...), and the variables of docs/FORMATS.md (party fields at 14BA, the
-     character record offsets, the moon state at 1320, the combat arrays);
-   - then the modules in docs/MAP.md, one agent each, renaming `Lxxxx` by `.syms`-style tables
-     as U6/U2 did (`../u2-decompiled/tools/rename.py`, `syms.py`, `lint.py` are the models).
-4. The combat and dungeon open questions of docs/FORMATS.md section 10 are answered by that pass.
+1. **Play the shifted build** (`tools/play.py build/shift --dir build/play_shift`; make it with
+   `tools/shift.py`): intro, menu, roster, a character, journey onward; in the game walk, enter a
+   town, talk, buy, cast, fight, enter a dungeon with a torch. A break points at an address still
+   written as a number. Also try the bugs of docs/FINDINGS.md that are marked unverified.
+2. Check the character record against a real save (`u3fmt.py roster FILE`, `party FILE`).
+3. Phase 7 (optional): a port (docs/PLAN.md). The speed-dependent parts are listed at the end of
+   docs/FINDINGS.md; FCB file I/O, CGA and the PC speaker are the rest.
+4. Smaller: OCR the manual and check FORMATS.md against it; decide whether to move the data blocks
+   that sit inside another module's range (6493-6B91, 7708-7AEA, 84DB-888B) to their users.

@@ -1,0 +1,36 @@
+; DUNMOVE (worker x4): local labels. Scope exodus.
+L81C3 GetChest_SetTile
+L81C7 GetChest_Dungeon
+L81D1 GetChest_Open
+L81DD GetChest_Done
+L81E0 GetChest_NotHere
+L81E3 GetChest_Incap
+L81E6 GetChest_Trap
+L8200 GetChest_Gas
+L8211 GetChest_GasAll
+L8217 GetChest_GasLoop
+L822F GetChest_GasNext
+L823C GetChest_Acid
+L826D GetChest_Poison
+L8290 GetChest_Bomb
+L82A1 GetChest_Gold
+L82AA TryEvadeTrap         ; ZF/AL=0: "Trap evaded!" (dexterity check of the player at DI)
+L82C2 TryEvadeTrap_Done
+L82D1 DamageParty_Loop
+L8300 DamageParty_Next
+L8338 DungeonLoop_Prompt
+L834E DungeonLoop_Wait
+L8360 DungeonLoop_Key
+L836D DungeonLoop_Find
+L837B DungeonLoop_Found
+L83A1 DungeonTurn_View
+L83D0 DungeonTurn_SetFoe
+L83DD DungeonTurn_Event
+L83F4 DungeonTurn_Done
+L8413 Klimb_Invalid
+L8416 Klimb_Exit
+L8435 Descend_Invalid
+L8452 TurnRight_Invalid
+L846F TurnLeft_Invalid
+L84A6 Advance_Invalid
+L84D8 Retreat_Invalid

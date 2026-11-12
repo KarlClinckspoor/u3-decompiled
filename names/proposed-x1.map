@@ -1,0 +1,39 @@
+; Worker x1 (LOOP, WORLD, VIEW): symbols defined in these files and used by other modules.
+; LOOP: command handlers (SurfaceCmds 190B / DungeonCmds 774A)
+L1C77 CmdPass        ; exodus ; Space / timeout: print "Pass"
+L1C7D CmdNorth       ; exodus ; Up arrow: move north
+L1C9E CmdSouth       ; exodus ; Down arrow
+L1CBF CmdEast        ; exodus ; Right arrow
+L1CE0 CmdWest        ; exodus ; Left arrow
+L1D01 CmdBoard       ; exodus ; B: mount a horse / board a frigate
+L1D4E CmdCast        ; exodus ; C: cast (surface and dungeon)
+L1D69 CmdEnter       ; exodus ; E: enter a town, castle, dungeon or (Ambrosia) shrine
+L1E55 CmdHand        ; exodus ; H: hand equipment to another player
+L1E7A CmdLook        ; exodus ; L: name the shape in a direction
+L1E9B CmdModify      ; exodus ; M: modify order (exchange two players)
+L1EFD CmdPeer        ; exodus ; P: peer at a gem (the map)
+L1F25 CmdQuit        ; exodus ; Q: quit & save (on Sosaria; the game goes on)
+L1F53 CmdSteal       ; exodus ; S: steal a chest behind a shop counter
+L1FD6 CmdUnlock      ; exodus ; U: unlock a door east or west
+L2018 CmdVolume      ; exodus ; V, Alt-S, Alt-V: sound on/off
+L2035 CmdXit         ; exodus ; X: leave the horse or frigate
+L2068 CmdZtats       ; exodus ; Z: Ztats of a player
+; WORLD
+L207D SaveSosaria    ; exodus ; write SOSARIA.ULT (map, creatures, moons) and PARTY.ULT
+L2097 SaveParty      ; exodus ; write PARTY.ULT
+L20AE AdvanceMoons   ; exodus ; one moon step: moon gate, Dawn, print the phases
+L2168 Whirlpool      ; exodus ; a whirlpool takes the frigate: Sosaria <-> Ambrosia (not the moon gate: that is ITEMS 5B51)
+L226C MonTurn        ; exodus ; the creatures' turn after MainLoop, then BuildView and the key loop
+L24C0 MapWraps       ; exodus ; 0FFh: the map wraps (Sosaria, Ambrosia); 0 in towns and castles
+L24F5 ViewCell31     ; exodus ; start-up instruction = ViewTiles+31h, the cell north of the party
+L24FF ViewCell3B     ; exodus ; start-up instruction = ViewTiles+3Bh (west; +1 the party, +2 east)
+L2509 ViewCell45     ; exodus ; start-up instruction = ViewTiles+45h (+2 = 47h, south)
+L2599 TileEast       ; exodus ; shape east of the party (BuildView)
+L259A TileWest       ; exodus ; shape west of the party
+L259B TileNorth      ; exodus ; shape north of the party
+L259C TileSouth      ; exodus ; shape south of the party
+L259D TileHere       ; exodus ; shape under the party
+; VIEW
+L259E ShowGemMap     ; exodus ; Peer at gem on the surface / in a town: the 64 x 64 map in pixels
+L2716 DrawFrame      ; exodus ; clear the screen and draw the frame lines
+L2909 ShowDungeonMap ; exodus ; Peer at gem in a dungeon: the level as characters

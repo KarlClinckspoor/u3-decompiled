@@ -1,0 +1,39 @@
+; ITEMS.ASM (worker x2). Scope exodus. Labels used only in ITEMS.
+L58B4 ItemsUnused          ; 12 zero bytes, not referenced
+L58E6 MsgFireDirect        ; "\nDirect-"
+L58EF MsgDestroyed         ; "s\nDestroyed!\n" (after a creature's name)
+L58FD MsgWhoseTorch        ; "Whose torch: "
+L5A58 MsgNorth
+L5A5F MsgSouth
+L5A66 MsgEast
+L5A6D MsgWest
+L5A93 MsgShrineWisdom
+L5AA1 MsgShrineStrength
+L5AB0 MsgShrineDexterity
+L5ABF MsgShrineIntel
+L5B37 InExodus_CheckX
+L5B42 InExodus_Ret
+L5B46 InExodus_Combat
+L5B4D InExodus_No
+L5BBD DexRoll_Roll
+L5BCA DexRoll_Done
+L5BDC Fire_OnShip
+L5BF6 Fire_Step
+L5C1A Fire_Redraw
+L5C1D Fire_Done
+L5C20 Fire_Hit
+L5C45 Fire_Roll
+L5C6F Fire_Miss
+L5C8C Join_Sum
+L5CA5 Join_Clear
+L5CB2 Join_Done
+L5CB5 Join_TooMuch
+L5CEF Ignite_Done
+L5CF2 Ignite_NotHere
+L5CF5 Ignite_NoneLeft
+L5D10 Negate_Done
+L5D13 Negate_NoneLeft
+L5D29 ReadKeyUp_Done
+L5D48 AddHP_Done
+L5D64 AddExp_Done
+L5D80 AddGold_Done

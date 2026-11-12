@@ -1,0 +1,5 @@
+; ULTIMA UDATA: labels used only in UDATA.ASM. Scope ultima. (worker bu)
+L00A0 PspSpareA0         ; PSP command tail; alias of the library's X01A9 (ULTIMA has no such table)
+L00A4 PspSpareA4         ; alias of X01AD
+L00A8 PspSpareA8         ; alias of X01B1
+L00AC PspSpareAC         ; alias of X01B5

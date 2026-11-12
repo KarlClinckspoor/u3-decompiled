@@ -1,0 +1,19 @@
+K0105 RandMonthDay ; proposed-lib.map:3 ; RandState+2: seeded with the date's DX (DH month, DL day) by ULTIMA/EXODUS start-up
+K0107 RandHourMin ; proposed-lib.map:4 ; RandState+4: seeded with the time's CX (CH hour, CL minute)
+K0109 RandSecHund ; proposed-lib.map:5 ; RandState+6: seeded with the time's DX (DH second, DL hundredths)
+K010B RandYear2 ; proposed-lib.map:6 ; RandState+8: the year again (CX)
+K010D RandMonthDay2 ; proposed-lib.map:7 ; RandState+0Ah: month/day again
+K010F RandHourMin2 ; proposed-lib.map:8 ; RandState+0Ch: hour/minute again
+K0111 RandSecHund2 ; proposed-lib.map:9 ; RandState+0Eh: second/hundredths again (the low end of the 128-bit state)
+K011B BlinkCount ; proposed-lib.map:10 ; combat: signed countdown of the active member's blink (BlinkPlayer)
+K2820 AnimScroll ; proposed-lib.map:11 ; scroll the water, force field, lava and moon gate tiles (each on its own count)
+K286F AnimFlags ; proposed-lib.map:12 ; wave the flags of the castle, towne and frigate tiles
+K28E7 SwapFrames ; proposed-lib.map:13 ; every 10th call swap tiles 16-30 and 12 with their second frames (64-79)
+K2AD8 AskChoice ; proposed-lib.map:14 ; menu input: key from the letter list at DI, show its string, Enter accepts
+K2BA0 SaveFile ; proposed-lib.map:15 ; write CX bytes from BX to the file named at DX (FCB at PSP:5C)
+X0103 CombatPlayer ; proposed-lib.map:16 ; EXODUS L84E1: the party member whose combat turn it is (0-3)
+X01A9 CombatPartyX ; proposed-lib.map:17 ; EXODUS StartUp+0A0h: the members' x in combat (4 bytes)
+X01AD CombatPartyY ; proposed-lib.map:18 ; StartUp+0A4h: their y
+X01B1 CombatUnderTile ; proposed-lib.map:19 ; StartUp+0A8h: the tile under each member (put back when he dies)
+X01B5 CombatPartyTile ; proposed-lib.map:20 ; StartUp+0ACh: each member's own tile
+X01BE Location ; proposed-lib.map:21 ; the party header's location byte (EXODUS Location, BOOTUP PartyLocation, ULTIMA 0105)

@@ -1,0 +1,99 @@
+L005C PspFcb ; proposed-bu.map:17 ; PSP:005C, default FCB used to open and read EXODUS.BIN
+L0068 FcbCurBlock ; proposed-bu.map:18 ; FCB+0Ch, current block (set 0)
+L006A FcbRecSize ; proposed-bu.map:19 ; FCB+0Eh, record size (set to the file size)
+L006C FcbFileSize ; proposed-bu.map:20 ; FCB+10h, file size (low word)
+L007C FcbCurRec ; proposed-bu.map:21 ; FCB+20h, current record (set 0)
+L00FA ChainInt21 ; proposed-bu.map:22 ; PSP:00FA, planted "int 21h" (CD 21) of the chain load
+L00FC ChainJmp ; proposed-bu.map:23 ; PSP:00FC, planted FF 26 = "jmp word ptr [...]"
+L00FE ChainJmpAddr ; proposed-bu.map:24 ; PSP:00FE, its operand 1328h: EXODUS's entry vector
+L01B9 DiskCheckResult ; proposed-bu.map:25 ; 0FFh: "(Strange Disk)"
+L01C3 PartySize ; proposed-bu.map:26 ; PARTY.ULT header +07: number of characters in the party (0-4)
+L01C4 PartyX ; proposed-bu.map:27 ; header +08: start x (Form sets 2Ch)
+L01C5 PartyY ; proposed-bu.map:28 ; header +09: start y (Form sets 14h)
+L01C6 PartyRosterNums ; proposed-bu.map:29 ; header +0A-0D: roster numbers (1-20) of the party members (+0E-11 follow)
+L01CE PartyChars ; proposed-bu.map:30 ; PARTY.ULT +12h: the four character records (100h bytes)
+L0C46 FileExodusBin ; proposed-bu.map:31 ; "EXODUS.BIN"
+L0CA9 MsgUltimaIII ; proposed-bu.map:32 ; 10h "Ultima III" 11h (10h/11h: bracket characters of CHARSET)
+L0CB6 MsgPressSpace ; proposed-bu.map:33 ; 10h "Press <Space>" 11h
+L0CC6 MsgCopyright ; proposed-bu.map:34 ; "(C)-1983 By James R. Van Artsdalen"
+L0CE9 MsgLordBritish ; proposed-bu.map:35 ; "and Lord British"
+L0CFA MsgEntry ; proposed-bu.map:36 ; "Entry#"
+L0D01 MsgOnly1To20 ; proposed-bu.map:37 ; "(1-20 Only!)"
+L0D0E MsgFromDepths ; proposed-bu.map:38 ; "From the depths of hell..."
+L0D29 MsgVengeance ; proposed-bu.map:39 ; "...he comes for VENGEANCE!"
+L0D5D StatusKeys ; proposed-bu.map:40 ; "GPDP" (sic, for GPDA): status letters of StatusNames
+L0E2F MsgOptionSpace ; proposed-bu.map:41 ; "Option: " (main menu)
+L0E38 MsgMenuReturn ; proposed-bu.map:42 ; "Return to the View"
+L0E4B MsgMenuOrganize ; proposed-bu.map:43 ; "Organize a Party"
+L0E5C MsgMenuJourney ; proposed-bu.map:44 ; "Journey Onward"
+L0E83 MainMenuKeys ; proposed-bu.map:45 ; "ROJ",1Bh: keys of MainMenu
+L0E8F MsgPartyOrganization ; proposed-bu.map:46 ; "Party Organization"
+L0EA2 MsgOption ; proposed-bu.map:47 ; "Option:" (party menu)
+L0EAA MsgMenuExamine ; proposed-bu.map:48 ; "Examine the Register"
+L0EBF MsgMenuCreate ; proposed-bu.map:49 ; "Create a Character"
+L0ED2 MsgMenuForm ; proposed-bu.map:50 ; "Form the Party"
+L0EE1 MsgMenuDisperse ; proposed-bu.map:51 ; "Disperse the Party"
+L0EF4 MsgMenuTerminate ; proposed-bu.map:52 ; "Terminate a Character"
+L0F0A MsgMenuMain ; proposed-bu.map:53 ; "Main Menu"
+L0F14 MsgMenuLook ; proposed-bu.map:54 ; "Look at a Character"
+L0F59 OrganizeKeys ; proposed-bu.map:55 ; "ECFDTMQL",1Bh: keys of OrganizeMenu
+L0F74 MsgRegister ; proposed-bu.map:56 ; "Register" (title of ExamineRegister)
+L0F7D MsgTerminateTitle ; proposed-bu.map:57 ; "Terminate!"
+L0F88 MsgNoOneThere ; proposed-bu.map:58 ; "(No one there)"
+L0F97 MsgWithParty ; proposed-bu.map:59 ; "(With a party)"
+L0FA6 MsgTerminated ; proposed-bu.map:60 ; "(Terminated)"
+L0FB3 MsgCreateTitle ; proposed-bu.map:61 ; "Create"
+L0FBA MsgNotEmpty ; proposed-bu.map:62 ; "(Not Empty!)"
+L0FC7 MsgPoints50 ; proposed-bu.map:63 ; "Points:50"
+L0FD1 MsgNameColon ; proposed-bu.map:64 ; "Name:"
+L0FD7 MsgSexColon ; proposed-bu.map:65 ; " Sex:"
+L0FDD MsgRaceColon ; proposed-bu.map:66 ; "Race:"
+L0FE3 MsgTypeColon ; proposed-bu.map:67 ; "Type:" (the class)
+L0FE9 MsgStrengthDots ; proposed-bu.map:68 ; "Strength........"
+L0FFA MsgDexterityDots ; proposed-bu.map:69 ; "Dexterity......."
+L100B MsgIntelligenceDots ; proposed-bu.map:70 ; "Intelligence...."
+L101C MsgWisdomDots ; proposed-bu.map:71 ; "Wisdom.........."
+L102D MsgOK ; proposed-bu.map:72 ; "O.K.?"
+L1045 SexKeys ; proposed-bu.map:73 ; "MFO"
+L106B RaceKeys ; proposed-bu.map:74 ; "HEDBF"
+L10D0 ClassKeys ; proposed-bu.map:75 ; "FCWTPLBDIAR"
+L10F8 YesNoKeys ; proposed-bu.map:76 ; "YN"
+L10FA YesNoNames ; proposed-bu.map:77 ; two pointers (written as db) to "Yes" (10F1) and "No" (10F5)
+L10FE MsgLookTitle ; proposed-bu.map:78 ; "Look at a Character" (title of LookAtChar)
+L1112 MsgStatusColon ; proposed-bu.map:79 ; "Status:"
+L111A MsgWeaponColon ; proposed-bu.map:80 ; "Weapon:"
+L1122 MsgArmourColon ; proposed-bu.map:81 ; "Armour:"
+L112A MsgStrengthColon ; proposed-bu.map:82 ; "Strength:"
+L1134 MsgDexterityColon ; proposed-bu.map:83 ; "Dexterity:"
+L113F MsgIntelligenceColon ; proposed-bu.map:84 ; "Intelligence:"
+L114D MsgWisdomColon ; proposed-bu.map:85 ; "Wisdom:"
+L1155 MsgHitPointsColon ; proposed-bu.map:86 ; "Hit points:"
+L1161 MsgExperienceColon ; proposed-bu.map:87 ; "Experience:"
+L116D MsgFoodColon ; proposed-bu.map:88 ; "Food:"
+L1173 MsgGoldColon ; proposed-bu.map:89 ; "Gold:"
+L1179 MsgPlayerDash ; proposed-bu.map:90 ; "Player-"
+L1181 MsgFormTitle ; proposed-bu.map:91 ; "Form the Party" (title of FormParty)
+L1190 MsgPartyInUse ; proposed-bu.map:92 ; "(Party in Use)"
+L119F MsgAlreadySelected ; proposed-bu.map:93 ; "Already Selected"
+L11B0 MsgFormed ; proposed-bu.map:94 ; "(Formed)"
+L11B9 MsgNoActivePlayers ; proposed-bu.map:95 ; "(No Active Players)"
+L11CD MsgStrangeDisk ; proposed-bu.map:96 ; "(Strange Disk)"
+L11DC MsgNoParty ; proposed-bu.map:97 ; "(No Party)"
+L11E7 MsgDispersed ; proposed-bu.map:98 ; "(Dispersed!)"
+L11F4 MsgDisperseTitle ; proposed-bu.map:99 ; "Disperse the Party" (title of DisperseParty)
+L1207 CritErrRetry ; proposed-bu.map:100 ; int 24h handler: AL = 1 (retry), then the iret at 1209 (TITLE)
+L120A StartUp ; proposed-bu.map:101 ; entry (from the jmp at 0100): load the files, draw the title, run TitleLoop
+L132B DrawMenuFrame ; proposed-bu.map:102 ; frame of the menu area (text rows 10-23)
+L1385 ClearMenu ; proposed-bu.map:103 ; clear the inside of the frame (BIOS scroll, rows 0Bh-16h, columns 1-26h)
+L14C9 RunOrganizeMenu ; proposed-bu.map:104 ; the "Party Organization" menu until M, Q or Esc
+L194B ExamineRegister ; proposed-bu.map:105 ; list the 20 roster slots
+L19DB TerminateChar ; proposed-bu.map:106 ; "Terminate!": erase a roster slot (not one in the party)
+L1A6D CreateChar ; proposed-bu.map:107 ; "Create": enter a new character into an empty roster slot
+L1CE7 WaitSpace ; proposed-bu.map:108 ; print "Press <Space>" and wait for the space bar
+L1D07 PartyToRoster ; proposed-bu.map:109 ; copy the party's records back into their roster slots
+L1D34 RosterToParty ; proposed-bu.map:110 ; copy the members' roster records into PartyChars
+L1D61 RosterRecord ; proposed-bu.map:111 ; BX = address of roster record number BL (1-20)
+L1D71 AnimateDemo ; proposed-bu.map:112 ; animate the tile graphics and redraw the DEMO.ULT block
+L1DA8 AnyAlive ; proposed-bu.map:113 ; AH = 0FFh if one of the four PartyChars is G or P, else 0
+L1DC6 AskScenarioDisk ; proposed-bu.map:114 ; disabled: a ret patched over its first byte
+L1E0C AskNumber ; proposed-bu.map:115 ; read a two-digit number at the cursor, retry on error

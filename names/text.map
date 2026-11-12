@@ -1,0 +1,28 @@
+; TEXT.ASM local labels (worker x5, phase 6). Scope exodus. Shared ones: names/proposed-x5.map.
+L964F MsgYesNo           ; NUL, "Yes", NUL, "No", NUL: the strings at +1 and +5 (YesNoMenuStrs)
+L973C MsgTipKindly       ; the pub's tips (PubTips), by the tens digit of the gold paid
+L9752 MsgTipAmbrosia
+L9770 MsgTipDawn
+L9793 MsgTipMoons
+L97BE MsgTipNasty
+L9800 MsgTipPool
+L983C MsgTipShrines
+L988E MsgTipFountains
+L98D9 MsgTipExodus
+L9916 MsgTipLordOfTime
+L9C14 MsgBuy
+L9C18 MsgSell
+L9F22 MsgVerse0          ; Radrion's verses (OracleVerses), by the hundreds offered
+L9F5E MsgVerse1
+L9F9C MsgVerse2
+L9FDA MsgVerse3
+LA019 MsgVerse4
+LA052 MsgVerse5
+LA089 MsgVerse6
+LA0CD MsgVerse7
+LA105 MsgVerse8
+LA144 MsgVerse9
+LA37B MsgKeys            ; the Guild's menu words (GuildMenuStrs)
+LA380 MsgTorches
+LA388 MsgPowders
+LA390 MsgGems

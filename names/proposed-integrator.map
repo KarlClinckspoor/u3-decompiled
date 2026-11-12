@@ -1,0 +1,6 @@
+; Corrections of earlier names by the integrator (phase 6), from the workers' notes.
+MonMove MonUnder ; exodus ; the map byte under the creature, put back when it leaves (x1, x4)
+WeaponFlag1 ExoticWeaponFound ; exodus ; 0FFh once Dig found the Exotic weapon: the weapon menus list it
+ArmourFlag1 ExoticArmourFound ; exodus ; 0FFh once Dig found the Exotic armour
+WeaponFlag2 ExtraWeaponsOk ; exodus ; 0FFh: the +2/+4 weapons are for sale (Dig, Dawn's weapon shop)
+ArmourFlag2 ExtraArmoursOk ; exodus ; 0FFh: the +2 armours are for sale (Dig, Dawn's armour shop)

@@ -1,0 +1,183 @@
+; Proposals of worker x2 (ITEMS, MAGIC, SHRINE): PUBLIC labels defined in these files.
+; OLD NEW ; SCOPE ; what it is
+; --- ITEMS.ASM: data
+L58CB SavedLocation ; exodus ; Location before a fight (COMBAT 89CA saves it, sets Location 80h)
+L58CD RaceLetters ; exodus ; "HEDBF": the five race letters
+L58D2 RaceStatMax ; exodus ; 5 races x 4 BCD maxima of Str, Dex, Int, Wis (the shrines' cap)
+L598B FacingNames ; exodus ; pointers to North, -East, South, -West (by Facing)
+L5993 ShrineStatNames ; exodus ; pointers to the shrine names Strength ... Wisdom (by x & 3)
+L599B MsgNotAMage ; exodus ; "Not a mage!"
+L59A8 MsgSpellType ; exodus ; "Spell type W/C-"
+L59B8 MsgClericSpell ; exodus ; "Cleric spell-"
+L59C6 MsgWizardSpell ; exodus ; "Wizard spell-"
+L59D4 MsgMPTooLow ; exodus ; "M.P. too low!"
+L59E3 MsgFailed ; exodus ; "Failed!"
+L59EC MsgHealWhom ; exodus ; "Heal whom? "
+L59F8 MsgCureWhom ; exodus ; "Cure whom? "
+L5A04 MsgResurectWhom ; exodus ; "Resurect whom? " (the game's spelling)
+L5A14 MsgRecallWhom ; exodus ; "Recall whom? "
+L5A22 MsgExitToSosaria ; exodus ; "Exit to Sosaria!/Please wait..."
+L5A43 MsgSpellDirect ; exodus ; "Direct? " (directed spells)
+L5A4C MsgLvl ; exodus ; "LVL:0" (dungeon level heading)
+L5A52 MsgHead ; exodus ; "Head-" (dungeon facing heading)
+L5A74 MsgWelcomeShrine ; exodus ; "/ Welcome to the/   Shrine of/"
+L5AD0 MsgOffering ; exodus ; "Offering*100-"
+L5ADE MsgThenBeOff ; exodus ; "/Then be off!/"
+L5AED MsgCantCheat ; exodus ; "/You can not cheat/the Gods!/"
+L5B09 MsgShazam ; exodus ; "/Shazam!/"
+L5B13 MsgShrineWho ; exodus ; "shrine!/Who enters? "
+; --- ITEMS.ASM: code
+L5B28 InExodusCastle ; exodus ; ZF set in the castle of Exodus (or in a fight there)
+L5B51 MoonGateJump ; exodus ; step on a moon gate: move to the gate of Moon2Phase
+L5B85 DexRoll ; exodus ; ZF set if a roll against the dexterity (+class bonus) of BX succeeds
+L5BCF CmdFire ; exodus ; F: fire the frigate's cannons
+L5C73 CmdJoinGold ; exodus ; J: Join gold to one player
+L5CC3 CmdKlimbDescend ; exodus ; K and D on the surface: prompt, then What?
+L5CC9 CmdIgnite ; exodus ; I: Ignite a torch
+L5CF8 CmdNegate ; exodus ; N: Negate time (a powder)
+L5D16 ReadKeyUpper ; exodus ; ReadKey, AH = the key upper-cased
+L5D2B AddHitPoints ; exodus ; add AL (BCD) to the hit points of BX, at most the maximum
+L5D4B AddExp ; exodus ; add AL (BCD) to the experience of BX, at most 9999
+L5D67 AddGold ; exodus ; add AL (BCD) to the gold of BX, at most 9999
+; --- MAGIC.ASM: Cast and the spell handlers (tables WizardSpellCmds, ClericSpellCmds)
+L5D83 CastSpell ; exodus ; the Cast command for the player at BX (menus, MP, dispatch)
+L5F9F SpellRepond ; exodus ; wizard A: kill orcs (fight against orcs, once a fight)
+L5FD4 SpellMittar ; exodus ; wizard B: directed 16-55 damage
+L5FE3 SpellLorum ; exodus ; wizard C, cleric D (Luminae): light for 10
+L5FEE SpellDorAcron ; exodus ; wizard D, cleric F (Rec Du): down a dungeon level
+L600C SpellSurAcron ; exodus ; wizard E, cleric E (Rec Su): up a level (level 1: out)
+L602F SpellFulgar ; exodus ; wizard F: directed 75 damage
+L6034 SpellDagAcron ; exodus ; wizard G: random teleport in Sosaria
+L606A SpellMentar ; exodus ; wizard H: directed 2 x Int damage
+L608A SpellDagLorum ; exodus ; wizard I, cleric J (Sominae): light for 250
+L6095 SpellFalDivi ; exodus ; wizard J: cast a cleric spell
+L60A5 SpellNoxum ; exodus ; wizard K: 75 damage to all monsters
+L60BA SpellDecorp ; exodus ; wizard L, cleric M (Excuun): kill one monster (directed)
+L60BF SpellAltair ; exodus ; wizard M: stop time (TimeStop 10)
+L60CA SpellDagMentar ; exodus ; wizard N: 2 x Int damage to all monsters
+L60FA SpellNecorp ; exodus ; wizard O: every monster's hit points to 5
+L613E SpellZxkuqyb ; exodus ; cleric O and the nameless wizard P: kill all monsters
+L6153 SpellPontori ; exodus ; cleric A: kill undead (fight against skeletons, once a fight)
+L6188 SpellApparUnem ; exodus ; cleric B: open a chest safely
+L61DC SpellSanctu ; exodus ; cleric C: heal 10-29
+L61F6 SpellLibRec ; exodus ; cleric G: random teleport on the dungeon level
+L6209 SpellAlcort ; exodus ; cleric H: cure poison
+L623C SpellSequitu ; exodus ; cleric I: leave the dungeon
+L624F SpellSanctuMani ; exodus ; cleric K: heal 20-99
+L6269 SpellVieda ; exodus ; cleric L: view the map (like a gem)
+L6288 SpellSurmandum ; exodus ; cleric N: resurrect (1 in 4: ashes)
+L62C4 SpellAnjuSermani ; exodus ; cleric P: recall from ashes, caster loses 5 Wis
+; --- SHRINE.ASM: code
+L62FD PrintLevelHead ; exodus ; dungeon headings "LVL:0n" and "Head-<facing>"
+L633B MonStepToPlayer ; exodus ; DL,DH = monster SI's x,y one step toward the party; CL,CH the step
+L6366 EnterShrine ; exodus ; a shrine of Ambrosia: offer gold, raise a stat
+L6458 ExitToSosaria ; exodus ; leave a dungeon: reload SOSARIA.ULT at PartyXY
+; --- SHRINE.ASM: variables and data
+L64A0 CardsInserted ; exodus ; word: cards inserted at Exodus so far (4 = the end)
+L64A2 UpkeepTick ; exodus ; off the surface the upkeep (PARTY 6FDF) runs every 4th turn
+L64A3 RegenTick ; exodus ; counts 9..0: hit points regenerate at 0
+L64A4 WhirlpoolTick ; exodus ; the whirlpool moves every 4th turn (PARTY 7357)
+L64A5 MsgNoOneThere ; exodus ; "/No one there!"
+L64B4 MsgAllPlayersOut ; exodus ; "//All Players Out!/"
+L64C8 MsgShipDestroyed ; exodus ; " A ship was/   Destroyed!/"
+L64E4 MsgStarving ; exodus ; "Starving!/"
+L64EF MsgPoisoned ; exodus ; "Poisoned!/"
+L64FA WordEvocare ; exodus ; "EVOCARE   " (the Word of power)
+L6540 OtherWords ; exodus ; the Other command's words, 0-ended (INSERT DIG SEARCH BRIBE PRAY)
+L654C OtherCmds ; exodus ; their handlers (ACTIONS)
+L67BD NameHand ; exodus ; NameTbl 64-79: weapons
+L67C2 NameDagger ; exodus ;
+L67C9 NameMace ; exodus ;
+L67CE NameSling ; exodus ;
+L67D4 NameAxe ; exodus ;
+L67D8 NameBow ; exodus ;
+L67DC NameSword ; exodus ;
+L67E2 Name2HSwd ; exodus ; "2-H-Swd"
+L67EA NamePlus2Axe ; exodus ;
+L67F1 NamePlus2Bow ; exodus ;
+L67F8 NamePlus2Swd ; exodus ;
+L67FF NameGloves ; exodus ;
+L6806 NamePlus4Axe ; exodus ;
+L680D NamePlus4Bow ; exodus ;
+L6814 NamePlus4Swd ; exodus ;
+L681B NameExotic ; exodus ; weapon 79 and armour 87
+L6822 NameSkin ; exodus ; NameTbl 80-87: armours
+L6827 NameCloth ; exodus ;
+L682D NameLeather ; exodus ;
+L6835 NameChain ; exodus ;
+L683B NamePlate ; exodus ;
+L6841 NamePlus2Chain ; exodus ;
+L684A NamePlus2Plate ; exodus ;
+L6853 NameRepond ; exodus ; NameTbl 88-103: wizard spells
+L685A NameMittar ; exodus ;
+L6861 NameLorum ; exodus ;
+L6867 NameDorAcron ; exodus ;
+L6871 NameSurAcron ; exodus ;
+L687B NameFulgar ; exodus ;
+L6882 NameDagAcron ; exodus ;
+L688C NameMentar ; exodus ;
+L6893 NameDagLorum ; exodus ;
+L689D NameFalDivi ; exodus ;
+L68A6 NameNoxum ; exodus ;
+L68AC NameDecorp ; exodus ;
+L68B3 NameAltair ; exodus ;
+L68BA NameDagMentar ; exodus ;
+L68C5 NameNecorp ; exodus ;
+L68CC NameNoSpell ; exodus ; "" (wizard spell P has no name)
+L68CD NamePontori ; exodus ; NameTbl 104-119: cleric spells
+L68D5 NameApparUnem ; exodus ;
+L68E0 NameSanctu ; exodus ;
+L68E7 NameLuminae ; exodus ;
+L68EF NameRecSu ; exodus ;
+L68F6 NameRecDu ; exodus ;
+L68FD NameLibRec ; exodus ;
+L6905 NameAlcort ; exodus ;
+L690C NameSequitu ; exodus ;
+L6914 NameSominae ; exodus ;
+L691C NameSanctuMani ; exodus ;
+L6928 NameVieda ; exodus ;
+L692E NameExcuun ; exodus ;
+L6935 NameSurmandum ; exodus ;
+L693F NameZxkuqyb ; exodus ;
+L6947 NameAnjuSermani ; exodus ;
+L69C2 MsgZtStr ; exodus ; Ztats screen: "/Str..."
+L69CA MsgZtDex ; exodus ;
+L69D2 MsgZtInt ; exodus ;
+L69DA MsgZtWis ; exodus ;
+L69E2 MsgZtHP ; exodus ; "/H.P..."
+L69EA MsgZtHM ; exodus ; "/H.M..." (maximum hit points)
+L69F2 MsgZtGold ; exodus ;
+L69FA MsgZtExp ; exodus ;
+L6A02 MsgZtGems ; exodus ;
+L6A0A MsgZtKeys ; exodus ;
+L6A12 MsgZtPowd ; exodus ;
+L6A1A MsgZtTrch ; exodus ;
+L6A22 MsgCardOfDeath ; exodus ;
+L6A31 MsgCardOfSol ; exodus ;
+L6A3E MsgCardOfLove ; exodus ;
+L6A4C MsgCardOfMoons ; exodus ;
+L6A5B MsgMarkOfForce ; exodus ;
+L6A6A MsgMarkOfFire ; exodus ;
+L6A78 MsgMarkOfSnake ; exodus ;
+L6A87 MsgMarkOfKings ; exodus ;
+L6A96 MsgZtWeapon ; exodus ; "/Weapon:"
+L6A9F MsgZtArmour ; exodus ; "/Armour:"
+L6AA8 MsgZtWeapons ; exodus ; "/***Weapons***"
+L6AB7 MsgZtHandsArmour ; exodus ; "/02-Hands-(A)/**Armour**"
+L6AD0 MsgZtSkin ; exodus ; "/01-Skin-(A)/"
+L6ADE MsgStatM ; exodus ; status line " M:" (magic points)
+L6AE2 MsgStatL ; exodus ; " L:" (level)
+L6AE6 MsgStatH ; exodus ; "H:" (hit points)
+L6AE9 MsgStatF ; exodus ; " F:" (food)
+L6B02 CardKeys ; exodus ; "MDLSQ",Esc: the Insert menu keys
+L6B08 CardNames ; exodus ; pointers to Moons, Death, Love, Sol, Quit, Quit
+L6B14 CardOrder ; exodus ; "LSMD": the order the cards must go in
+L6B18 MsgCmd ; exodus ; "Cmd: " (Other command)
+L6B1E MsgNoEffect ; exodus ; "No effect!"
+L6B2A MsgOtherDirect ; exodus ; "Direct? " (Bribe, Insert)
+L6B33 MsgCardMenu ; exodus ; "D, S, L, M:"
+L6B40 MsgStrangeCard ; exodus ; "A card, with/strange marks!"
+L6B5D MsgExotics ; exodus ; "Exotics!"
+L6B67 MsgYellEvocare ; exodus ; "Yell 'Evocare'"
+L6B78 MsgWord ; exodus ; "Word: "
+L6B7F MsgNotEnoughGold ; exodus ; "Not enough gold!"

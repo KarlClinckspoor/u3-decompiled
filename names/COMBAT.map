@@ -1,0 +1,118 @@
+; COMBAT (worker x4): local labels. Scope exodus.
+L88A4 Attack_NotHere
+L88A7 Attack_Cancel
+L88CA FightCreature_Leave
+L88F6 StartCombat_Guards
+L8900 StartCombat_Hostile
+L8905 StartCombat_NextSlot
+L8928 StartCombat_TryPirate
+L8942 StartCombat_Ashore
+L8948 StartCombat_TryShip
+L8960 StartCombat_TrySea
+L8972 StartCombat_Terrain
+L8986 StartCombat_TryGrass
+L89BD StartCombat_Load
+L89EC StartCombat_PlacePlr
+L8A04 StartCombat_PlrUp
+L8A23 StartCombat_NextPlr
+L8A54 StartCombat_Eight
+L8A59 StartCombat_RandCount
+L8A64 StartCombat_PlaceFoe
+L8AC4 ClassTile              ; AL = class letter -> AL = the tile that shows it
+L8ADD ClassTile_Done
+L8AE2 ClassTile_Default
+L8AE6 PrintFoeName           ; the foes' name, AL = 0FFh plural
+L8B08 PrintFoeName_Plural
+L8B29 PrintFoeName_Suffix
+L8B2C PrintFoeName_Done
+L8B30 PrintFoeName_Plain
+L8B37 PrintFoeName_Shape
+L8B3E PrintFoeName_Thief
+L8B4A PrintFoeName_Scroll
+L8B52 CombatRound
+L8B5A PlayerTurn
+L8B76 PlayerTurn_Banner
+L8B8C PlayerTurn_Prompt
+L8BA7 PlayerTurn_Wait
+L8BD5 PlayerTurn_Key
+L8BE2 PlayerTurn_Find
+L8BF0 PlayerTurn_Found
+L8C0B PlayerTurnEnd_Check
+L8C36 PlayerTurnEnd_Won
+L8C39 PlayerTurnEnd_Next
+L8C3C CCmdMove
+L8C93 CCmdMove_Invalid
+L8C96 CanWalkOn              ; AL = tile -> AL = 0 walkable (with a step sound), 0FFh not
+L8CAA CanWalkOn_Done
+L8CAD CanWalkOn_Yes
+L8CB5 CanWalkOn_Delay
+L8D80 CCmdNegate_None
+L8E2B CCmdAttack_Shoot
+L8E3D CCmdAttack_Hit
+L8E40 CCmdAttack_Miss
+L8E43 CCmdAttack_Cancel
+L8E46 FindFoeAt              ; DL, DH = x, y -> BX = foe slot 0-7, or 0FFFFh
+L8E53 FindFoeAt_Loop
+L8E66 FindFoeAt_Next
+L8E6C FindFoeAt_Done
+L8E70 FindFoeAt_Found
+L8E7D ShootLine_Step
+L8EA3 ShootLine_Done
+L8EA7 ShootLine_Edge
+L8EAF AttackMissed
+L8EBC AttackHit
+L8ED4 AttackHit_Miss
+L8ED6 AttackHit_Roll
+L8EF3 AttackHit_Hit
+L8F74 DamageFoe_Killed
+L8FB0 DamageFoe_Done
+L8FB6 Victory
+L8FE8 Victory_Done
+L8FEB FoeCanEnter            ; AL = tile at DX -> AL = 0FFh the foe may step there, else 0
+L8FFF FoeCanEnter_Free
+L9009 FoeCanEnter_Done
+L900C FoeCanEnter_Land
+L901C FoeCanEnter_No
+L9020 FoeChooseMove          ; foe DI: nearest player, adjacent or the step towards him
+L903D FoeChoose_Loop
+L904B FoeChoose_Dist
+L905C FoeChoose_AbsY
+L906D FoeChoose_Near
+L9078 FoeChoose_TryStep
+L90CE FoeChoose_Keep
+L90DA FoeChoose_Next
+L90E8 FoeChoose_End
+L90EC FoeChoose_Ret
+L90F9 FoeChoose_Adjacent
+L90FD FoeBreathe             ; dragon's fire along CL, CH from foe DI
+L910E FoeBreathe_Step
+L9124 FoeBreathe_Plr
+L9135 FoeBreathe_NextPlr
+L9147 FoeBreathe_Done
+L914F FoesTurn
+L915D FoesTurn_Start
+L9160 FoesTurn_Loop
+L916A FoesTurn_Alive
+L917C FoesTurn_TryBreath
+L9198 FoesTurn_TryMagic
+L91CA FoesTurn_Move
+L91CE FoesTurn_Step
+L91D3 FoesTurn_Magic
+L9209 FoesTurn_Next
+L9212 FoesTurn_Done
+L9215 FoeStep                ; move foe DI to DX
+L9244 FoeAttack              ; foe attacks player BL
+L9256 FoeAttack_Poison
+L925B FoeAttack_TryThief
+L9262 FoeAttack_Roll
+L928A FoeAttack_Armour
+L92A1 FoeAttack_Hit
+L92AB FoeAttack_Done
+L92AF FoeHurtPlayer          ; damage player BL, kill him at 0
+L9356 FoeHurtPlayer_Done
+L9360 FoePoison
+L939D FoePoison_Done
+L93A2 FoeSteal
+L93DE FoeSteal_Armour
+L93FD FoeSteal_Msg
+L9417 FoeSteal_Done

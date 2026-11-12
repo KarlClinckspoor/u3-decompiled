@@ -1,0 +1,21 @@
+; BOOTUP TITLE: labels used only in TITLE.ASM. Scope bootup. (worker bu)
+L1209 BreakHandler       ; int 23h handler (iret); also the end of CritErrRetry (BDATA 1207)
+L12B7 TitleLoop
+L12C8 TitleLoop_Prompt
+L12D3 TitleLoop_Step
+L12E5 TitleLoop_Read
+L12FC TitleLoop_SetCell
+L1308 TitleLoop_Round
+L133D DrawMenuFrame_Erase
+L134D DrawMenuFrame_Bottom
+L135B DrawMenuFrame_Top
+L1369 DrawMenuFrame_Left
+L1378 DrawMenuFrame_Right
+L13A0 RunMainMenu
+L13A6 RunMainMenu_Redraw
+L142B RunMainMenu_Journey
+L1431 RunMainMenu_Organize
+L1437 JourneyOnward
+L1493 JourneyOnward_NoParty
+L14A5 JourneyOnward_Strange
+L14B7 JourneyOnward_NoActive

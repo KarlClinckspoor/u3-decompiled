@@ -1,0 +1,54 @@
+; ULTIMA INTRO: labels used only in INTRO.ASM. Scope ultima. (worker bu)
+L5CDD CritErrRetry       ; int 24h handler: AL = 1 (retry)
+L5CDF BreakHandler       ; int 23h handler: iret (Ctrl-Break ignored)
+L5D67 StartUp_RowTbl
+L5DD1 StartUp_WaitDisk
+L5DF4 StartUp_Roar
+L5DF7 StartUp_RoarDelay
+L5E05 StartUp_FireOut
+L5E0E StartUp_FlushKeys
+L5E18 StartUp_ChainLoad
+L5E57 StartUp_Exit
+L5E5A Delay              ; AX x 65536 loops, cut short by a key
+L5E62 Delay_Loop
+L5E67 Delay_Done
+L5E68 DrawSignature      ; NAME.DAT: "Lord British" written point by point
+L5E76 DrawSignature_Loop
+L5E8D DrawSignature_Wait
+L5E94 DrawSignature_Done
+L5E96 DissolveExodus     ; "Exodus" (rows 8-84) dissolves in
+L5E98 DissolveExodus_Loop
+L5EB1 DissolveExodus_Full
+L5EC2 DrawDragonFire     ; the dragon's fire over the party (rows 168-183)
+L5ED7 DrawDragonFire_Done
+L5ED8 DrawDragonAlone    ; picture rows 152-167 to 168: the fire and the party gone
+L5EED DrawDragonAlone_Done
+L5EEE DissolveUltima     ; "Ultima III" (rows 85-127) dissolves in
+L5EF0 DissolveUltima_Loop
+L5F09 DissolveUltima_Full
+L5F1A DrawBy             ; "by" (rows 132-140)
+L5F2F DrawBy_Done
+L5F30 DrawCopyright      ; "COPYRIGHT (C) 1983 ORIGIN SYSTEMS" (rows 146-150)
+L5F41 PlotPixel          ; white pixel at x = CL+20, row CH
+L5F6C CopyPicture        ; rectangle of PictureBuf to the screen, optionally dissolving
+L5F81 CopyPicture_Line
+L5FA4 CopyPicture_Word
+L5FC5 CopyPicture_Click
+L5FCD CopyPicture_Copy
+L5FCE CopyPicture_Store
+L5FE7 AnimStepTbl        ; per phase: +1/-1 for the picture and the x position
+L5FEA AnimEndPicTbl      ; per phase: picture number that ends a step
+L5FED AnimEndXTbl        ; per phase: x position that ends the phase
+L5FF0 AnimStartPicTbl    ; per phase: first picture of each step
+L5FF3 AnimateParty       ; ANIMATE.DAT: the party walks up to the dragon
+L5FFB AnimateParty_Step
+L6004 AnimateParty_Frame
+L600A AnimateParty_Wait
+L6023 AnimateParty_Done
+L6024 DrawAnimFrame      ; ANIMATE.DAT picture AL at x position BX
+L605B DrawAnimFrame_Row
+L607E SetGraphicsMode    ; check for CGA, set mode 4 palette 1, or hang with a message
+L60D9 SetGraphicsMode_Set
+L60FF SetGraphicsMode_Fail
+L6106 SetGraphicsMode_Print
+L6111 SetGraphicsMode_Hang

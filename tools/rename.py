@@ -131,7 +131,8 @@ def rename(scope, pairs, dry=False, only=None):
                 errs.append('%s: name %s would be used twice (%s and %s)' % (sp, nm, final[nm.upper()], s.name))
             final[nm.upper()] = s.name
     if only:
-        o = only.upper().replace('.ASM', '') + '.ASM'
+        o = only.upper() if only.upper().endswith(('.ASM', '.INC')) else only.upper() + '.ASM'
+        o = os.path.basename(o)
         for old, new, where in pairs:
             outside = sorted({p for p, _, _ in syms.refs(old, scope) if os.path.basename(p).upper() != o})
             if outside:

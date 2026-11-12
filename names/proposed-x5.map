@@ -1,0 +1,183 @@
+; Proposals of worker x5 (TOWNS, ENDING, TEXT, EXDATA): symbols defined there and used by other modules.
+; OLD NEW ; SCOPE ; what it is
+; --- TOWNS: the town services (table L77CE in ACTIONS; L9BEC and LA3A7 in TEXT) ---
+LA5AC ShopPub ; exodus ; the pub: drink 7 gp, tip by the tens digit of the payment (PubTips)
+LA630 ShopGrocer ; exodus ; rations 1 gp each, added to the buyer's food
+LA692 ShopTemple ; exodus ; the clerical sacraments menu (1-4), jumps through TempleCmds
+LA6D4 TempleCure ; exodus ; cure poison, 100 gp (status P -> G)
+LA761 TempleHeal ; exodus ; hit points = maximum, 200 gp
+LA7B6 TempleResurrect ; exodus ; dead -> good, 500 gp
+LA833 TempleRecall ; exodus ; ashes -> good, 900 gp
+LA8A5 ShopWeapons ; exodus ; the weapons shop: list, buy, sell
+LAA25 ShopArmour ; exodus ; the armour shop: list, buy, sell
+LAB93 ShopGuild ; exodus ; the Guild: gems, keys, powders, torches (menu GuildCmds)
+LABBD GuildGems ; exodus ; buy gems, 75 gp each
+LABFF GuildKeys ; exodus ; buy keys, 50 gp each
+LAC6B GuildPowders ; exodus ; buy powders, 90 gp each
+LACAC GuildTorches ; exodus ; buy torches, 6 gp each
+LACEF GuildDone ; exodus ; Guild exit: "Thank you, come again!" and return (Q, Esc)
+LACFC ShopRadrion ; exodus ; Radrion's shrine: offer hundreds of gold for a verse (OracleVerses)
+LAD70 ShopHorses ; exodus ; the Equine Emporium: a horse per member, 200 gp each (also called from EQUIP 8018)
+; --- ENDING ---
+LA46F PrintMoves ; exodus ; print MoveCount (8 BCD digits) and " moves" (LOOP Quit & Save, EndGame)
+LA4B9 EndGame ; exodus ; the Congratulations screen, then hangs (ACTIONS 76BC, after Exodus falls)
+LA561 AskYesNo ; exodus ; menu Y/N/Q/Esc; AL = 'Y' or 'N' (anything but Y is N); used by TOWNS
+LA587 PayGold ; exodus ; DI = record, AX = BCD price: CF set if gold < price (nothing paid), else gold -= price
+; --- TEXT: tables and strings used by TOWNS and ENDING ---
+L9657 YesNoMenuKeys ; exodus ; "YNQ",Esc: keys for AskYesNo (library K2AD8)
+L965B YesNoMenuStrs ; exodus ; 4 words (as db): MsgYesNo+1 "Yes", MsgYesNo+5 "No" x3
+L9663 ShopWeaponKeys ; exodus ; "Q",Esc,0,"B".."O": keys of the weapon menu (10 or 17 used)
+L9674 ShopArmourKeys ; exodus ; "Q",Esc,0,"B".."G": keys of the armour menu (7 or 9 used)
+L967D EndFlashPatterns ; exodus ; 21 words XORed over the map window by EndGame
+L96A7 MsgWelcomePub ; exodus ; "Welcome to the Pub!"
+L96C4 MsgHaveADrink ; exodus ; "Here, friend, have a drink! It costs 7 g.p. You pay?"
+L96FB MsgLeaveMyShop ; exodus ; "Leave my shop! You scum!!" (paid less than 7)
+L971B MsgCantPay ; exodus ; "What? Can't pay! Out you scum!" (pub, grocer, Radrion)
+L9956 MsgAnother ; exodus ; "Another?"
+L9961 MsgBeenAPleasure ; exodus ; "It's been a pleasure!!"
+L9979 PubTips ; exodus ; 10 pointers: the barkeeper's tips (MsgTipKindly ... MsgTipLordOfTime)
+L998D MsgGrocer ; exodus ; "Ye local Grocer / Rations: 1 g.p. each. How many would you like?"
+L99D7 MsgGrocerThanks ; exodus ; "Thank you, Come again!"
+L99F1 MsgTooMuchToCarry ; exodus ; "Too much to carry!" (grocer, Guild)
+L9A06 MsgSacraments ; exodus ; "Clerical Healing Sacraments: 1-Curing ... Your needs:"
+L9A68 MsgFareTheeWell ; exodus ; "Fare thee well my children."
+L9A86 MsgCuringCost ; exodus ; "A curing will cost 100 g.p. Wilt thou pay?"
+L9AB3 MsgTempleCureWhom ; exodus ; "Cure whom?"
+L9ABF MsgHealingCost ; exodus ; "Healings cost 200 g.p. Wilt thou pay?"
+L9AE8 MsgTempleHealWhom ; exodus ; "Heal whom?"
+L9AF4 MsgResurrectCost ; exodus ; "Resurrections cost 500 g.p. Wilt thou pay?"
+L9B21 MsgTempleResurrectWhom ; exodus ; "Resurrect whom?"
+L9B32 MsgRecallCost ; exodus ; "Recallings cost 900 g.p. Wilt thou pay?"
+L9B5B MsgTempleRecallWhom ; exodus ; "Recall whom?"
+L9B69 MsgNoOfferings ; exodus ; "Without proper offerings I cannot help!" (answered N)
+L9B93 MsgNotGoldEnough ; exodus ; "I'm sorry, but thou hast not gold enough." (temple, horses)
+L9BBE MsgNotInjured ; exodus ; "Not injured!"
+L9BCC MsgTempleFailed ; exodus ; "Failed!" (temple; EXDATA has its own copy, L1A05)
+L9BD5 MsgNotDead ; exodus ; "Not dead!"
+L9BE0 MsgNotAshes ; exodus ; "Not ashes!"
+L9BEC TempleCmds ; exodus ; jump table of the four sacraments (TempleCure ... TempleRecall)
+L9BF4 TempleMenuKeys ; exodus ; "1234Q",Esc
+L9BFA TempleMenuStrs ; exodus ; 6 words (as db) pointing at the strings "1".."4","Q" that follow at +12
+L9C10 BuySellMenuKeys ; exodus ; "BSQ",Esc
+L9C1D BuySellMenuStrs ; exodus ; MsgBuy, MsgSell, and L78AF twice (Q, Esc)
+L9C25 MsgWeaponsShop ; exodus ; "Welcome to the Weapons Shop! List?"
+L9C4B MsgBuyOrSell ; exodus ; "Buy or sell?"
+L9C5A MsgYourInterest ; exodus ; "Your interest?" (buy)
+L9C6A MsgHaventTheGold ; exodus ; "I'm very sorry, but you haven't the gold!" (+2Ch: dead "Oh well, maybe next time.")
+L9CB1 MsgHereYouAre ; exodus ; "Here you are. May it serve you well."
+L9CD8 MsgForSale ; exodus ; "For sale?" (sell)
+L9CE3 MsgDontOwn ; exodus ; "You don't own one of those!"
+L9D01 MsgThankYou ; exodus ; "Thank you!" (after a sale)
+L9D0E MsgWeaponList1 ; exodus ; "Available: B:Dagger 5gp ... G:Sword 200gp"
+L9D7A MsgWeaponList2 ; exodus ; "H:2H Swd 250gp"
+L9D8C MsgWeaponList3 ; exodus ; "I:+2 Axe ... N:+4 Bow" (Dawn only)
+L9DEC MsgWeaponList4 ; exodus ; "O:+4 Swd 4550gp" (Dawn only)
+L9DFE MsgTooMuchGold ; exodus ; "Too much gold!" (a sale would pass 9999)
+L9E0F MsgShopNoMoreRoom ; exodus ; "No more room!" (already 99)
+L9E1F WeaponPrices ; exodus ; 14 BCD words: Dagger 5 ... +4 Swd 4550 (buy and sell price)
+L9E3B MsgArmourShop ; exodus ; "Welcome to the Armour Shop! List?"
+L9E60 MsgArmourList1 ; exodus ; "Available: B:Cloth 75gp ... E:Plate 2500gp"
+L9EB0 MsgArmourList2 ; exodus ; "F:+2Chain 6130gp G:+2Plate 8250gp" (Dawn only)
+L9ED3 ArmourPrices ; exodus ; 6 BCD words: Cloth 75 ... +2 Plate 8250
+L9EDF MsgRadrion ; exodus ; "Radrion: Prophet of Life!"
+L9EFF MsgHowMany100gp ; exodus ; "How many 100gp is your offering?"
+LA17F MsgMoreOffering ; exodus ; "More offering?"
+LA190 MsgGoodLuck ; exodus ; "Fare thee well and good luck!"
+LA1B0 OracleVerses ; exodus ; 10 pointers: Radrion's verses MsgVerse0-9, by the hundreds offered
+LA1C4 MsgEquineEmporium ; exodus ; "Equine Emporium:"
+LA1D9 MsgHorsesCost ; exodus ; " horses cost"
+LA1E7 MsgWillYouBuy ; exodus ; "00gp. Will you buy?"
+LA1FC MsgTooBad ; exodus ; "Ah, too bad. These are the best in town!"
+LA226 MsgRideFast ; exodus ; "May you ride fast and true friend!"
+LA24A MsgMoves ; exodus ; " moves"
+LA252 MsgCongratulations ; exodus ; "Congratulations! Thou hast compleated Exodus: Ultima 3 in"
+LA29B MsgReportThyFeat ; exodus ; "Report thy feat!"
+LA2AC MsgEndLine1 ; exodus ; the 10 lines of the final text: "And so it came to" ...
+LA2BE MsgEndLine2 ; exodus ; final text line 2
+LA2D3 MsgEndLine3 ; exodus ; final text line 3
+LA2E8 MsgEndLine4 ; exodus ; final text line 4
+LA2FD MsgEndLine5 ; exodus ; final text line 5
+LA312 MsgEndLine6 ; exodus ; final text line 6
+LA327 MsgEndLine7 ; exodus ; final text line 7
+LA33C MsgEndLine8 ; exodus ; final text line 8
+LA351 MsgEndLine9 ; exodus ; final text line 9
+LA366 MsgEndLine10 ; exodus ; "Onward to ULTIMA IV!"
+LA395 GuildMenuKeys ; exodus ; "GKPTQ",Esc
+LA39B GuildMenuStrs ; exodus ; MsgGems, MsgKeys, MsgPowders, MsgTorches, L78AF x2
+LA3A7 GuildCmds ; exodus ; GuildGems, GuildKeys, GuildPowders, GuildTorches, GuildDone x2
+LA3B3 MsgGuildShop ; exodus ; "The Guild shop: Keys 50gp ... Your needs:"
+LA410 MsgGuildThanks ; exodus ; "Thank you, come again!"
+LA429 MsgNotTheFunds ; exodus ; "I'm sorry, but you have not the funds!"
+LA452 MsgAnythingElse ; exodus ; "Anything else?"
+LA463 MsgGuildHowMany ; exodus ; "How many?"
+; --- EXDATA ---
+L0080 Ofs80h ; exodus ; offset 80h: of the combat area (monsters x) and of the creature arrays (MonTile+80h = MonTalk); was proposed as CmbMonX StartUp (FORMATS 5): monsters' x; LOOP 1F96 uses it as MonTile+80h = MonTalk
+L0088 CmbMonY ; exodus ; offset 88h: monsters' y
+L0090 CmbMonUnder ; exodus ; offset 90h: the tile under each monster (put back when it dies, COMBAT 8F80)
+L0098 CmbMonHP ; exodus ; offset 98h: monsters' hit points, 0 = dead (COMBAT 8F66 subtracts damage)
+L00A0 CmbPlrX ; exodus ; offset 0A0h: the four players' x (0FFh = not fighting)
+L00A4 CmbPlrY ; exodus ; offset 0A4h: players' y
+L00A8 CmbPlrUnder ; exodus ; offset 0A8h: the tile under each player (COMBAT 8A19, 8C78)
+L00AC CmbPlrTile ; exodus ; offset 0ACh: each player's own tile, from the class (COMBAT 8A0F)
+L0E65 DawnCell ; exodus ; MapBuf byte of Dawn at (37, 53): 18h Towne when both moons are 7, 0Ch Forest when both 0 (WORLD 211E)
+GateState WhirlpoolX ; exodus ; CORRECTION: 1320/1321 are the whirlpool's x, y (PARTY 736C-73DE moves it; WORLD 21A4 puts it at (3, 7-3Dh))
+GatePos WhirlpoolY ; exodus ; see WhirlpoolX
+L1322 WhirlpoolDX ; exodus ; the whirlpool's step in x (-1, 0, 1, from table L7337; PARTY 73BE)
+L1323 WhirlpoolDY ; exodus ; the whirlpool's step in y (table L733F)
+L14BE MoveCountB1 ; exodus ; MoveCount byte 1 (BCD digits 3-2), carried into by AddMoves
+L14BF MoveCountB2 ; exodus ; MoveCount byte 2 (digits 5-4)
+L14C0 MoveCountB3 ; exodus ; MoveCount byte 3 (digits 7-6)
+L14DD PlrStatus ; exodus ; Players+11h: status letter, indexed by slot * 40h (COMBAT)
+L14E0 PlrInt ; exodus ; Players+14h: intelligence, indexed by slot * 40h (MAGIC 6073, 60DD)
+L158C Player4 ; exodus ; Players+0C0h: the fourth record (PARTY 6FF9 walks the party backwards)
+L15CD PlayerY ; exodus ; PlayerXY+1: the party's current y
+L15D1 RideToggle ; exodus ; negated every turn on horse or ship when moving: creatures move every other step (WORLD 2281)
+L15D2 LastKey ; exodus ; word: the key (scan code, char) of the command being run, set by ReadCommand
+L16E1 MapPosTbl ; exodus ; 19 words (x, y): where each MapFileNames entry is on the surface (LOOP 1D97, Enter)
+L16E3 ExodusCastleX ; exodus ; MapPosTbl+2: x of Castle Exodus (ITEMS 5B3A)
+L1719 MsgVolume ; exodus ; "Volume " (prompt; also dungeon and combat tables)
+L1721 MsgZtatsFor ; exodus ; "Ztats for # "
+L1735 MsgHandEquipment ; exodus ; "Hand Equipment! From Player: "
+L1782 MsgReadyFor ; exodus ; "Ready for # "
+L178F MsgWearFor ; exodus ; "Wear for # "
+L179B MsgCastByWhom ; exodus ; "Cast by whom-"
+L17AE MsgJoinGoldTo ; exodus ; "Join gold to:"
+L17CA MsgIgniteTorch ; exodus ; "Ignite a torch"
+L17DA MsgNegateTime ; exodus ; "Negate Time! Whose Powd? "
+L17FC MsgModifyOrder ; exodus ; "Modify order! Player: "
+L1813 MsgGetChest ; exodus ; "Get Chest! Plr to search-"
+L182D MsgPeerAtGem ; exodus ; "Peer at gem! Whose gem? "
+L185C MsgYellWhom ; exodus ; "Yell, whom? "
+L1869 MsgOtherCommand ; exodus ; "Other command! Whose action? "
+L195D ArrowKeys ; exodus ; 4 key words: Up, Down, Right, Left (WORLD 2279)
+L1965 SpawnTiles ; exodus ; 13 creature tiles (Orc ... Balron) for new surface monsters, index = rnd(13) AND rnd(13)
+L1972 SpawnMoves ; exodus ; their movement codes (0 for Serpent, Man-O-War, Pirate: the water ones; 4 the rest)
+L197F MsgArrow ; exodus ; "->" (Look)
+L1982 MsgMountHorse ; exodus ; "Mount Horse!"
+L1990 MsgBoardFrigate ; exodus ; "Board Frigate!"
+L19A0 MsgWhoseKey ; exodus ; "Whose key? "
+L19AC MsgCraft ; exodus ; "Craft"
+L19B3 MsgOn ; exodus ; "On!"
+L19B8 MsgOff ; exodus ; "Off!"
+L19BE MsgDungeon ; exodus ; "Dungeon!"
+L19C8 MsgTowne ; exodus ; "Towne!"
+L19D0 MsgCastle ; exodus ; "Castle!"
+L19D9 MsgPlayer ; exodus ; "Player: "
+L19E2 MsgExchanged ; exodus ; "Exchanged!"
+L19EE MsgToPlayer ; exodus ; "  To Player: "
+L19FC MsgDirect ; exodus ; "Direct? "
+L1A05 MsgStealFailed ; exodus ; "Failed!" (Steal)
+L1A0E MsgWatchOut ; exodus ; "Watch out!"
+L1A1A MsgOnlyOnSurface ; exodus ; "Only on surface!"
+L1A2C MsgWhirlpool ; exodus ; "A huge swirling --WhirlPool-- engulfs you ..."
+L1A90 MsgIntoDarkness ; exodus ; "As the water enters your lungs you pass into Darkness!"
+L1ACE MsgForgottenLand ; exodus ; "You awaken on the shores of a forgotten Land ..." (Ambrosia)
+L1B29 MsgAllIsDark ; exodus ; "All is Dark!"
+L1B3E MsgYouMadeIt ; exodus ; "You made it!"
+L1B4D MsgMoveNorth ; exodus ; "North"
+L1B54 MsgMoveSouth ; exodus ; "South"
+L1B5B MsgMoveEast ; exodus ; "East"
+L1B61 MsgMoveWest ; exodus ; "West"
+L1B67 MsgPleaseWait ; exodus ; "Please wait..."
+L1B77 ReadCommand ; exodus ; surface turn: draw the view, read a command key (Pass after ~5 s), jump to its handler
+L1B7A ReadCommandNoView ; exodus ; ReadCommand without redrawing the view (WORLD 22A2)

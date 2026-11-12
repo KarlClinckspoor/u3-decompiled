@@ -15,9 +15,9 @@ K25CC PutChar          ; print AL at the cursor and advance (8 = backspace)
 K2600 DrawChar         ; draw character AL at the cursor without moving it
 K2670 DiskCheckStub    ; the copy protection's replacement: returns AL = 0 (0FFh in EXODUS)
 K26C3 FillCell         ; store AX in the 8 scan lines of the cell at screen offset BX
-K26E8 DrawTileBlock    ; draw AH rows x AL columns of tiles from the list at BX at screen DI
+K26E8 DrawTileBlock    ; draw AH rows x AL columns of tiles from the list at BX (graphics at BP) at screen DI
 K2749 ClearScreen
-K2773 ReadLine         ; read up to CX characters to ES:DI, with backspace; CX out = length
+K2773 ReadLine         ; read up to CX characters to ES:DI, with backspace; BX out = length
 K27C1 Random           ; DL = random number below DH
 K29AA KeyReady         ; ZF clear when a key is waiting
 K29BD ReadKey          ; wait for a key: AH = scan code, AL = character
@@ -28,9 +28,9 @@ K2A4E ParseNumber      ; decimal number from the CX characters at SI
 K2B4F ReadNumber       ; read a two-digit number (BCD in AL)
 K2BF0 LoadFile         ; read the file named at DX, CX bytes, to BX (FCB at PSP:5C)
 K2C7E PrintAt          ; print the string at SI at row DH, column DL
-K2C87 SignStep         ; AL = -1, 0 or +1 by the sign of AL (a step towards a target)
+K2C87 SignStep         ; AH = -1, 0 or +1 by the sign of AL (a step towards a target)
 K2CAA DrawView         ; draw the 11 x 11 tiles of ViewTiles in the map window
-K2CC5 ViewTileAt       ; AL = the tile at view row BH, column BL
+K2CC5 ViewTileAt       ; AL = the tile at view row BH, column BL, BX = its address
 K2CEA WindUpdate       ; count down WindCount, choose a new WindDir, print it
 K2D40 SoundOn          ; 0FFh: sounds play
 K2D41 SoundTbl         ; the 12 sound routines, for codes 0F4h-0FFh

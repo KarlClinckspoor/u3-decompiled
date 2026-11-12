@@ -1,0 +1,51 @@
+; MAGIC.ASM (worker x2). Scope exodus. Labels used only in MAGIC.
+L5DC9 Cast_AskType
+L5DD0 Cast_TypeKey
+L5DFC Cast_EchoType
+L5DFF Cast_Menu
+L5E02 Cast_SpellKey
+L5E1E Cast_BadKey
+L5E25 Cast_Spell
+L5E66 Cast_Esc
+L5E69 Cast_Done            ; StatusLine, ret: every spell ends here
+L5E6D Cast_MPLow
+L5E7B Cast_Failed          ; "Failed!": shared exit of the spells
+L5EAA HitAllMonsters       ; AL = damage (0FFh kills) to each monster, 3 in 4
+L5EC7 HitAll_Loop
+L5EFF HitAll_Next
+L5F0A HealPlayer           ; "Heal whom?", add DH (BCD) hit points
+L5F2A HealPlayer_Done
+L5F2D CastDirected         ; AL = damage to the monster in a direction (fight only)
+L5F75 CastDir_Done
+L5F78 CastDir_Fail
+L5F7B DungeonTeleport      ; PlayerXY = a random empty cell of the level
+L5F82 DunTele_Try
+L5FD1 Repond_Fail
+L6009 DorAcron_Fail
+L6024 SurAcron_Done
+L6027 SurAcron_Fail
+L602A SurAcron_Exit
+L603E DagAcron_Try
+L6067 DagAcron_Fail
+L60B7 Noxum_Fail
+L60F7 DagMentar_Fail
+L610B Necorp_Loop
+L6135 Necorp_Next
+L613B Necorp_Fail
+L6150 Zxkuqyb_Fail
+L6185 Pontori_Fail
+L61B7 ApparUnem_Set
+L61BB ApparUnem_Dungeon
+L61C5 ApparUnem_Gold
+L61CB ApparUnem_Fail
+L61CE ApparUnem_NotHere
+L6206 LibRec_Fail
+L622D Alcort_Fail
+L6230 Alcort_Refund
+L624C Sequitu_Fail
+L627F Vieda_Surface
+L6282 Vieda_Done
+L6285 Vieda_Fail
+L62BD Surmandum_Ashes
+L62C1 Surmandum_Fail
+L62FA AnjuSermani_Fail

@@ -1,0 +1,42 @@
+; WORLD.ASM (worker x1): labels used only in this module. Scope exodus.
+L20D1 Moons_Moon2
+L20E5 Moons_Gate
+L2125 Moons_DawnGone
+L212E Moons_Print
+L21EA Whirlpool_Done
+L21F4 Whirlpool_Back
+L2228 MonCanEnter        ; AL = 0FFh when creature SI may step on map byte AL at DX
+L2237 MonCanEnter_TrySea
+L2247 MonCanEnter_Test
+L224B MonCanEnter_Land
+L225B MonCanEnter_Free
+L2265 MonCanEnter_Done
+L2268 MonCanEnter_No
+L2286 MonTurn_Toggle
+L228C MonTurn_Clock
+L2299 MonTurn_Move
+L229F MonTurn_Draw
+L22A5 SpawnMonster       ; perhaps put a new creature on the Sosaria map
+L22C1 Spawn_FindSlot
+L22CB Spawn_Done
+L22D2 Spawn_Slot
+L2328 Spawn_Fail
+L232F MonShoot           ; a dragon or pirate fires at the party
+L2369 MonShoot_Step
+L239B MonShoot_Next
+L239F MonShoot_Done
+L23A5 MoveMonsters       ; move every creature one step
+L23B1 MoveMon_Slot
+L23B8 MoveMon_Skip
+L23BB MoveMon_Active
+L23C2 MoveMon_Chase
+L23D3 MoveMon_Town
+L23EE MoveMon_Wander
+L2425 MoveMon_Try
+L2464 MoveMon_Shoot
+L2467 MoveMon_Skip2
+L2469 MoveMon_Go
+L24A5 MoveMon_Next
+L24AB MoveMon_Done
+L24C1 CritErrHandler     ; int 24h: AL = 1, retry
+L24C3 CtrlBreakHandler   ; int 23h: ignore Ctrl-C

@@ -1,0 +1,24 @@
+; TRANSACT.ASM local labels (worker x3). Scope exodus. (The module is the Hand Equipment command.)
+L7AF3 AskDirection_Key
+L7B16 AskDirection_North
+L7B21 AskDirection_South
+L7B2C AskDirection_East
+L7B37 AskDirection_West
+L7B40 AskDirection_Done
+L7B4F AskDirection_Esc
+L7B8E HandEquip_Done
+L7B98 HandEquip_Exit
+L7BAC HandGold_Ask
+L7C03 HandEquip_NotEnough
+L7C09 HandEquip_NoRoom
+L7C1B HandEquip_Fail
+L7C26 HandItems_Ask
+L7C59 HandEquip_BadNum
+L7C7B HandWeapons_Menu
+L7C9F HandArmour_Menu
+L7CA7 HandArms_Pick
+L7CFF HandArms_Quit
+L7D02 HandArms_What
+L7D05 HandArms_NotEnough
+L7D08 HandArms_NoRoom
+L7D0B HandArms_InUse

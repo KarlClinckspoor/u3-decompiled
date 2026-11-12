@@ -1,0 +1,37 @@
+; EXDATA.ASM local labels (worker x5, phase 6). Scope exodus. Shared ones: names/proposed-x5.map.
+L1603 FileBritishUlt     ; the 19 names of MapFileNames
+L160F FileExodusUlt
+L161A FileLcbUlt
+L1622 FileMoonUlt
+L162B FileYewUlt
+L1633 FileMontorEUlt
+L1640 FileMontorWUlt
+L164D FileGreyUlt
+L1656 FileDawnUlt
+L165F FileDevilUlt
+L1669 FileFawnUlt
+L1672 FileDeathUlt
+L167C FileMUlt
+L1682 FileFireUlt
+L168B FileTimeUlt
+L1694 FilePUlt
+L169A FilePerinianUlt
+L16A7 FileMineUlt
+L16B0 FileDardinUlt
+L1707 MsgPass            ; surface command prompts used only by SurfacePrompts
+L170D MsgBoard
+L1713 MsgXit
+L172E MsgEnter
+L1753 MsgLook
+L1759 MsgWhoWillTransact
+L176D MsgUnlock
+L1775 MsgQuitSave
+L17A9 MsgFire
+L17BC MsgDescend
+L17C4 MsgKlimb
+L17F4 MsgAttack
+L1846 MsgStealChest
+L1B93 ReadCommand_Wait
+L1BA8 ReadCommand_Key
+L1BB5 ReadCommand_Find
+L1BC5 ReadCommand_Found

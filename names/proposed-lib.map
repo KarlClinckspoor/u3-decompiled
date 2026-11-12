@@ -1,0 +1,21 @@
+; Proposals for LIB.INC's shared names (public K labels and the X symbols), from worker "lib".
+; OLD NEW ; SCOPE ; what it is
+K0105 RandMonthDay      ; lib ; RandState+2: seeded with the date's DX (DH month, DL day) by ULTIMA/EXODUS start-up
+K0107 RandHourMin       ; lib ; RandState+4: seeded with the time's CX (CH hour, CL minute)
+K0109 RandSecHund       ; lib ; RandState+6: seeded with the time's DX (DH second, DL hundredths)
+K010B RandYear2         ; lib ; RandState+8: the year again (CX); RandState+0 holds it first
+K010D RandMonthDay2     ; lib ; RandState+0Ah: month/day again
+K010F RandHourMin2      ; lib ; RandState+0Ch: hour/minute again
+K0111 RandSecHund2      ; lib ; RandState+0Eh: second/hundredths again (the low end of the 128-bit state)
+K011B BlinkCount        ; lib ; combat: signed countdown of the active member's blink (BlinkPlayer); COMBAT sets 2
+K2820 AnimScroll        ; lib ; scroll the water, force field, lava and moon gate tiles (each on its own count)
+K286F AnimFlags         ; lib ; wave the flags of the castle, towne and frigate tiles
+K28E7 SwapFrames        ; lib ; every 10th call swap tiles 16-30 and 12 with their second frames (64-79)
+K2AD8 AskChoice         ; lib ; menu input: key from the letter list at DI, show its string, Enter accepts
+K2BA0 SaveFile          ; lib ; write CX bytes from BX to the file named at DX (FCB at PSP:5C)
+X0103 CombatPlayer      ; lib ; EXODUS L84E1: the party member whose combat turn it is (0-3)
+X01A9 CombatPartyX      ; lib ; EXODUS StartUp+0A0h: the members' x in combat (4 bytes)
+X01AD CombatPartyY      ; lib ; StartUp+0A4h: their y
+X01B1 CombatUnderTile   ; lib ; StartUp+0A8h: the tile under each member (put back when he dies)
+X01B5 CombatPartyTile   ; lib ; StartUp+0ACh: each member's own tile
+X01BE Location          ; lib ; the party header's location byte (EXODUS Location, BOOTUP PartyLocation, ULTIMA 0105)

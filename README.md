@@ -18,9 +18,9 @@ All three link the same library module (screen, text, keyboard, files, sound), o
 
 The game is hand-written 8086 assembly. There is no compiler output and no protection envelope.
 The sources were generated from the files (`tools/gen.py`, `tools/genlib.py`) and are now
-edited by hand. Every address is a symbol (`Lxxxx` in the programs, `Kxxxx` in the library),
+edited by hand. Every address is a symbol, every label has a name and every routine a comment,
 so code can be added or removed (`tools/shift.py` proves it), and no instruction is written
-as `db`, in modules named for their subsystem. Next: play-test a shifted build, then names (docs/PLAN.md,
+as `db`, in modules named for their subsystem. Next: play-test a shifted build (docs/PLAN.md,
 docs/HANDOFF.md).
 
 ## Toolchain
@@ -61,4 +61,7 @@ neither is set. The analysis tools need `capstone` (on Karl's machine:
 - `tools/shift.py`: relocation test (pad every module, rebuild, check only addresses moved);
   `tools/play.py`: play a build in DOSBox with GOG's settings; `tools/cands.py`,
   `tools/ptrtabs.py`: surveys for addresses still written as numbers
+- `tools/syms.py`, `rename.py`, `lint.py`, `dups.py`: the naming tools (`docs/NAMING.md`)
+- `docs/MAP.md`: modules and routines; `docs/FORMATS.md`: data files; `docs/FINDINGS.md`: what the
+  code revealed (mechanics, bugs, the protection removal)
 - `docs/PLAN.md`: the plan; `docs/HANDOFF.md`: state, findings and next steps

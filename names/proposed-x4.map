@@ -1,0 +1,101 @@
+; Worker x4: PUBLIC labels of DUNMOVE, DUNEVENT, COMBAT, CMDTAB. OLD NEW ; SCOPE ; what it is
+; DUNMOVE
+L8190 CmdGetChest            ; exodus ; Get Chest (surface 190B and dungeon 774A tables): open, trap or gold
+L82C6 DamageParty            ; exodus ; hurt every up player (bomb trap, dungeon trap, cannon ball, ...)
+L8314 EnterDungeon           ; exodus ; no torch, level 0, header, clear view, then DungeonLoop
+L8327 DungeonLoop            ; exodus ; the dungeon's command loop (key, 5 s timeout = Pass, DungeonCmds)
+L838D DungeonTurnEnd         ; exodus ; after a dungeon command: moves, food, torch, view, encounter, event
+L83F7 CmdKlimb               ; exodus ; dungeon K: up a ladder (10h), out from level 0
+L841C CmdDescend             ; exodus ; dungeon D: down a ladder (20h)
+L8438 CmdTurnRight           ; exodus ; dungeon Right arrow
+L8455 CmdTurnLeft            ; exodus ; dungeon Left arrow
+L8472 CmdNotDungeon          ; exodus ; "Not a DNG cmd!" (B A E F L Q T U X S in a dungeon)
+L847D CmdAdvance             ; exodus ; dungeon Up arrow
+L84A9 CmdRetreat             ; exodus ; dungeon Down arrow
+; DUNEVENT
+L941E EventTimeVision        ; exodus ; dungeon cell 1: TIME.IMG, the Time Lord's vision (cell cleared)
+L9457 EventFountain          ; exodus ; dungeon cell 2: FOUNTAIN.IMG, drink (effect by x & 3)
+L94AB FountainCure           ; exodus ; fountain effect 3: status G
+L94BB FountainPoison         ; exodus ; fountain effect 0: status P
+L94DC FountainHeal           ; exodus ; fountain effect 1: hit points = max
+L94EE FountainHurt           ; exodus ; fountain effect 2: 25 damage
+L9517 EventWind              ; exodus ; dungeon cell 3: "Strange wind!" puts the torch out
+L9529 EventTrap              ; exodus ; dungeon cell 4: trap (player 1 may evade, else DamageParty)
+L9550 EventRod               ; exodus ; dungeon cell 5: BRAND.IMG, the red hot rod gives a mark
+L95B3 EventGremlins          ; exodus ; dungeon cell 6: gremlins eat a random player's food
+L960D EventWriting           ; exodus ; dungeon cell 8: misty writing, the level's message (MapText)
+L9630 DrawDungeon            ; exodus ; clear the view and call the DUNGEON.DAT overlay (if a torch burns)
+; COMBAT
+L888B CmdAttack              ; exodus ; surface A: attack the creature in a direction
+L88AA FightCreature          ; exodus ; fight creature slot BX (from CmdAttack and WORLD 23D0)
+L88EA StartCombat            ; exodus ; fight FoeTile: choose and load the CNFLCT map, place everyone
+L8BFC PlayerTurnEnd          ; exodus ; end of a player's combat turn (MainLoop jumps here in a fight)
+L8CBE CCmdNorth              ; exodus ; combat Up arrow
+L8CC9 CCmdSouth              ; exodus ; combat Down arrow
+L8CD4 CCmdEast               ; exodus ; combat Right arrow
+L8CDF CCmdWest               ; exodus ; combat Left arrow
+L8CEA CCmdVolume             ; exodus ; combat V, Alt-S, Alt-V
+L8CF1 CCmdReady              ; exodus ; combat R: ready a weapon
+L8D0B CCmdZtats              ; exodus ; combat Z
+L8D38 CCmdCast               ; exodus ; combat C
+L8D57 CCmdNegate             ; exodus ; combat N: Negate Time (a powder, TimeStop = 10)
+L8D83 CCmdPass               ; exodus ; combat Space
+L8D8D CCmdBad                ; exodus ; "Not usable cmd!" (no turn spent)
+L8D9F CCmdAttack             ; exodus ; combat A: melee, bow/sling or thrown dagger
+L8E7A ShootLine              ; exodus ; missile from DL,DH stepping CL,CH: BX = foe hit or 0FFFFh
+L8F5A DamageFoe              ; exodus ; AL damage to foe BX (= StartUp + slot), DI player gets the Exp
+; CMDTAB
+L84E0 HitTile                ; exodus ; tile flashed where a blow lands: 3Dh (fire) or 3Ch (magic)
+L84E1 CombatPlr              ; exodus ; player whose combat turn it is, 0-3 (same byte as lib X0103, proposed CombatPlayer)
+L84E2 FoeTile                ; exodus ; shape number of this fight's foes (18h Orc ...)
+L84E3 KillSpellUsed          ; exodus ; 0FFh once the orc/skeleton spell (MAGIC 5F9F, 6153) was tried
+L8504 FileConflictA          ; exodus ; "CNFLCT_A.ULT" pirates fought from land
+L8511 FileConflictB          ; exodus ; "CNFLCT_B.ULT" brush
+L851E FileConflictC          ; exodus ; "CNFLCT_C.ULT" dungeon, floor, force field, lava
+L852B FileConflictF          ; exodus ; "CNFLCT_F.ULT" forest
+L8545 FileConflictM          ; exodus ; "CNFLCT_M.ULT" sea monster fought from land
+L8552 FileConflictQ          ; exodus ; "CNFLCT_Q.ULT" sea monster fought from a frigate
+L855F FileConflictR          ; exodus ; "CNFLCT_R.ULT" land monster fought from a frigate
+L856C FileConflictS          ; exodus ; "CNFLCT_S.ULT" pirates fought from a frigate
+L85FD FountainCmds           ; exodus ; the four fountain effects, by x & 3
+L8605 FoeHitPoints           ; exodus ; 16 bytes by FoeTile & 0Fh: range of a foe's hit points (and blows)
+L8615 FoeExp                 ; exodus ; 16 bytes by FoeTile & 0Fh: experience for a kill (BCD)
+L8625 CombatClassLetters     ; exodus ; "FCWTPBLIDA"
+L862F CombatClassTiles       ; exodus ; the tile of each of those classes in a fight
+L8639 MsgMistyWriting ; exodus ; string
+L8649 MsgTimeVision ; exodus ; string
+L86B8 MsgArghTrap ; exodus ; string
+L86C9 MsgEvadedTrap ; exodus ; string
+L86D3 MsgFountain ; exodus ; string
+L86F2 MsgFountainCant ; exodus ; string
+L86FA MsgAhNice ; exodus ; string
+L870C MsgYuckHorrible ; exodus ; string
+L871D MsgHowWonderful ; exodus ; string
+L872D MsgArghBlah ; exodus ; string
+L873F MsgStrangeWind ; exodus ; string
+L874E MsgGremlins ; exodus ; string
+L8759 MsgRedHotRod ; exodus ; string
+L8785 MsgLeftMark ; exodus ; string
+L8796 MsgPlrKilled           ; exodus ; "Killed!!!"
+L87A1 MsgPlrPoisoned ; exodus ; string
+L87AD MsgPlrN                ; exodus ; "Plr "
+L87B2 MsgPlrPilfered ; exodus ; string
+L87BE MsgFoeMissed ; exodus ; string
+L87C8 MsgFoeHit ; exodus ; string
+L87CF MsgThieves ; exodus ; string
+L87D7 MsgPluralE             ; exodus ; "e", runs on into MsgPluralS
+L87D8 MsgPluralS             ; exodus ; "s", two line feeds
+L87DC MsgConflict ; exodus ; string
+L87F1 MsgPlayerBar           ; exodus ; "----Player "
+L87FD MsgBarEnd              ; exodus ; "----"
+L8803 MsgAttackDir           ; exodus ; " Attack" / "Dir-" after the weapon's name
+L8810 MsgAttackMissed ; exodus ; string
+L8819 MsgAttackHit ; exodus ; string
+L8820 MsgKilledExp           ; exodus ; "Killed! Exp.+"
+L882E MsgCombatReady ; exodus ; string
+L883F MsgCombatCast ; exodus ; string
+L884C MsgCombatNegate ; exodus ; string
+L885A MsgNotUsableCmd ; exodus ; string
+L886B MsgCombatZtats ; exodus ; string
+L8872 MsgVictory ; exodus ; string
+L8885 MsgCombatPass ; exodus ; string

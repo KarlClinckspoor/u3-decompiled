@@ -1,0 +1,115 @@
+; Proposals of worker bu: labels defined in my files that other modules use. OLD NEW ; SCOPE ; what
+; --- ULTIMA (UDATA <-> INTRO) ---
+L0000 PspInt20 ; ultima ; PSP:0000, the int 20h there: jumped to when BOOTUP.BIN cannot be opened (exit)
+L005C PspFcb ; ultima ; PSP:005C, the default FCB used to open and read BOOTUP.BIN
+L0068 FcbCurBlock ; ultima ; FCB+0Ch, current block (set 0)
+L006A FcbRecSize ; ultima ; FCB+0Eh, record size (set to the file size: one read loads it all)
+L006C FcbFileSize ; ultima ; FCB+10h, file size (low word)
+L007C FcbCurRec ; ultima ; FCB+20h, current record (set 0)
+L00FE ChainInt21 ; ultima ; PSP:00FE, where "int 21h" (CD 21) is planted before the chain load; runs into 0100
+L0105 PartyLocation ; ultima ; 0105, the library's X01BE: set to 1 so KeyReady does not animate tiles
+L4115 VideoSeg ; ultima ; dw 0B800h, the CGA segment the intro draws into
+L5A2D DissolveRand ; ultima ; dw 9DE3h, pseudo-random state of CopyPicture's dissolve
+L5A57 FileBootupBin ; ultima ; "BOOTUP.BIN"
+L5CBA MsgNoGraphics ; ultima ; "Unable to access graphics display."
+L5CE0 StartUp ; ultima ; INTRO's entry (from the jmp at 0100)
+; --- BOOTUP (BDATA, TITLE, ORGANIZE, CREATE) ---
+L005C PspFcb ; bootup ; PSP:005C, default FCB used to open and read EXODUS.BIN
+L0068 FcbCurBlock ; bootup ; FCB+0Ch, current block (set 0)
+L006A FcbRecSize ; bootup ; FCB+0Eh, record size (set to the file size)
+L006C FcbFileSize ; bootup ; FCB+10h, file size (low word)
+L007C FcbCurRec ; bootup ; FCB+20h, current record (set 0)
+L00FA ChainInt21 ; bootup ; PSP:00FA, planted "int 21h" (CD 21) of the chain load
+L00FC ChainJmp ; bootup ; PSP:00FC, planted FF 26 = "jmp word ptr [...]"
+L00FE ChainJmpAddr ; bootup ; PSP:00FE, its operand 1328h: EXODUS's entry vector
+L01B9 DiskCheckResult ; bootup ; 0FFh: "(Strange Disk)"; only set by the disabled AskScenarioDisk, so always 0
+L01C3 PartySize ; bootup ; PARTY.ULT header +07: number of characters in the party (0-4)
+L01C4 PartyX ; bootup ; header +08: start x (Form sets 2Ch)
+L01C5 PartyY ; bootup ; header +09: start y (Form sets 14h)
+L01C6 PartyRosterNums ; bootup ; header +0A-0D: roster numbers (1-20) of the party members (+0E-11 follow)
+L01CE PartyChars ; bootup ; PARTY.ULT +12h: the four character records (100h bytes)
+L0C46 FileExodusBin ; bootup ; "EXODUS.BIN"
+L0CA9 MsgUltimaIII ; bootup ; 10h "Ultima III" 11h (10h/11h: bracket characters of CHARSET)
+L0CB6 MsgPressSpace ; bootup ; 10h "Press <Space>" 11h
+L0CC6 MsgCopyright ; bootup ; "(C)-1983 By James R. Van Artsdalen"
+L0CE9 MsgLordBritish ; bootup ; "and Lord British"
+L0CFA MsgEntry ; bootup ; "Entry#"
+L0D01 MsgOnly1To20 ; bootup ; "(1-20 Only!)"
+L0D0E MsgFromDepths ; bootup ; "From the depths of hell..."
+L0D29 MsgVengeance ; bootup ; "...he comes for VENGEANCE!"
+L0D5D StatusKeys ; bootup ; "GPDP" (sic, for GPDA): status letters of StatusNames; A is found as "not found" = the last
+L0E2F MsgOptionSpace ; bootup ; "Option: " (main menu)
+L0E38 MsgMenuReturn ; bootup ; "Return to the View"
+L0E4B MsgMenuOrganize ; bootup ; "Organize a Party"
+L0E5C MsgMenuJourney ; bootup ; "Journey Onward"
+L0E83 MainMenuKeys ; bootup ; "ROJ",1Bh: keys of MainMenu
+L0E8F MsgPartyOrganization ; bootup ; "Party Organization"
+L0EA2 MsgOption ; bootup ; "Option:" (party menu)
+L0EAA MsgMenuExamine ; bootup ; "Examine the Register"
+L0EBF MsgMenuCreate ; bootup ; "Create a Character"
+L0ED2 MsgMenuForm ; bootup ; "Form the Party"
+L0EE1 MsgMenuDisperse ; bootup ; "Disperse the Party"
+L0EF4 MsgMenuTerminate ; bootup ; "Terminate a Character"
+L0F0A MsgMenuMain ; bootup ; "Main Menu"
+L0F14 MsgMenuLook ; bootup ; "Look at a Character"
+L0F59 OrganizeKeys ; bootup ; "ECFDTMQL",1Bh: keys of OrganizeMenu
+L0F74 MsgRegister ; bootup ; "Register" (title of ExamineRegister)
+L0F7D MsgTerminateTitle ; bootup ; "Terminate!"
+L0F88 MsgNoOneThere ; bootup ; "(No one there)"
+L0F97 MsgWithParty ; bootup ; "(With a party)"
+L0FA6 MsgTerminated ; bootup ; "(Terminated)"
+L0FB3 MsgCreateTitle ; bootup ; "Create"
+L0FBA MsgNotEmpty ; bootup ; "(Not Empty!)"
+L0FC7 MsgPoints50 ; bootup ; "Points:50"
+L0FD1 MsgNameColon ; bootup ; "Name:"
+L0FD7 MsgSexColon ; bootup ; " Sex:"
+L0FDD MsgRaceColon ; bootup ; "Race:"
+L0FE3 MsgTypeColon ; bootup ; "Type:" (the class)
+L0FE9 MsgStrengthDots ; bootup ; "Strength........"
+L0FFA MsgDexterityDots ; bootup ; "Dexterity......."
+L100B MsgIntelligenceDots ; bootup ; "Intelligence...."
+L101C MsgWisdomDots ; bootup ; "Wisdom.........."
+L102D MsgOK ; bootup ; "O.K.?"
+L1045 SexKeys ; bootup ; "MFO"
+L106B RaceKeys ; bootup ; "HEDBF"
+L10D0 ClassKeys ; bootup ; "FCWTPLBDIAR"
+L10F8 YesNoKeys ; bootup ; "YN"
+L10FA YesNoNames ; bootup ; two pointers (written as db) to "Yes" (10F1) and "No" (10F5)
+L10FE MsgLookTitle ; bootup ; "Look at a Character" (title of LookAtChar)
+L1112 MsgStatusColon ; bootup ; "Status:"
+L111A MsgWeaponColon ; bootup ; "Weapon:"
+L1122 MsgArmourColon ; bootup ; "Armour:"
+L112A MsgStrengthColon ; bootup ; "Strength:"
+L1134 MsgDexterityColon ; bootup ; "Dexterity:"
+L113F MsgIntelligenceColon ; bootup ; "Intelligence:"
+L114D MsgWisdomColon ; bootup ; "Wisdom:"
+L1155 MsgHitPointsColon ; bootup ; "Hit points:"
+L1161 MsgExperienceColon ; bootup ; "Experience:"
+L116D MsgFoodColon ; bootup ; "Food:"
+L1173 MsgGoldColon ; bootup ; "Gold:"
+L1179 MsgPlayerDash ; bootup ; "Player-"
+L1181 MsgFormTitle ; bootup ; "Form the Party" (title of FormParty)
+L1190 MsgPartyInUse ; bootup ; "(Party in Use)"
+L119F MsgAlreadySelected ; bootup ; "Already Selected"
+L11B0 MsgFormed ; bootup ; "(Formed)"
+L11B9 MsgNoActivePlayers ; bootup ; "(No Active Players)"
+L11CD MsgStrangeDisk ; bootup ; "(Strange Disk)"
+L11DC MsgNoParty ; bootup ; "(No Party)"
+L11E7 MsgDispersed ; bootup ; "(Dispersed!)"
+L11F4 MsgDisperseTitle ; bootup ; "Disperse the Party" (title of DisperseParty)
+L1207 CritErrRetry ; bootup ; int 24h handler: AL = 1 (retry), then the iret at 1209 (TITLE)
+L120A StartUp ; bootup ; entry (from the jmp at 0100): load the files, draw the title, run TitleLoop
+L132B DrawMenuFrame ; bootup ; frame of the menu area (text rows 10-23); DX = screen offset of its bottom line
+L1385 ClearMenu ; bootup ; clear the inside of the frame (BIOS scroll, rows 0Bh-16h, columns 1-26h)
+L14C9 RunOrganizeMenu ; bootup ; the "Party Organization" menu until M, Q or Esc
+L194B ExamineRegister ; bootup ; list the 20 roster slots
+L19DB TerminateChar ; bootup ; "Terminate!": erase a roster slot (not one in the party)
+L1A6D CreateChar ; bootup ; "Create": enter a new character into an empty roster slot
+L1CE7 WaitSpace ; bootup ; print "Press <Space>" and wait for the space bar
+L1D07 PartyToRoster ; bootup ; copy the party's records back into their roster slots
+L1D34 RosterToParty ; bootup ; copy the members' roster records into PartyChars
+L1D61 RosterRecord ; bootup ; BX = address of roster record number BL (1-20)
+L1D71 AnimateDemo ; bootup ; animate the tile graphics and redraw the DEMO.ULT block
+L1DA8 AnyAlive ; bootup ; AH = 0FFh if one of the four PartyChars is G or P, else 0
+L1DC6 AskScenarioDisk ; bootup ; disabled: a ret patched over its first byte; the rest (1DC7-1E0B) is dead
+L1E0C AskNumber ; bootup ; read a two-digit number at the cursor, retry on error; AL = BCD, AH = binary

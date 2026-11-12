@@ -1,0 +1,146 @@
+; LIB.INC's internal labels (scope lib, used only inside LIB.INC). Shared ones: names/proposed-lib.map.
+K0113 WaterCount        ; calls until the water tile scrolls again (3)
+K0114 LavaCount         ; (2)
+K0115 FieldCount        ; force field (3)
+K0116 GateCount         ; moon gate (2)
+K0117 CastleFlagCount   ; castle flag (4)
+K0118 TowneFlagCount    ; towne flag (3)
+K0119 ShipFlagCount     ; frigate flag (2)
+K011C FrameCount        ; calls until the figures switch frames (10)
+K011D MsgCalmWind
+K012A MsgNorthWind
+K0137 MsgSouthWind
+K0144 MsgEastWind
+K0151 MsgWestWind
+K015E MsgUnableRead
+K0173 MsgUnableWrite
+K0189 MsgWrongDiskette
+K0199 MsgBlankLine      ; 15 spaces: clears "Wrong Diskette!"
+K04A9 WhirlpoolGfx      ; TileGfx+300h: tile 12
+K05A9 FigureGfx         ; TileGfx+400h: tiles 16-63 (16-30 have a second frame)
+K11A9 AltFrameGfx       ; TileGfx+1000h: tiles 64-79, the second frames of 16-30 and 12
+K25B2 PrintStrLen_Loop
+K25BD PrintStrLen_Done
+K25E8 PutChar_Done
+K25EA PutChar_Back
+K26FB DrawTileBlock_Row
+K26FD DrawTileBlock_Tile
+K2715 DrawTileBlock_Even
+K2723 DrawTileBlock_Odd
+K2772 IdleNop           ; a bare ret ReadKey calls while it waits
+K277A ReadLine_Key
+K27A2 ReadLine_Enter
+K27A9 ReadLine_Back
+K27BA ReadLine_Beep
+K27D4 Random_Add
+K27E3 Random_Inc
+K27EC Random_Mod
+K27F4 Random_Done
+K27FA ScrollTile        ; scroll a tile down one pixel line (wrapping)
+K280A ScrollTile_Loop
+K2838 AnimScroll_Lava
+K2849 AnimScroll_Field
+K285A AnimScroll_Gate
+K286B AnimScroll_Done
+K2898 AnimFlags_Towne
+K28BD AnimFlags_Ship
+K28E2 AnimFlags_Done
+K2907 AnimFrames_Swap
+K2918 AnimFrames_Whirl
+K2922 AnimFrames_Done
+K2928 BlinkPlayer       ; combat: blink the active member's tile
+K2965 BlinkPlayer_Show
+K2983 BlinkPlayer_Done
+K2987 Animate           ; per key poll: wind, tile animation, blink, redraw the view
+K2999 Animate_NoWind
+K29BA KeyReady_Done
+K29C6 ReadKey_Cursor
+K29CE ReadKey_Poll
+K29DA ReadKey_Erase
+K29DF ReadKey_Got
+K2A0B ReadKey_Bios
+K2A48 PrintDigit_Put
+K2A57 ParseNumber_Skip
+K2A64 ParseNumber_First
+K2A7E ParseNumber_Start
+K2A84 ParseNumber_Loop
+K2AA2 ParseNumber_Digit
+K2AB2 ParseNumber_Add
+K2ACD ParseNumber_Hex
+K2AD2 ParseNumber_Done
+K2AEA AskChoice_Key
+K2AFB AskChoice_Find
+K2B07 AskChoice_Beep
+K2B0E AskChoice_Show
+K2B19 AskChoice_Confirm
+K2B32 AskChoice_Ok
+K2B33 AskChoice_Done
+K2B3B AskChoice_Undo
+K2B44 AskChoice_Erase
+K2B49 AskChoice_Again
+K2B5F ReadNumber_Retry
+K2B91 ReadNumber_Done
+K2BDF SaveFile_Fail
+K2BEE SaveFile_Hang
+K2C32 LoadFile_Fail
+K2C41 LoadFile_Hang
+K2C43 OpenFile          ; open the FCB at DI, "Wrong Diskette!" until it opens
+K2C48 OpenFile_Try
+K2C62 OpenFile_Wrong
+K2C74 OpenFile_Wait
+K2C93 SignStep_Sign
+K2C9D SignStep_Restore
+K2CA8 SignStep_Done
+K2CE0 WindMsgTbl
+K2CF9 WindUpdate_Pick
+K2D0C WindUpdate_Set
+K2D10 WindUpdate_Print
+K2D77 Sound_Done
+K2D79 SndBuzz           ; 0FFh
+K2D83 SndBuzz_Loop
+K2D8A SndBuzz_Delay
+K2D8D SndBuzz_Wait
+K2D9B SndBeep           ; 0FEh: the error beep
+K2DA5 SndBeep_Loop
+K2DAC SndBeep_Delay
+K2DAF SndBeep_Wait
+K2DBD SndWarble         ; 0FDh
+K2DC9 SndWarble_Step
+K2DCB SndWarble_Cycle
+K2DCD SndWarble_Hi
+K2DD7 SndWarble_Lo
+K2DEC SndWarble_Step2
+K2DEE SndWarble_Cycle2
+K2DF0 SndWarble_Hi2
+K2DFA SndWarble_Lo2
+K2E16 SndNoise          ; 0FCh
+K2E20 SndNoise_Loop
+K2E27 SndNoise_Delay
+K2E2A SndNoise_Wait
+K2E3F SndFall           ; 0FBh
+K2E47 SndFall_Loop
+K2E4D SndFall_Wait
+K2E5A SndRise           ; 0FAh
+K2E65 SndRise_Loop
+K2E67 SndRise_Wait
+K2E78 SndWarbleE0       ; 0F9h
+K2E82 SndNoiseRise      ; 0F8h
+K2E8F SndNoiseRise_Loop
+K2E94 SndNoiseRise_Wait
+K2EA8 SndHit            ; 0F7h
+K2EB2 SndTick           ; 0F6h
+K2EBC NoiseBurst
+K2EC6 NoiseBurst_Loop
+K2ECB NoiseBurst_Wait
+K2EDE SndTrill          ; 0F5h
+K2EEF SndTrill_Burst
+K2EF6 SndTrill_Loop
+K2EF8 SndTrill_Wait
+K2F0E SndSlowFall       ; 0F4h
+K2F17 SndSlowFall_Step
+K2F19 SndSlowFall_Loop
+K2F1B SndSlowFall_Wait
+; second pass: K28E7 is proposed as SwapFrames (ULTIMA has its own AnimFrames)
+AnimFrames_Swap SwapFrames_Swap
+AnimFrames_Whirl SwapFrames_Whirl
+AnimFrames_Done SwapFrames_Done

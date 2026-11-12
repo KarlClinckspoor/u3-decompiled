@@ -1,0 +1,45 @@
+; VIEW.ASM (worker x1): labels used only in this module. Scope exodus.
+L25AE GemMap_Cell        ; ShowGemMap: one map cell
+L25D6 GemMap_Grass
+L25E2 GemMap_Brush
+L25EA GemMap_Forest
+L25F2 GemMap_Floor
+L2600 GemMap_Solid       ; mountains, wall: all four pixels
+L260E GemMap_Other
+L261A GemMap_Next
+L2623 GemMap_NextRow
+L262C GemMap_Party
+L263B GemMap_Blink
+L2667 GemMap_Key
+L2675 XorGemPixel        ; XOR one 2-bit pixel of the gem map
+L26BC PrintMsg_Next
+L26CC PrintMsg_Put
+L26CF PrintMsg_Advance
+L26D3 PrintMsg_NewLine
+L26DA PrintMsg_Done
+L26E8 PrintMsg_LastCol
+L26ED PrintMsg_Wrap
+L2729 DrawFrame_Left
+L2738 DrawFrame_Divider
+L2747 DrawFrame_Top
+L2755 DrawFrame_Bottom
+L2763 DrawFrame_Line0
+L2771 DrawFrame_Line4
+L277F DrawFrame_Line8
+L278D DrawFrame_Line12
+L279B DrawFrame_Line16
+L27A9 DrawFrame_Right
+L27B7 SightStep          ; view column/row 0-10 -> step towards the centre (+1, 0, -1)
+L27C2 SightRowStep       ; the same step in view cells (+11, 0, -11)
+L27E6 BuildView_Cell
+L27FE BuildView_Outside
+L2802 BuildView_Wrap
+L280F BuildView_Read
+L2821 BuildView_Store
+L2861 BuildView_Sight
+L2869 BuildView_SightStep
+L28A1 BuildView_Hidden
+L28A8 BuildView_SightNext
+L291D DunMap_Cell
+L294E DunMap_Put
+L2973 DunMap_Blink

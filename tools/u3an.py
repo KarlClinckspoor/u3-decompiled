@@ -78,8 +78,8 @@ TARGETS = {
                             0x62FD: 'SHRINE',      # stats header, shrines, leaving a dungeon
                             0x6B91: 'PARTY',       # names, status lines, hit points, food, poison
                             0x7458: 'ACTIONS',     # Word, Cmd, Insert, Dig, Search, Bribe, Pray
-                            0x7AEA: 'TRANSACT',    # the Transact command and its menus
-                            0x7D1A: 'EQUIP',       # ready weapon and armour, talk, gold
+                            0x7AEA: 'HAND',        # the H command (Hand Equipment) and its menus; AskDirection
+                            0x7D1A: 'EQUIP',       # error exits, ready weapon, wear armour, Transact (T: talk, shops), gold
                             0x8190: 'DUNMOVE',     # dungeon: traps, darkness, turning, advancing
                             0x84DB: 'CMDTAB',      # tables of the combat commands
                             0x888B: 'COMBAT',      # fights

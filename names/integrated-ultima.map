@@ -1,0 +1,12 @@
+L0000 PspInt20 ; proposed-bu.map:3 ; PSP:0000, the int 20h there: jumped to when BOOTUP.BIN cannot be opened (exit)
+L005C PspFcb ; proposed-bu.map:4 ; PSP:005C, the default FCB used to open and read BOOTUP.BIN
+L0068 FcbCurBlock ; proposed-bu.map:5 ; FCB+0Ch, current block (set 0)
+L006A FcbRecSize ; proposed-bu.map:6 ; FCB+0Eh, record size (set to the file size: one read loads it all)
+L006C FcbFileSize ; proposed-bu.map:7 ; FCB+10h, file size (low word)
+L007C FcbCurRec ; proposed-bu.map:8 ; FCB+20h, current record (set 0)
+L00FE ChainInt21 ; proposed-bu.map:9 ; PSP:00FE, where "int 21h" (CD 21) is planted before the chain load
+L4115 VideoSeg ; proposed-bu.map:11 ; dw 0B800h, the CGA segment the intro draws into
+L5A2D DissolveRand ; proposed-bu.map:12 ; dw 9DE3h, pseudo-random state of CopyPicture's dissolve
+L5A57 FileBootupBin ; proposed-bu.map:13 ; "BOOTUP.BIN"
+L5CBA MsgNoGraphics ; proposed-bu.map:14 ; "Unable to access graphics display."
+L5CE0 StartUp ; proposed-bu.map:15 ; INTRO's entry (from the jmp at 0100)

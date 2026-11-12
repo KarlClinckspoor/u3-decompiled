@@ -1,0 +1,9 @@
+; ENDING.ASM local labels (worker x5, phase 6). Scope exodus. Shared ones: names/proposed-x5.map.
+LA47E PrintMoves_Loop
+LA491 XorMapWindow           ; XOR the map window with the pattern in AX
+LA4D2 EndGame_Flash
+LA556 EndGame_WaitKey
+LA57D AskYesNo_Done
+LA5AB PayGold_Done
+LA4A0 XorMapWindow_Line
+LA4A3 XorMapWindow_Word

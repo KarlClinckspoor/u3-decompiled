@@ -1,0 +1,98 @@
+; Proposals of worker x3 (PARTY, ACTIONS, TRANSACT, EQUIP): public labels defined in these files.
+; OLD NEW ; SCOPE ; what it is
+; --- PARTY
+L6B91 SaveGame ; exodus ; write PARTY.ULT (and SOSARIA.ULT on the surface), Location saved as 0
+L6BC9 HurtPlayer ; exodus ; subtract BCD AL from the hit points at BX; dies at <0; AL=0FFh if died
+L6C29 CheckAllOut ; exodus ; nobody Good/Poisoned: "All Players Out!", save, Hang
+L6D58 DrawPlayerNums ; exodus ; the four player numbers (10h n 11h) beside the status boxes
+L6DC1 ShowZtats ; exodus ; the Ztats screen of player DH ('1'-'4'), record DI
+L6FB1 WaitMore ; exodus ; wait for Enter/Down/Space (AL=0) or Esc (AL=0FFh)
+L6FDF PartyUpkeep ; exodus ; once a turn: magic regen, food, poison, hit point regen
+L7176 FlashPlayer ; exodus ; invert the status box of player AL (0-3)
+L71C1 FlashView ; exodus ; invert the map window
+L71ED InvertPlayerNum ; exodus ; invert the number of player AL (1-4): marks whose turn it is
+L7233 AgainstWind ; exodus ; ZF clear when the frigate cannot sail in direction AL
+L7252 Hang ; exodus ; jmp $: the game stops (all players out, end of the game)
+L7254 CheckTerrain ; exodus ; ZF set when the party may enter shape AL (force field, lava effects)
+L7347 MoveWhirlpool ; exodus ; move the whirlpool one step (every 4th call, on Sosaria)
+L740A UpcaseBuf ; exodus ; upper-case the CX characters at DI
+L7423 MatchWord ; exodus ; AL=0FFh if the CX characters at DI spell the space-ended word at SI
+; --- ACTIONS
+L7458 CmdYell ; exodus ; Y: Yell a word; EVOCARE with the Mark of the Snake crosses the serpent
+L74D5 CmdOther ; exodus ; O: Other command: a typed word dispatched by the table at 6540/654C
+L7534 CmdDig ; exodus ; Other DIG: the exotic weapon (21h,3) or armour (13h,2Ch)
+L7580 CmdPray ; exodus ; Other PRAY: the hint "Yell 'Evocare'" at one place in one town
+L75A9 CmdBribe ; exodus ; Other BRIBE: 100 gold removes a guard
+L7607 CmdSearch ; exodus ; Other SEARCH: at a shrine (Ambrosia) gives a card
+L762F CmdInsert ; exodus ; Other INSERT: put the four cards into Exodus
+L76F0 FacingDxTbl ; exodus ; dungeon step x by Facing 0-3 (0,1,0,-1)
+L76F4 FacingDyTbl ; exodus ; dungeon step y by Facing 0-3 (-1,0,1,0)
+L76F8 DungeonEventCmds ; exodus ; handlers of the special dungeon cells 1-8 (7 unused)
+L77CE ShopCmds ; exodus ; the 8 town services by player y & 7: Pub ... Equine Emporium
+L77DE MsgItsDark ; exodus ; "It's dark!"
+L7839 MsgHandMenu ; exodus ; "F, G, E, W, A:"
+L7849 MsgHandEquipMenu ; exodus ; "G, K, P, T:"
+L7857 MsgHowMuch ; exodus ; "How much? "
+L7863 MsgNotEnough ; exodus ; "Not enough!"
+L7870 MsgDone ; exodus ; "Done!"
+L7877 MsgHowMany ; exodus ; "How many? "
+L7883 MsgInUse ; exodus ; "In use!"
+L78AF MsgQuit ; exodus ; "Quit" (menus' Q and Esc entries)
+L78B4 HandMenuKeys ; exodus ; F G E W A Q Esc
+L78BB HandMenuStrs ; exodus ; strings of HandMenuKeys
+L78E0 HandEquipKeys ; exodus ; G K P T Q Esc
+L78E6 HandEquipStrs ; exodus ; Gems Keys Powder Torch Quit Quit
+L78F2 WeaponMenuKeys ; exodus ; Q Esc A-P
+L7904 WeaponMenuStrs ; exodus ; Quit Quit Hand ... Exotic
+L7928 ArmourMenuKeys ; exodus ; Q Esc A-H
+L7932 ArmourMenuStrs ; exodus ; Quit Quit Skin ... Exotic
+L7946 HandCmdKeys ; exodus ; G F E W A Q Esc: the order of HandCmds
+L794D HandCmds ; exodus ; Hand Equipment handlers: gold, food, equipment, weapons, armour, quit x2
+L795B TxtNoneLeft ; exodus ; "None Left!" (MsgNoneLeft prints it)
+L7967 TxtWhat ; exodus ; "<-What?", then an unused "No One There"
+L797E TxtInvalidMove ; exodus ; "Invalid Move!"
+L798D TxtNotHere ; exodus ; "Not Here!"
+L7998 TxtIncapacitated ; exodus ; "Incapacitated!"
+L79A8 MsgNoMoreRoom ; exodus ; "No more room!"
+L79B7 MsgNoneOwned ; exodus ; "None owned"
+L79C3 MsgWeaponPrompt ; exodus ; "Weapon:"
+L79CC MsgNotAllowed ; exodus ; "Not allowed!"
+L79DB MsgReadied ; exodus ; "Readied!"
+L79E6 MsgArmourPrompt ; exodus ; "Armour:"
+L79EF MaxWeaponTbl ; exodus ; per class (ClassLetters order): first weapon key not allowed
+L79FA MaxArmourTbl ; exodus ; per class: first armour key not allowed
+L7A05 ClassLetters ; exodus ; F C W T P B L I D A R
+L7A10 MsgTalkDirect ; exodus ; "Direct? " (Transact)
+L7A19 MsgGoodDay ; exodus ; "Good day!"
+L7A26 MsgWelcomeChild ; exodus ; "Welcome my child"
+L7A39 MsgNoMore ; exodus ; "No more!"
+L7A43 MsgSeekKings ; exodus ; "Seek ye the Mark of Kings!"
+L7A60 MsgThouGreater ; exodus ; "Thou art greater"
+L7A73 MsgExpMore ; exodus ; "Experience more!"
+L7A86 MsgEatDeath ; exodus ; "Eat Death Scum!"
+L7A99 MsgGoldPlus ; exodus ; "Gold+"
+L7A9F MsgAndA ; exodus ; "and a "
+L7AA6 MsgAnd ; exodus ; "and "
+L7AAB MsgTrapEvaded ; exodus ; "Trap evaded!"
+L7AB9 MsgAcidTrap ; exodus ; "Acid trap!"
+L7AC5 MsgPoisonTrap ; exodus ; "Poison trap!"
+L7AD3 MsgBombTrap ; exodus ; "Bomb trap!"
+L7ADF MsgGasTrap ; exodus ; "Gas trap!"
+; --- TRANSACT (really the H command, Hand Equipment)
+L7AEA AskDirection ; exodus ; arrow key: BX = PlayerXY + step (wrapped), DX = step, ZF on Esc
+L7B54 HandEquip ; exodus ; the Hand Equipment menu, from player SI to player DI
+L7B95 HandQuit ; exodus ; menu exit (Q/Esc) of HandEquip
+L7BA4 HandGold ; exodus ; hand gold (record 23h)
+L7BA9 HandFood ; exodus ; hand food (record 21h)
+L7BD0 HandItems ; exodus ; hand gems, keys, powders or torches
+L7C61 HandWeapons ; exodus ; hand weapons
+L7C85 HandArmour ; exodus ; hand armour
+; --- EQUIP
+L7D1A ReadAmount ; exodus ; read a number of up to 4 digits at the cursor: AX (BCD)
+L7D74 TransferBcd ; exodus ; move AX from CX to DX (BCD); AX = 0 ok, 1 not enough, 2 overflow
+L7E33 CmdReady ; exodus ; R: Ready for #
+L7E48 ReadyWeapon ; exodus ; the weapon menu for the player at BX
+L7EE4 CmdWear ; exodus ; W: Wear for #
+L7F96 FindMonster ; exodus ; BX = creature slot at DL,DH or 0FFFFh
+L7FC6 CmdTransact ; exodus ; T: Transact: talk to a creature or buy at a counter
+L80D9 ChestLoot ; exodus ; "Gold+nn" to the player at DI, and sometimes a weapon or armour

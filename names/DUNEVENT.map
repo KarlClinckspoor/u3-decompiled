@@ -1,0 +1,10 @@
+; DUNEVENT (worker x4): local labels. Scope exodus.
+L9441 TimeVision_Wait
+L9470 Fountain_Ask
+L9492 Fountain_Cant
+L94A0 Fountain_Done
+L954A Trap_Hit
+L954D Trap_Done
+L95A8 Rod_Done
+L9602 Gremlins_Done
+L964B DrawDungeon_Done

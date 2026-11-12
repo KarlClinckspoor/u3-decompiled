@@ -1,0 +1,2 @@
+; CMDTAB (worker x4): local labels. Scope exodus.
+L84DB CmdTab_Unused         ; 5 zero bytes, nothing reads them

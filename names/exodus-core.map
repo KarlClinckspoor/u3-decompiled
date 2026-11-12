@@ -3,12 +3,12 @@ L0100 MapBuf           ; 0100-1327: the map file (SOSARIA.ULT ...); in a dungeon
 L0900 DungeonMap       ; the dungeon file's eight 16 x 16 levels (in a dungeon)
 L1100 MapText          ; town speeches / dungeon messages: offset table + strings
 L1280 MonTile          ; creature slots (32 each): tile
-L12A0 MonMove          ; movement code
+L12A0 MonMove          ; (wrong: the map byte under the creature, renamed MonUnder)
 L12C0 MonX
 L12E0 MonY
 L1300 MonTalk          ; talk code (speech number | kind bits; 0C0h = does not talk)
-L1320 GateState        ; moon gate: 3 while open (WORLD)
-L1321 GatePos
+L1320 GateState        ; (wrong: the whirlpool x, renamed WhirlpoolX in phase 6)
+L1321 GatePos          ; (wrong: the whirlpool y, renamed WhirlpoolY)
 L1324 Moon1Phase       ; 0-7
 L1325 Moon2Phase
 L1326 Moon1Count       ; steps to the next phase (12)
@@ -74,4 +74,4 @@ L85BB CombatCmds
 L84E4 FileBrandImg
 L84EE FileTimeImg
 L84F7 FileFountainImg
-L8538 FileConflict     ; "CNFLCT_x.ULT", the letter patched per terrain
+L8538 FileConflict     ; "CNFLCT_G.ULT" (COMBAT picks one of nine name pointers)

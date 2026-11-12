@@ -1,0 +1,61 @@
+; DUNGEON.ASM names (worker dg). Scope dungeon.
+L0107 SlotDXTbl         ; x offset of each of the 32 view slots, facing north
+L0127 SlotDYTbl         ; y offset of each view slot (negative = ahead), facing north
+L0147 LadderTbl         ; 21 x 8 bytes: ladder rails and rungs per near slot
+L01F3 ChestTbl          ; 21 x 4 bytes: chest box per near slot
+L0247 FaceTbl           ; 64 x 8 bytes: wall faces (0-31) and door shapes (32-63)
+L0466 DrawView_Left0
+L048E DrawView_Right0
+L04B6 DrawView_Ahead1
+L04D7 DrawView_Right1
+L04F1 DrawView_Ahead2
+L050B DrawView_Right2
+L051E DrawView_Ahead3
+L052F DrawView_Done
+L0533 DrawSlot
+L054B DrawSlot_Turn
+L0553 DrawSlot_Cell
+L0574 DrawSlot_TryDown
+L057E DrawSlot_TryChest
+L0586 DrawSlot_Open
+L058C DrawSlot_Wall
+L0599 DrawSlot_Door
+L05AD DrawSlot_InDoor
+L05B1 DrawSlot_Ret
+L05B5 DrawFace
+L05F5 DrawFace_Loop
+L0607 DrawFace_Bot1
+L0613 DrawFace_Half2
+L0623 DrawFace_Bot2
+L062F DrawFace_Next
+L0633 DrawFace_Done
+L063B DrawLadder
+L0647 DrawLadder_Go
+L0671 DrawLadder_LRail
+L0681 DrawLadder_Right
+L0697 DrawLadder_RRail
+L06A7 DrawLadder_Rungs
+L06B8 DrawLadder_Rung1
+L06CB DrawLadder_Rung2
+L06D0 DrawLadder_Done
+L06D5 DrawLine
+L06E9 DrawLine_Right
+L06ED DrawLine_DY
+L06FD DrawLine_Down
+L0701 DrawLine_Pick
+L0711 DrawLine_XLoop
+L0721 DrawLine_XStep
+L072D DrawLine_Steep
+L0737 DrawLine_YLoop
+L0747 DrawLine_YStep
+L0751 DrawLine_Done
+L0758 DrawChest
+L077C DrawChest_Loop
+L0785 DrawChest_Done
+L0789 DrawVLine
+L07BD DrawVLine_Set
+L07CA DrawVLine_Erase
+L07F3 DrawVLine_Clear
+L07FE DrawVLine_Done
+L0805 PlotPixel
+L0833 GetCell
