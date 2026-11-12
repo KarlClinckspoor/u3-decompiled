@@ -3,29 +3,29 @@
 ; CREATE: register, terminate, create a character, then load EXODUS.BIN (194B-1E34).
 CODE SEGMENT BYTE PUBLIC
 ASSUME CS:CODE, DS:CODE, ES:CODE, SS:CODE
-EXTRN K0100:BYTE
-EXTRN K01A9:BYTE
-EXTRN K25C7:NEAR
-EXTRN K25CC:NEAR
-EXTRN K26E8:NEAR
-EXTRN K2773:NEAR
+EXTRN CursorCol:BYTE
+EXTRN TileGfx:BYTE
+EXTRN SwapCursor:NEAR
+EXTRN PutChar:NEAR
+EXTRN DrawTileBlock:NEAR
+EXTRN ReadLine:NEAR
 EXTRN K2820:NEAR
 EXTRN K286F:NEAR
 EXTRN K28E7:NEAR
-EXTRN K29AA:NEAR
-EXTRN K29BD:NEAR
-EXTRN K2A23:NEAR
+EXTRN KeyReady:NEAR
+EXTRN ReadKey:NEAR
+EXTRN PrintBcdByte:NEAR
 EXTRN K2AD8:NEAR
-EXTRN K2B4F:NEAR
+EXTRN ReadNumber:NEAR
 EXTRN K2BA0:NEAR
-EXTRN K2C7E:NEAR
-EXTRN K2D59:NEAR
+EXTRN PrintAt:NEAR
+EXTRN Sound:NEAR
 EXTRN L01C3:BYTE
 EXTRN L01C6:BYTE
 EXTRN L01CE:BYTE
-EXTRN L02CE:BYTE
-EXTRN L07D2:BYTE
-EXTRN L0C5C:BYTE
+EXTRN Roster:BYTE
+EXTRN DemoTiles:BYTE
+EXTRN FileRosterUlt:BYTE
 EXTRN L0CB6:BYTE
 EXTRN L0CFA:BYTE
 EXTRN L0D01:BYTE
@@ -47,11 +47,11 @@ EXTRN L100B:BYTE
 EXTRN L101C:BYTE
 EXTRN L102D:BYTE
 EXTRN L1045:BYTE
-EXTRN L1048:BYTE
+EXTRN SexNames:BYTE
 EXTRN L106B:BYTE
-EXTRN L1070:BYTE
+EXTRN RaceNames:BYTE
 EXTRN L10D0:BYTE
-EXTRN L10DB:BYTE
+EXTRN ClassNames:BYTE
 EXTRN L10F8:BYTE
 EXTRN L10FA:BYTE
 EXTRN L1385:NEAR
@@ -73,7 +73,7 @@ L194B:	pushf	;@194B
 	mov dh, 0Bh	;@1951
 	mov dl, 10h	;@1953
 	lea si, L0F74	;@1955
-	call K2C7E	;@1959
+	call PrintAt	;@1959
 	mov al, 1	;@195C
 	mov ah, 1	;@195E
 L1960:	mov dl, 1	;@1960
@@ -83,9 +83,9 @@ L1960:	mov dl, 1	;@1960
 	jb L1971	;@196A
 	sub dh, 0Ah	;@196C
 	mov dl, 14h	;@196F
-L1971:	call K25C7	;@1971
+L1971:	call SwapCursor	;@1971
 	mov bl, al	;@1974
-	call K2A23	;@1976
+	call PrintBcdByte	;@1976
 	mov bl, ah	;@1979
 	call L1D61	;@197B
 	cmp byte ptr [bx], 0	;@197E
@@ -94,28 +94,28 @@ L1971:	call K25C7	;@1971
 	cmp byte ptr [bx+10h], 0FFh	;@1984
 	je L1991	;@1988
 	mov al, 2Dh	;@198A
-	call K25CC	;@198C
+	call PutChar	;@198C
 	jmp short L1996	;@198F
 L1991:	mov al, 2Ah	;@1991
-	call K25CC	;@1993
+	call PutChar	;@1993
 L1996:	mov al, 20h	;@1996
-	call K25CC	;@1998
+	call PutChar	;@1998
 	mov al, byte ptr [bx+18h]	;@199B
-	call K25CC	;@199E
+	call PutChar	;@199E
 	mov al, byte ptr [bx+16h]	;@19A1
-	call K25CC	;@19A4
+	call PutChar	;@19A4
 	mov al, byte ptr [bx+17h]	;@19A7
-	call K25CC	;@19AA
+	call PutChar	;@19AA
 	mov al, byte ptr [bx+11h]	;@19AD
-	call K25CC	;@19B0
+	call PutChar	;@19B0
 	mov al, 20h	;@19B3
-	call K25CC	;@19B5
+	call PutChar	;@19B5
 	lea si, [bx]	;@19B8
 	mov cx, 0Eh	;@19BA
 L19BD:	lodsb	;@19BD
 	cmp al, 0	;@19BE
 	je L19C7	;@19C0
-	call K25CC	;@19C2
+	call PutChar	;@19C2
 	loop L19BD	;@19C5
 L19C7:	pop ax	;@19C7
 L19C8:	add al, 1	;@19C8
@@ -141,11 +141,11 @@ L19DB:	pushf	;@19DB
 	mov dh, 0Fh	;@19E6
 	mov dl, 0Fh	;@19E8
 	lea si, L0F7D	;@19EA
-	call K2C7E	;@19EE
+	call PrintAt	;@19EE
 	mov dh, 12h	;@19F1
 	mov dl, 10h	;@19F3
 	lea si, L0CFA	;@19F5
-	call K2C7E	;@19F9
+	call PrintAt	;@19F9
 	call L1E0C	;@19FC
 	cmp ah, 0	;@19FF
 	je L1A46	;@1A02
@@ -164,10 +164,10 @@ L19DB:	pushf	;@19DB
 	mov dh, 15h	;@1A22
 	mov dl, 0Eh	;@1A24
 	lea si, L0FA6	;@1A26
-	call K2C7E	;@1A2A
-	lea dx, L0C5C	;@1A2D
+	call PrintAt	;@1A2A
+	lea dx, FileRosterUlt	;@1A2D
 	mov cx, 500h	;@1A31
-	lea bx, L02CE	;@1A34
+	lea bx, Roster	;@1A34
 	call K2BA0	;@1A38
 L1A3B:	call L1CE7	;@1A3B
 	pop di	;@1A3E
@@ -181,17 +181,17 @@ L1A3B:	call L1CE7	;@1A3B
 L1A46:	mov dh, 15h	;@1A46
 	mov dl, 0Eh	;@1A48
 	lea si, L0D01	;@1A4A
-	call K2C7E	;@1A4E
+	call PrintAt	;@1A4E
 	jmp L1A3B	;@1A51
 L1A53:	mov dh, 14h	;@1A53
 	mov dl, 0Dh	;@1A55
 	lea si, L0F88	;@1A57
-	call K2C7E	;@1A5B
+	call PrintAt	;@1A5B
 	jmp L1A3B	;@1A5E
 L1A60:	mov dh, 15h	;@1A60
 	mov dl, 0Dh	;@1A62
 	lea si, L0F97	;@1A64
-	call K2C7E	;@1A68
+	call PrintAt	;@1A68
 	jmp L1A3B	;@1A6B
 L1A6D:	pushf	;@1A6D
 	push ax	;@1A6E
@@ -204,11 +204,11 @@ L1A6D:	pushf	;@1A6D
 	mov dh, 0Fh	;@1A77
 	mov dl, 11h	;@1A79
 	lea si, L0FB3	;@1A7B
-	call K2C7E	;@1A7F
+	call PrintAt	;@1A7F
 	mov dh, 12h	;@1A82
 	mov dl, 10h	;@1A84
 	lea si, L0CFA	;@1A86
-	call K2C7E	;@1A8A
+	call PrintAt	;@1A8A
 	call L1E0C	;@1A8D
 	cmp ah, 0	;@1A90
 	je L1AE5	;@1A93
@@ -227,14 +227,14 @@ L1A6D:	pushf	;@1A6D
 	mov al, dl	;@1AB2
 	mov dh, 0Bh	;@1AB4
 	mov dl, 11h	;@1AB6
-	call K25C7	;@1AB8
-	call K2A23	;@1ABB
+	call SwapCursor	;@1AB8
+	call PrintBcdByte	;@1ABB
 	call L1BC8	;@1ABE
 	cmp byte ptr [bx], 0	;@1AC1
 	je L1B33	;@1AC4
 L1AC6:	mov dh, 15h	;@1AC6
 	mov dl, 13h	;@1AC8
-	call K25C7	;@1ACA
+	call SwapCursor	;@1ACA
 	mov cx, 2	;@1ACD
 	lea di, L10F8	;@1AD0
 	lea si, L10FA	;@1AD4
@@ -247,12 +247,12 @@ L1AC6:	mov dh, 15h	;@1AC6
 L1AE5:	mov dh, 15h	;@1AE5
 	mov dl, 0Eh	;@1AE7
 	lea si, L0D01	;@1AE9
-	call K2C7E	;@1AED
+	call PrintAt	;@1AED
 	jmp short L1B3C	;@1AF0
 L1AF2:	mov dh, 15h	;@1AF2
 	mov dl, 0Eh	;@1AF4
 	lea si, L0FBA	;@1AF6
-	call K2C7E	;@1AFA
+	call PrintAt	;@1AFA
 	jmp short L1B3C	;@1AFD
 L1AFF:	mov byte ptr [bx+11h], 47h	;@1AFF
 	mov byte ptr [bx+10h], 0	;@1B03
@@ -262,9 +262,9 @@ L1AFF:	mov byte ptr [bx+11h], 47h	;@1AFF
 	mov word ptr [bx+23h], 150h	;@1B16
 	mov byte ptr [bx+31h], 1	;@1B1B
 	mov byte ptr [bx+29h], 1	;@1B1F
-	lea dx, L0C5C	;@1B23
+	lea dx, FileRosterUlt	;@1B23
 	mov cx, 500h	;@1B27
-	lea bx, L02CE	;@1B2A
+	lea bx, Roster	;@1B2A
 	call K2BA0	;@1B2E
 	jmp short L1B3C	;@1B31
 L1B33:	mov al, 0	;@1B33
@@ -286,47 +286,47 @@ L1B47:	push dx	;@1B47
 	mov dh, 0Bh	;@1B4C
 	mov dl, 0Bh	;@1B4E
 	lea si, L0CFA	;@1B50
-	call K2C7E	;@1B54
+	call PrintAt	;@1B54
 	mov dh, 0Bh	;@1B57
 	mov dl, 14h	;@1B59
 	lea si, L0FC7	;@1B5B
-	call K2C7E	;@1B5F
+	call PrintAt	;@1B5F
 	mov dh, 0Dh	;@1B62
 	mov dl, 0Eh	;@1B64
 	lea si, L0FD1	;@1B66
-	call K2C7E	;@1B6A
+	call PrintAt	;@1B6A
 	mov dh, 0Eh	;@1B6D
 	mov dl, 0Eh	;@1B6F
 	lea si, L0FD7	;@1B71
-	call K2C7E	;@1B75
+	call PrintAt	;@1B75
 	mov dh, 0Fh	;@1B78
 	mov dl, 0Eh	;@1B7A
 	lea si, L0FDD	;@1B7C
-	call K2C7E	;@1B80
+	call PrintAt	;@1B80
 	mov dh, 10h	;@1B83
 	mov dl, 0Eh	;@1B85
 	lea si, L0FE3	;@1B87
-	call K2C7E	;@1B8B
+	call PrintAt	;@1B8B
 	mov dh, 11h	;@1B8E
 	mov dl, 0Bh	;@1B90
 	lea si, L0FE9	;@1B92
-	call K2C7E	;@1B96
+	call PrintAt	;@1B96
 	mov dh, 12h	;@1B99
 	mov dl, 0Bh	;@1B9B
 	lea si, L0FFA	;@1B9D
-	call K2C7E	;@1BA1
+	call PrintAt	;@1BA1
 	mov dh, 13h	;@1BA4
 	mov dl, 0Bh	;@1BA6
 	lea si, L100B	;@1BA8
-	call K2C7E	;@1BAC
+	call PrintAt	;@1BAC
 	mov dh, 14h	;@1BAF
 	mov dl, 0Bh	;@1BB1
 	lea si, L101C	;@1BB3
-	call K2C7E	;@1BB7
+	call PrintAt	;@1BB7
 	mov dh, 15h	;@1BBA
 	mov dl, 0Eh	;@1BBC
 	lea si, L102D	;@1BBE
-	call K2C7E	;@1BC2
+	call PrintAt	;@1BC2
 	pop si	;@1BC5
 	pop dx	;@1BC6
 	ret	;@1BC7
@@ -339,11 +339,11 @@ L1BC8:	pushf	;@1BC8
 	push di	;@1BCE
 	mov dh, 0Dh	;@1BCF
 	mov dl, 13h	;@1BD1
-	call K25C7	;@1BD3
+	call SwapCursor	;@1BD3
 	push bx	;@1BD6
 	mov cx, 9	;@1BD7
 	lea di, [bx]	;@1BDA
-	call K2773	;@1BDC
+	call ReadLine	;@1BDC
 	mov byte ptr [bx+di], 0	;@1BDF
 	test bx, 0FFFFh	;@1BE2
 	pop bx	;@1BE6
@@ -351,32 +351,32 @@ L1BC8:	pushf	;@1BC8
 	jmp L1CCC	;@1BE9
 L1BEC:	mov dh, 0Eh	;@1BEC
 	mov dl, 13h	;@1BEE
-	call K25C7	;@1BF0
+	call SwapCursor	;@1BF0
 	mov cx, 3	;@1BF3
 	lea di, L1045	;@1BF6
-	lea si, L1048	;@1BFA
+	lea si, SexNames	;@1BFA
 	call K2AD8	;@1BFE
 	mov byte ptr [bx+18h], al	;@1C01
 	mov dh, 0Fh	;@1C04
 	mov dl, 13h	;@1C06
-	call K25C7	;@1C08
+	call SwapCursor	;@1C08
 	mov cx, 5	;@1C0B
 	lea di, L106B	;@1C0E
-	lea si, L1070	;@1C12
+	lea si, RaceNames	;@1C12
 	call K2AD8	;@1C16
 	mov byte ptr [bx+16h], al	;@1C19
 	mov dh, 10h	;@1C1C
 	mov dl, 13h	;@1C1E
-	call K25C7	;@1C20
+	call SwapCursor	;@1C20
 	mov cx, 0Bh	;@1C23
 	lea di, L10D0	;@1C26
-	lea si, L10DB	;@1C2A
+	lea si, ClassNames	;@1C2A
 	call K2AD8	;@1C2E
 	mov byte ptr [bx+17h], al	;@1C31
 	mov cl, 50h	;@1C34
 L1C36:	mov dh, 11h	;@1C36
 	mov dl, 1Bh	;@1C38
-	call K25C7	;@1C3A
+	call SwapCursor	;@1C3A
 	call L1E0C	;@1C3D
 	cmp ah, 19h	;@1C40
 	ja L1C36	;@1C43
@@ -390,7 +390,7 @@ L1C36:	mov dh, 11h	;@1C36
 	call L1CD4	;@1C54
 L1C57:	mov dh, 12h	;@1C57
 	mov dl, 1Bh	;@1C59
-	call K25C7	;@1C5B
+	call SwapCursor	;@1C5B
 	call L1E0C	;@1C5E
 	cmp ah, 19h	;@1C61
 	ja L1C57	;@1C64
@@ -407,7 +407,7 @@ L1C57:	mov dh, 12h	;@1C57
 	call L1CD4	;@1C7B
 L1C7E:	mov dh, 13h	;@1C7E
 	mov dl, 1Bh	;@1C80
-	call K25C7	;@1C82
+	call SwapCursor	;@1C82
 	call L1E0C	;@1C85
 	cmp ah, 19h	;@1C88
 	ja L1C7E	;@1C8B
@@ -425,7 +425,7 @@ L1C7E:	mov dh, 13h	;@1C7E
 	call L1CD4	;@1CA4
 L1CA7:	mov dh, 14h	;@1CA7
 	mov dl, 1Bh	;@1CA9
-	call K25C7	;@1CAB
+	call SwapCursor	;@1CAB
 	call L1E0C	;@1CAE
 	cmp ah, 19h	;@1CB1
 	ja L1CA7	;@1CB4
@@ -452,9 +452,9 @@ L1CD4:	pushf	;@1CD4
 	push dx	;@1CD6
 	mov dh, 0Bh	;@1CD7
 	mov dl, 1Bh	;@1CD9
-	call K25C7	;@1CDB
+	call SwapCursor	;@1CDB
 	mov al, cl	;@1CDE
-	call K2A23	;@1CE0
+	call PrintBcdByte	;@1CE0
 	pop dx	;@1CE3
 	pop ax	;@1CE4
 	popf	;@1CE5
@@ -466,10 +466,10 @@ L1CE7:	pushf	;@1CE7
 	mov dh, 17h	;@1CEB
 	mov dl, 0Ch	;@1CED
 	lea si, L0CB6	;@1CEF
-	call K2C7E	;@1CF3
-L1CF6:	call K29AA	;@1CF6
+	call PrintAt	;@1CF3
+L1CF6:	call KeyReady	;@1CF6
 	je L1CF6	;@1CF9
-	call K29BD	;@1CFB
+	call ReadKey	;@1CFB
 	cmp al, 20h	;@1CFE
 	jne L1CF6	;@1D00
 	pop si	;@1D02
@@ -530,7 +530,7 @@ L1D61:	pushf	;@1D61
 	mov al, 40h	;@1D63
 	dec bl	;@1D65
 	mul bl	;@1D67
-	mov bx, offset L02CE	;@1D69
+	mov bx, offset Roster	;@1D69
 	add bx, ax	;@1D6C
 	pop ax	;@1D6E
 	popf	;@1D6F
@@ -544,10 +544,10 @@ L1D71:	push ax	;@1D71
 	call K28E7	;@1D7B
 	mov ah, 6	;@1D7E
 	mov al, 13h	;@1D80
-	lea bx, L07D2	;@1D82
-	lea bp, K01A9	;@1D86
+	lea bx, DemoTiles	;@1D82
+	lea bp, TileGfx	;@1D86
 	mov di, 0DC2h	;@1D8A
-	call K26E8	;@1D8D
+	call DrawTileBlock	;@1D8D
 	pop di	;@1D90
 	pop bp	;@1D91
 	pop bx	;@1D92
@@ -586,17 +586,17 @@ L1DC6:	ret	;@1DC6
 	db 0B4h,0Eh,0CDh,21h,0C3h	;@1E07
 L1E0C:	pushf	;@1E0C
 	push dx	;@1E0D
-	mov dx, word ptr K0100	;@1E0E
-L1E12:	call K2B4F	;@1E12
+	mov dx, word ptr CursorCol	;@1E0E
+L1E12:	call ReadNumber	;@1E12
 	cmp ah, 0FFh	;@1E15
 	jne L1E31	;@1E18
 	mov al, 0FEh	;@1E1A
-	call K2D59	;@1E1C
-	mov word ptr K0100, dx	;@1E1F
+	call Sound	;@1E1C
+	mov word ptr CursorCol, dx	;@1E1F
 	mov al, 20h	;@1E23
-	call K25CC	;@1E25
-	call K25CC	;@1E28
-	mov word ptr K0100, dx	;@1E2B
+	call PutChar	;@1E25
+	call PutChar	;@1E28
+	mov word ptr CursorCol, dx	;@1E2B
 	jmp L1E12	;@1E2F
 L1E31:	pop dx	;@1E31
 	popf	;@1E32

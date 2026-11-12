@@ -3,27 +3,27 @@
 ; LOOP: main loop and the surface commands (1BD5-207D).
 CODE SEGMENT BYTE PUBLIC
 ASSUME CS:CODE, DS:CODE, ES:CODE, SS:CODE
-EXTRN K27C1:NEAR
-EXTRN K2BF0:NEAR
-EXTRN K2CAA:NEAR
-EXTRN K2CC5:NEAR
-EXTRN K2D40:BYTE
-EXTRN K2D59:NEAR
+EXTRN Random:NEAR
+EXTRN LoadFile:NEAR
+EXTRN DrawView:NEAR
+EXTRN ViewTileAt:NEAR
+EXTRN SoundOn:BYTE
+EXTRN Sound:NEAR
 EXTRN L0080:BYTE
-EXTRN L0100:BYTE
-EXTRN L0900:BYTE
-EXTRN L1280:BYTE
-EXTRN L1324:BYTE
-EXTRN L14BA:BYTE
-EXTRN L14BC:BYTE
-EXTRN L14C1:BYTE
-EXTRN L14C2:BYTE
-EXTRN L15CC:BYTE
+EXTRN MapBuf:BYTE
+EXTRN DungeonMap:BYTE
+EXTRN MonTile:BYTE
+EXTRN Moon1Phase:BYTE
+EXTRN PartyTile:BYTE
+EXTRN Location:BYTE
+EXTRN PartySize:BYTE
+EXTRN PartyXY:BYTE
+EXTRN PlayerXY:BYTE
 EXTRN L15CD:BYTE
-EXTRN L15CF:BYTE
-EXTRN L15D0:BYTE
-EXTRN L15DE:BYTE
-EXTRN L16BB:BYTE
+EXTRN DungeonLevel:BYTE
+EXTRN TimeStop:BYTE
+EXTRN FileDungeonDat:BYTE
+EXTRN MapFileNames:BYTE
 EXTRN L16E1:BYTE
 EXTRN L197F:BYTE
 EXTRN L1982:BYTE
@@ -54,13 +54,13 @@ EXTRN L259B:BYTE
 EXTRN L259C:BYTE
 EXTRN L259D:BYTE
 EXTRN L259E:NEAR
-EXTRN L26A9:NEAR
-EXTRN L26F4:NEAR
+EXTRN PrintMsg:NEAR
+EXTRN ScrollMsg:NEAR
 EXTRN L2716:NEAR
-EXTRN L27CD:NEAR
-EXTRN L28DF:NEAR
+EXTRN BuildView:NEAR
+EXTRN MapCellAddr:NEAR
 EXTRN L2909:NEAR
-EXTRN L58CC:BYTE
+EXTRN Facing:BYTE
 EXTRN L5B28:NEAR
 EXTRN L5B51:NEAR
 EXTRN L5B85:NEAR
@@ -68,10 +68,10 @@ EXTRN L5D83:NEAR
 EXTRN L6366:NEAR
 EXTRN L6458:NEAR
 EXTRN L64A0:BYTE
-EXTRN L6BFA:NEAR
-EXTRN L6C14:NEAR
-EXTRN L6C76:NEAR
-EXTRN L6CC3:NEAR
+EXTRN PrintName:NEAR
+EXTRN IsUp:NEAR
+EXTRN AskPlayer:NEAR
+EXTRN StatusLine:NEAR
 EXTRN L6D58:NEAR
 EXTRN L6DC1:NEAR
 EXTRN L6FDF:NEAR
@@ -79,12 +79,12 @@ EXTRN L7233:NEAR
 EXTRN L7254:NEAR
 EXTRN L7AEA:NEAR
 EXTRN L7B54:NEAR
-EXTRN L7DA8:NEAR
-EXTRN L7DBA:NEAR
-EXTRN L7DCC:NEAR
-EXTRN L7DDE:NEAR
-EXTRN L7DF0:NEAR
-EXTRN L7E02:NEAR
+EXTRN MsgNoneLeft:NEAR
+EXTRN MsgWhat:NEAR
+EXTRN MsgInvalidMove:NEAR
+EXTRN MsgNotHere:NEAR
+EXTRN MsgIncapacitated:NEAR
+EXTRN AddMoves:NEAR
 EXTRN L80D9:NEAR
 EXTRN L82C6:NEAR
 EXTRN L8314:NEAR
@@ -92,7 +92,7 @@ EXTRN L838D:NEAR
 EXTRN L84E0:BYTE
 EXTRN L8BFC:NEAR
 EXTRN LA46F:NEAR
-PUBLIC L1BD5
+PUBLIC MainLoop
 PUBLIC L1C77
 PUBLIC L1C7D
 PUBLIC L1C9E
@@ -111,32 +111,32 @@ PUBLIC L1FD6
 PUBLIC L2018
 PUBLIC L2035
 PUBLIC L2068
-L1BD5:	cmp byte ptr L14BC, 80h	;@1BD5
+MainLoop:	cmp byte ptr Location, 80h	;@1BD5
 	jne L1BDF	;@1BDA
 	jmp L8BFC	;@1BDC
-L1BDF:	cmp byte ptr L14BC, 1	;@1BDF
+L1BDF:	cmp byte ptr Location, 1	;@1BDF
 	jne L1BE9	;@1BE4
 	jmp L838D	;@1BE6
-L1BE9:	mov al, byte ptr L14C1	;@1BE9
-	call L7E02	;@1BEC
-	cmp byte ptr L14BC, 2	;@1BEF
+L1BE9:	mov al, byte ptr PartySize	;@1BE9
+	call AddMoves	;@1BEC
+	cmp byte ptr Location, 2	;@1BEF
 	jb L1C07	;@1BF4
-	cmp byte ptr L15CC, 0	;@1BF6
+	cmp byte ptr PlayerXY, 0	;@1BF6
 	je L1C04	;@1BFB
 	cmp byte ptr L15CD, 0	;@1BFD
 	jne L1C07	;@1C02
 L1C04:	call L6458	;@1C04
 L1C07:	call L6FDF	;@1C07
-	mov bx, word ptr L15CC	;@1C0A
-	call L28DF	;@1C0E
+	mov bx, word ptr PlayerXY	;@1C0A
+	call MapCellAddr	;@1C0E
 	cmp al, 88h	;@1C11
 	jne L1C1D	;@1C13
 	call L5B51	;@1C15
 	call L20AE	;@1C18
 	jmp short L1C2E	;@1C1B
 L1C1D:	call L20AE	;@1C1D
-	mov bx, word ptr L15CC	;@1C20
-	call L28DF	;@1C24
+	mov bx, word ptr PlayerXY	;@1C20
+	call MapCellAddr	;@1C24
 	cmp al, 88h	;@1C27
 	jne L1C2E	;@1C29
 	call L5B51	;@1C2B
@@ -145,31 +145,31 @@ L1C2E:	cmp al, 30h	;@1C2E
 	call L2168	;@1C32
 L1C35:	call L5B28	;@1C35
 	jne L1C74	;@1C38
-	mov byte ptr L15D0, 0	;@1C3A
+	mov byte ptr TimeStop, 0	;@1C3A
 	mov dh, 0Bh	;@1C3F
-	call K27C1	;@1C41
+	call Random	;@1C41
 	mov bl, dl	;@1C44
-	call K27C1	;@1C46
+	call Random	;@1C46
 	mov bh, dl	;@1C49
 	cmp bx, 505h	;@1C4B
-	call K2CC5	;@1C4F
+	call ViewTileAt	;@1C4F
 	jne L1C62	;@1C52
-	call L27CD	;@1C54
+	call BuildView	;@1C54
 	mov byte ptr [bx], 3Dh	;@1C57
-	call K2CAA	;@1C5A
+	call DrawView	;@1C5A
 	call L82C6	;@1C5D
 	jmp short L1C74	;@1C60
 L1C62:	cmp al, 8	;@1C62
 	jne L1C74	;@1C64
-	call K2CAA	;@1C66
+	call DrawView	;@1C66
 	mov byte ptr [bx], 3Dh	;@1C69
-	call K2CAA	;@1C6C
+	call DrawView	;@1C6C
 	mov al, 0F7h	;@1C6F
-	call K2D59	;@1C71
+	call Sound	;@1C71
 L1C74:	jmp L226C	;@1C74
-L1C77:	call L26A9	;@1C77
-	jmp L1BD5	;@1C7A
-L1C7D:	call L26A9	;@1C7D
+L1C77:	call PrintMsg	;@1C77
+	jmp MainLoop	;@1C7A
+L1C7D:	call PrintMsg	;@1C7D
 	mov al, 1	;@1C80
 	call L7233	;@1C82
 	jne L1C9B	;@1C85
@@ -178,9 +178,9 @@ L1C7D:	call L26A9	;@1C7D
 	jne L1C9B	;@1C8D
 	dec byte ptr L15CD	;@1C8F
 	and byte ptr L15CD, 3Fh	;@1C93
-	jmp L1BD5	;@1C98
-L1C9B:	jmp L7DCC	;@1C9B
-L1C9E:	call L26A9	;@1C9E
+	jmp MainLoop	;@1C98
+L1C9B:	jmp MsgInvalidMove	;@1C9B
+L1C9E:	call PrintMsg	;@1C9E
 	mov al, 3	;@1CA1
 	call L7233	;@1CA3
 	jne L1CBC	;@1CA6
@@ -189,76 +189,76 @@ L1C9E:	call L26A9	;@1C9E
 	jne L1CBC	;@1CAE
 	inc byte ptr L15CD	;@1CB0
 	and byte ptr L15CD, 3Fh	;@1CB4
-	jmp L1BD5	;@1CB9
-L1CBC:	jmp L7DCC	;@1CBC
-L1CBF:	call L26A9	;@1CBF
+	jmp MainLoop	;@1CB9
+L1CBC:	jmp MsgInvalidMove	;@1CBC
+L1CBF:	call PrintMsg	;@1CBF
 	mov al, 2	;@1CC2
 	call L7233	;@1CC4
 	jne L1CDD	;@1CC7
 	mov al, byte ptr L2599	;@1CC9
 	call L7254	;@1CCC
 	jne L1CDD	;@1CCF
-	inc byte ptr L15CC	;@1CD1
-	and byte ptr L15CC, 3Fh	;@1CD5
-	jmp L1BD5	;@1CDA
-L1CDD:	jmp L7DCC	;@1CDD
-L1CE0:	call L26A9	;@1CE0
+	inc byte ptr PlayerXY	;@1CD1
+	and byte ptr PlayerXY, 3Fh	;@1CD5
+	jmp MainLoop	;@1CDA
+L1CDD:	jmp MsgInvalidMove	;@1CDD
+L1CE0:	call PrintMsg	;@1CE0
 	mov al, 4	;@1CE3
 	call L7233	;@1CE5
 	jne L1CFE	;@1CE8
 	mov al, byte ptr L259A	;@1CEA
 	call L7254	;@1CED
 	jne L1CFE	;@1CF0
-	dec byte ptr L15CC	;@1CF2
-	and byte ptr L15CC, 3Fh	;@1CF6
-	jmp L1BD5	;@1CFB
-L1CFE:	jmp L7DCC	;@1CFE
-L1D01:	cmp byte ptr L14BA, 3Fh	;@1D01
+	dec byte ptr PlayerXY	;@1CF2
+	and byte ptr PlayerXY, 3Fh	;@1CF6
+	jmp MainLoop	;@1CFB
+L1CFE:	jmp MsgInvalidMove	;@1CFE
+L1D01:	cmp byte ptr PartyTile, 3Fh	;@1D01
 	jne L1D17	;@1D06
-	mov bx, word ptr L15CC	;@1D08
-	call L28DF	;@1D0C
+	mov bx, word ptr PlayerXY	;@1D08
+	call MapCellAddr	;@1D0C
 	cmp al, 28h	;@1D0F
 	je L1D1D	;@1D11
 	cmp al, 2Ch	;@1D13
 	je L1D3C	;@1D15
-L1D17:	call L26A9	;@1D17
-	jmp L7DBA	;@1D1A
-L1D1D:	cmp byte ptr L14BC, 0FFh	;@1D1D
+L1D17:	call PrintMsg	;@1D17
+	jmp MsgWhat	;@1D1A
+L1D1D:	cmp byte ptr Location, 0FFh	;@1D1D
 	jne L1D2B	;@1D22
-	mov byte ptr L15D0, 0	;@1D24
+	mov byte ptr TimeStop, 0	;@1D24
 	jmp L1D17	;@1D29
 L1D2B:	mov byte ptr [bx], 4	;@1D2B
-	mov byte ptr L14BA, 0Ah	;@1D2E
+	mov byte ptr PartyTile, 0Ah	;@1D2E
 	lea si, L1982	;@1D33
-	call L26A9	;@1D37
+	call PrintMsg	;@1D37
 	jmp short L1D4B	;@1D3A
 L1D3C:	mov byte ptr [bx], 0	;@1D3C
-	mov byte ptr L14BA, 0Bh	;@1D3F
+	mov byte ptr PartyTile, 0Bh	;@1D3F
 	lea si, L1990	;@1D44
-	call L26A9	;@1D48
-L1D4B:	jmp L1BD5	;@1D4B
-L1D4E:	call L26A9	;@1D4E
-	call L6C76	;@1D51
+	call PrintMsg	;@1D48
+L1D4B:	jmp MainLoop	;@1D4B
+L1D4E:	call PrintMsg	;@1D4E
+	call AskPlayer	;@1D51
 	je L1D63	;@1D54
-	call L6C14	;@1D56
+	call IsUp	;@1D56
 	jne L1D66	;@1D59
 	mov byte ptr L84E0, 3Ch	;@1D5B
 	call L5D83	;@1D60
-L1D63:	jmp L1BD5	;@1D63
-L1D66:	jmp L7DF0	;@1D66
-L1D69:	call L26A9	;@1D69
-	cmp byte ptr L14BC, 0	;@1D6C
+L1D63:	jmp MainLoop	;@1D63
+L1D66:	jmp MsgIncapacitated	;@1D66
+L1D69:	call PrintMsg	;@1D69
+	cmp byte ptr Location, 0	;@1D6C
 	je L1D8E	;@1D71
-	cmp byte ptr L14BC, 0FFh	;@1D73
+	cmp byte ptr Location, 0FFh	;@1D73
 	jne L1D8B	;@1D78
-	mov bx, word ptr L15CC	;@1D7A
-	call L28DF	;@1D7E
+	mov bx, word ptr PlayerXY	;@1D7A
+	call MapCellAddr	;@1D7E
 	cmp al, 0F8h	;@1D81
 	jne L1D8B	;@1D83
 	call L6366	;@1D85
 	jmp L1E37	;@1D88
-L1D8B:	jmp L7DBA	;@1D8B
-L1D8E:	mov ax, word ptr L15CC	;@1D8E
+L1D8B:	jmp MsgWhat	;@1D8B
+L1D8E:	mov ax, word ptr PlayerXY	;@1D8E
 	cld	;@1D91
 	mov cx, 13h	;@1D92
 	mov bx, cx	;@1D95
@@ -268,96 +268,96 @@ L1D8E:	mov ax, word ptr L15CC	;@1D8E
 	sub bx, cx	;@1D9F
 	dec bx	;@1DA1
 	shl bx, 1	;@1DA2
-	mov ax, word ptr L15CC	;@1DA4
-	mov word ptr L14C2, ax	;@1DA7
+	mov ax, word ptr PlayerXY	;@1DA4
+	mov word ptr PartyXY, ax	;@1DA7
 	cmp byte ptr L259D, 5	;@1DAA
 	jne L1DCC	;@1DAF
 	lea si, L19BE	;@1DB1
-	call L26A9	;@1DB5
+	call PrintMsg	;@1DB5
 	mov dl, 1	;@1DB8
-	mov byte ptr L15CF, 0	;@1DBA
-	mov word ptr L15CC, 101h	;@1DBF
-	mov byte ptr L58CC, 1	;@1DC5
+	mov byte ptr DungeonLevel, 0	;@1DBA
+	mov word ptr PlayerXY, 101h	;@1DBF
+	mov byte ptr Facing, 1	;@1DC5
 	jmp short L1E0A	;@1DCA
 L1DCC:	cmp byte ptr L259D, 6	;@1DCC
 	jne L1DE9	;@1DD1
 	lea si, L19C8	;@1DD3
-	call L26A9	;@1DD7
+	call PrintMsg	;@1DD7
 	mov dl, 2	;@1DDA
-	mov word ptr L15CC, 2001h	;@1DDC
+	mov word ptr PlayerXY, 2001h	;@1DDC
 	mov byte ptr L24C0, 0	;@1DE2
 	jmp short L1E0A	;@1DE7
 L1DE9:	cmp byte ptr L259D, 7	;@1DE9
 	jne L1D8B	;@1DEE
 	lea si, L19D0	;@1DF0
-	call L26A9	;@1DF4
+	call PrintMsg	;@1DF4
 	mov dl, 3	;@1DF7
-	mov word ptr L15CC, 3E20h	;@1DF9
+	mov word ptr PlayerXY, 3E20h	;@1DF9
 	mov byte ptr L24C0, 0	;@1DFF
 	mov word ptr L64A0, 0	;@1E04
 L1E0A:	lea si, L1B67	;@1E0A
-	call L26A9	;@1E0E
+	call PrintMsg	;@1E0E
 	call L207D	;@1E11
-	mov byte ptr L14BC, dl	;@1E14
+	mov byte ptr Location, dl	;@1E14
 	mov si, bx	;@1E18
-	mov dx, word ptr L16BB[si]	;@1E1A
-	cmp byte ptr L14BC, 1	;@1E1E
+	mov dx, word ptr MapFileNames[si]	;@1E1A
+	cmp byte ptr Location, 1	;@1E1E
 	je L1E3A	;@1E23
-	push word ptr L1324	;@1E25
-	lea bx, L0100	;@1E29
+	push word ptr Moon1Phase	;@1E25
+	lea bx, MapBuf	;@1E29
 	mov cx, 1228h	;@1E2D
-	call K2BF0	;@1E30
-	pop word ptr L1324	;@1E33
-L1E37:	jmp L1BD5	;@1E37
+	call LoadFile	;@1E30
+	pop word ptr Moon1Phase	;@1E33
+L1E37:	jmp MainLoop	;@1E37
 L1E3A:	mov cx, 890h	;@1E3A
-	lea bx, L0900	;@1E3D
-	call K2BF0	;@1E41
-	lea bx, L0100	;@1E44
+	lea bx, DungeonMap	;@1E3D
+	call LoadFile	;@1E41
+	lea bx, MapBuf	;@1E44
 	mov cx, 800h	;@1E48
-	lea dx, L15DE	;@1E4B
-	call K2BF0	;@1E4F
+	lea dx, FileDungeonDat	;@1E4B
+	call LoadFile	;@1E4F
 	jmp L8314	;@1E52
-L1E55:	call L26A9	;@1E55
-	call L6C76	;@1E58
+L1E55:	call PrintMsg	;@1E55
+	call AskPlayer	;@1E58
 	je L1E74	;@1E5B
 	lea si, L19EE	;@1E5D
-	call L26A9	;@1E61
+	call PrintMsg	;@1E61
 	mov si, bx	;@1E64
-	call L6C76	;@1E66
+	call AskPlayer	;@1E66
 	je L1E74	;@1E69
 	mov di, bx	;@1E6B
 	cmp si, di	;@1E6D
 	je L1E77	;@1E6F
 	call L7B54	;@1E71
-L1E74:	jmp L1BD5	;@1E74
-L1E77:	jmp L7DBA	;@1E77
-L1E7A:	call L26A9	;@1E7A
+L1E74:	jmp MainLoop	;@1E74
+L1E77:	jmp MsgWhat	;@1E77
+L1E7A:	call PrintMsg	;@1E7A
 	call L7AEA	;@1E7D
 	je L1E98	;@1E80
 	lea si, L197F	;@1E82
-	call L26A9	;@1E86
-	call L28DF	;@1E89
+	call PrintMsg	;@1E86
+	call MapCellAddr	;@1E89
 	shr al, 1	;@1E8C
 	shr al, 1	;@1E8E
 	inc al	;@1E90
-	call L6BFA	;@1E92
-	call L26F4	;@1E95
-L1E98:	jmp L1BD5	;@1E98
-L1E9B:	call L26A9	;@1E9B
-	call L6C76	;@1E9E
+	call PrintName	;@1E92
+	call ScrollMsg	;@1E95
+L1E98:	jmp MainLoop	;@1E98
+L1E9B:	call PrintMsg	;@1E9B
+	call AskPlayer	;@1E9E
 	je L1EFA	;@1EA1
 	mov dl, al	;@1EA3
 	dec dl	;@1EA5
 	mov di, bx	;@1EA7
 	lea si, L19D9	;@1EA9
-	call L26A9	;@1EAD
-	call L6C76	;@1EB0
+	call PrintMsg	;@1EAD
+	call AskPlayer	;@1EB0
 	je L1EFA	;@1EB3
 	mov dh, al	;@1EB5
 	dec dh	;@1EB7
 	mov si, bx	;@1EB9
 	mov cx, si	;@1EBB
-	lea si, L14BA	;@1EBD
+	lea si, PartyTile	;@1EBD
 	mov bl, dl	;@1EC1
 	mov bh, 0	;@1EC3
 	mov al, byte ptr [bx+si+0Ah]	;@1EC5
@@ -375,51 +375,51 @@ L1ED8:	mov al, byte ptr [di]	;@1ED8
 	loop L1ED8	;@1EDE
 	call L2716	;@1EE0
 	call L6D58	;@1EE3
-	cmp byte ptr L14BC, 1	;@1EE6
+	cmp byte ptr Location, 1	;@1EE6
 	je L1EF0	;@1EEB
 	call L20AE	;@1EED
-L1EF0:	call L6CC3	;@1EF0
+L1EF0:	call StatusLine	;@1EF0
 	lea si, L19E2	;@1EF3
-	call L26A9	;@1EF7
-L1EFA:	jmp L1BD5	;@1EFA
-L1EFD:	call L26A9	;@1EFD
-	call L6C76	;@1F00
+	call PrintMsg	;@1EF7
+L1EFA:	jmp MainLoop	;@1EFA
+L1EFD:	call PrintMsg	;@1EFD
+	call AskPlayer	;@1F00
 	je L1F1F	;@1F03
 	mov al, byte ptr [bx+25h]	;@1F05
 	sub al, 1	;@1F08
 	das	;@1F0A
 	jb L1F22	;@1F0B
 	mov byte ptr [bx+25h], al	;@1F0D
-	cmp byte ptr L14BC, 1	;@1F10
+	cmp byte ptr Location, 1	;@1F10
 	je L1F1C	;@1F15
 	call L259E	;@1F17
 	jmp short L1F1F	;@1F1A
 L1F1C:	call L2909	;@1F1C
-L1F1F:	jmp L1BD5	;@1F1F
-L1F22:	jmp L7DA8	;@1F22
-L1F25:	call L26A9	;@1F25
-	cmp byte ptr L14BC, 0	;@1F28
+L1F1F:	jmp MainLoop	;@1F1F
+L1F22:	jmp MsgNoneLeft	;@1F22
+L1F25:	call PrintMsg	;@1F25
+	cmp byte ptr Location, 0	;@1F28
 	jne L1F45	;@1F2D
-	mov ax, word ptr L15CC	;@1F2F
-	mov word ptr L14C2, ax	;@1F32
+	mov ax, word ptr PlayerXY	;@1F2F
+	mov word ptr PartyXY, ax	;@1F32
 	call LA46F	;@1F35
 	lea si, L1B67	;@1F38
-	call L26A9	;@1F3C
+	call PrintMsg	;@1F3C
 	call L207D	;@1F3F
-L1F42:	jmp L1BD5	;@1F42
+L1F42:	jmp MainLoop	;@1F42
 L1F45:	lea si, L1A1A	;@1F45
-	call L26A9	;@1F49
+	call PrintMsg	;@1F49
 	mov al, 0FFh	;@1F4C
-	call K2D59	;@1F4E
+	call Sound	;@1F4E
 	jmp L1F42	;@1F51
-L1F53:	call L26A9	;@1F53
-	call L6C76	;@1F56
+L1F53:	call PrintMsg	;@1F53
+	call AskPlayer	;@1F56
 	je L1FD0	;@1F59
 	mov di, bx	;@1F5B
-	call L6C14	;@1F5D
+	call IsUp	;@1F5D
 	jne L1FD3	;@1F60
 	lea si, L19FC	;@1F62
-	call L26A9	;@1F66
+	call PrintMsg	;@1F66
 	call L7AEA	;@1F69
 	je L1FD0	;@1F6C
 	mov cx, bx	;@1F6E
@@ -427,13 +427,13 @@ L1F53:	call L26A9	;@1F53
 	call L5B85	;@1F72
 	je L1FAC	;@1F75
 L1F77:	mov dh, 0FFh	;@1F77
-	call K27C1	;@1F79
+	call Random	;@1F79
 	and dl, 3	;@1F7C
 	je L1F8A	;@1F7F
 	lea si, L1A05	;@1F81
-	call L26A9	;@1F85
+	call PrintMsg	;@1F85
 	jmp short L1FD0	;@1F88
-L1F8A:	lea bx, L1280	;@1F8A
+L1F8A:	lea bx, MonTile	;@1F8A
 	mov cx, 20h	;@1F8E
 L1F91:	cmp byte ptr [bx], 48h	;@1F91
 	jne L1F9B	;@1F94
@@ -441,12 +441,12 @@ L1F91:	cmp byte ptr [bx], 48h	;@1F91
 L1F9B:	inc bx	;@1F9B
 	loop L1F91	;@1F9C
 	lea si, L1A0E	;@1F9E
-	call L26A9	;@1FA2
+	call PrintMsg	;@1FA2
 	mov al, 0FAh	;@1FA5
-	call K2D59	;@1FA7
+	call Sound	;@1FA7
 	jmp short L1FD0	;@1FAA
 L1FAC:	mov bx, cx	;@1FAC
-	call L28DF	;@1FAE
+	call MapCellAddr	;@1FAE
 	cmp al, 94h	;@1FB1
 	jb L1F77	;@1FB3
 	cmp al, 0E4h	;@1FB5
@@ -456,25 +456,25 @@ L1FAC:	mov bx, cx	;@1FAC
 	add ch, dh	;@1FBD
 	add ch, dh	;@1FBF
 	mov bx, cx	;@1FC1
-	call L28DF	;@1FC3
+	call MapCellAddr	;@1FC3
 	cmp al, 24h	;@1FC6
 	jne L1F77	;@1FC8
 	mov byte ptr [bx], 20h	;@1FCA
 	call L80D9	;@1FCD
-L1FD0:	jmp L1BD5	;@1FD0
-L1FD3:	jmp L7DF0	;@1FD3
-L1FD6:	call L26A9	;@1FD6
+L1FD0:	jmp MainLoop	;@1FD0
+L1FD3:	jmp MsgIncapacitated	;@1FD3
+L1FD6:	call PrintMsg	;@1FD6
 	call L7AEA	;@1FD9
 	je L200F	;@1FDC
 	test dh, 0FFh	;@1FDE
 	jne L2012	;@1FE1
-	call L28DF	;@1FE3
+	call MapCellAddr	;@1FE3
 	cmp al, 0B8h	;@1FE6
 	jne L2012	;@1FE8
 	lea si, L19A0	;@1FEA
-	call L26A9	;@1FEE
+	call PrintMsg	;@1FEE
 	mov si, bx	;@1FF1
-	call L6C76	;@1FF3
+	call AskPlayer	;@1FF3
 	je L200F	;@1FF6
 	mov al, byte ptr [bx+26h]	;@1FF8
 	sub al, 1	;@1FFB
@@ -485,42 +485,42 @@ L1FD6:	call L26A9	;@1FD6
 	shl al, 1	;@2006
 	shl al, 1	;@2008
 	mov byte ptr [si], al	;@200A
-	call L27CD	;@200C
-L200F:	jmp L1BD5	;@200F
-L2012:	jmp L7DDE	;@2012
-L2015:	jmp L7DA8	;@2015
-L2018:	call L26A9	;@2018
-	xor byte ptr K2D40, 0FFh	;@201B
+	call BuildView	;@200C
+L200F:	jmp MainLoop	;@200F
+L2012:	jmp MsgNotHere	;@2012
+L2015:	jmp MsgNoneLeft	;@2015
+L2018:	call PrintMsg	;@2018
+	xor byte ptr SoundOn, 0FFh	;@201B
 	lea si, L19B8	;@2020
-	cmp byte ptr K2D40, 0	;@2024
+	cmp byte ptr SoundOn, 0	;@2024
 	je L202F	;@2029
 	lea si, L19B3	;@202B
-L202F:	call L26A9	;@202F
-	jmp L1BD5	;@2032
-L2035:	call L26A9	;@2035
-	cmp byte ptr L14BA, 3Fh	;@2038
+L202F:	call PrintMsg	;@202F
+	jmp MainLoop	;@2032
+L2035:	call PrintMsg	;@2035
+	cmp byte ptr PartyTile, 3Fh	;@2038
 	je L2062	;@203D
-	mov bx, word ptr L15CC	;@203F
-	call L28DF	;@2043
+	mov bx, word ptr PlayerXY	;@203F
+	call MapCellAddr	;@2043
 	cmp al, 4	;@2046
 	ja L2065	;@2048
-	mov al, byte ptr L14BA	;@204A
+	mov al, byte ptr PartyTile	;@204A
 	shl al, 1	;@204D
 	shl al, 1	;@204F
 	mov byte ptr [bx], al	;@2051
-	mov byte ptr L14BA, 3Fh	;@2053
+	mov byte ptr PartyTile, 3Fh	;@2053
 	lea si, L19AC	;@2058
-	call L26A9	;@205C
-	jmp L1BD5	;@205F
-L2062:	jmp L7DBA	;@2062
-L2065:	jmp L7DDE	;@2065
-L2068:	call L26A9	;@2068
-	call L6C76	;@206B
+	call PrintMsg	;@205C
+	jmp MainLoop	;@205F
+L2062:	jmp MsgWhat	;@2062
+L2065:	jmp MsgNotHere	;@2065
+L2068:	call PrintMsg	;@2068
+	call AskPlayer	;@206B
 	je L207A	;@206E
 	mov dh, al	;@2070
 	mov di, bx	;@2072
 	add dh, 30h	;@2074
 	call L6DC1	;@2077
-L207A:	jmp L1BD5	;@207A
+L207A:	jmp MainLoop	;@207A
 CODE ENDS
 END

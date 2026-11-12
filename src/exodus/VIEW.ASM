@@ -3,26 +3,26 @@
 ; VIEW: the map window and map access (259E-298E).
 CODE SEGMENT BYTE PUBLIC
 ASSUME CS:CODE, DS:CODE, ES:CODE, SS:CODE
-EXTRN K0100:BYTE
-EXTRN K0101:BYTE
-EXTRN K25A9:BYTE
-EXTRN K25C7:NEAR
-EXTRN K25CC:NEAR
-EXTRN K2600:NEAR
-EXTRN K26C3:NEAR
-EXTRN K2749:NEAR
-EXTRN K29AA:NEAR
-EXTRN K29BD:NEAR
-EXTRN K2CAA:NEAR
-EXTRN L0100:BYTE
-EXTRN L0900:BYTE
-EXTRN L132A:BYTE
-EXTRN L14BA:BYTE
-EXTRN L14BC:BYTE
-EXTRN L15CC:BYTE
-EXTRN L15CF:BYTE
+EXTRN CursorCol:BYTE
+EXTRN CursorRow:BYTE
+EXTRN ScreenSeg:BYTE
+EXTRN SwapCursor:NEAR
+EXTRN PutChar:NEAR
+EXTRN DrawChar:NEAR
+EXTRN FillCell:NEAR
+EXTRN ClearScreen:NEAR
+EXTRN KeyReady:NEAR
+EXTRN ReadKey:NEAR
+EXTRN DrawView:NEAR
+EXTRN MapBuf:BYTE
+EXTRN DungeonMap:BYTE
+EXTRN ScreenRowTbl:BYTE
+EXTRN PartyTile:BYTE
+EXTRN Location:BYTE
+EXTRN PlayerXY:BYTE
+EXTRN DungeonLevel:BYTE
 EXTRN L24C0:BYTE
-EXTRN L24C4:NEAR
+EXTRN StartUp:NEAR
 EXTRN L24F5:NEAR
 EXTRN L24FF:NEAR
 EXTRN L2509:NEAR
@@ -32,13 +32,13 @@ EXTRN L259B:BYTE
 EXTRN L259C:BYTE
 EXTRN L259D:BYTE
 PUBLIC L259E
-PUBLIC L26A9
-PUBLIC L26F4
+PUBLIC PrintMsg
+PUBLIC ScrollMsg
 PUBLIC L2716
-PUBLIC L27CD
-PUBLIC L28C6
-PUBLIC L28DF
-PUBLIC L28F2
+PUBLIC BuildView
+PUBLIC ClearView
+PUBLIC MapCellAddr
+PUBLIC DungeonCell
 PUBLIC L2909
 L259E:	pushf	;@259E
 	push ax	;@259F
@@ -46,11 +46,11 @@ L259E:	pushf	;@259E
 	push cx	;@25A1
 	push dx	;@25A2
 	push es	;@25A3
-	mov es, word ptr K25A9	;@25A4
-	call L28C6	;@25A8
+	mov es, word ptr ScreenSeg	;@25A4
+	call ClearView	;@25A8
 	mov cx, 0	;@25AB
 L25AE:	mov bx, cx	;@25AE
-	call L28DF	;@25B0
+	call MapCellAddr	;@25B0
 	cmp al, 0	;@25B3
 	je L261A	;@25B5
 	mov ah, 40h	;@25B7
@@ -101,28 +101,28 @@ L2623:	inc ch	;@2623
 	cmp ch, 40h	;@2625
 	jae L262C	;@2628
 	jmp L25AE	;@262A
-L262C:	mov cx, word ptr L15CC	;@262C
-	mov bl, byte ptr L14BC	;@2630
-	mov byte ptr L14BC, 1	;@2634
+L262C:	mov cx, word ptr PlayerXY	;@262C
+	mov bl, byte ptr Location	;@2630
+	mov byte ptr Location, 1	;@2634
 	mov ah, 0C0h	;@2639
 L263B:	mov dx, 0	;@263B
 	call L2675	;@263E
-	call K29AA	;@2641
+	call KeyReady	;@2641
 	jne L2667	;@2644
 	mov dx, 101h	;@2646
 	call L2675	;@2649
-	call K29AA	;@264C
+	call KeyReady	;@264C
 	jne L2667	;@264F
 	mov dx, 1	;@2651
 	call L2675	;@2654
-	call K29AA	;@2657
+	call KeyReady	;@2657
 	jne L2667	;@265A
 	mov dx, 100h	;@265C
 	call L2675	;@265F
-	call K29AA	;@2662
+	call KeyReady	;@2662
 	je L263B	;@2665
-L2667:	call K29BD	;@2667
-	mov byte ptr L14BC, bl	;@266A
+L2667:	call ReadKey	;@2667
+	mov byte ptr Location, bl	;@266A
 	pop es	;@266E
 	pop dx	;@266F
 	pop cx	;@2670
@@ -148,7 +148,7 @@ L2675:	push ax	;@2675
 	mov bl, ch	;@2693
 	mov bh, 0	;@2695
 	shl bx, 1	;@2697
-	mov bx, word ptr L132A[bx]	;@2699
+	mov bx, word ptr ScreenRowTbl[bx]	;@2699
 	add bl, al	;@269D
 	adc bh, 0	;@269F
 	xor byte ptr es:[bx], ah	;@26A2
@@ -156,12 +156,12 @@ L2675:	push ax	;@2675
 	pop bx	;@26A6
 	pop ax	;@26A7
 	ret	;@26A8
-L26A9:	pushf	;@26A9
+PrintMsg:	pushf	;@26A9
 	push ax	;@26AA
 	push dx	;@26AB
 	push si	;@26AC
 	cld	;@26AD
-	mov dx, word ptr K0100	;@26AE
+	mov dx, word ptr CursorCol	;@26AE
 	cmp dh, 11h	;@26B2
 	jb L26D3	;@26B5
 	cmp dl, 18h	;@26B7
@@ -174,10 +174,10 @@ L26BC:	lodsb	;@26BC
 	cmp dl, 27h	;@26C5
 	je L26E8	;@26C8
 	ja L26ED	;@26CA
-L26CC:	call K25CC	;@26CC
+L26CC:	call PutChar	;@26CC
 L26CF:	inc dl	;@26CF
 	jmp L26BC	;@26D1
-L26D3:	call L26F4	;@26D3
+L26D3:	call ScrollMsg	;@26D3
 	mov dl, 18h	;@26D6
 	jmp L26BC	;@26D8
 L26DA:	pop si	;@26DA
@@ -186,12 +186,12 @@ L26DA:	pop si	;@26DA
 	popf	;@26DD
 	ret	;@26DE
 	db 0B6h,17h,0B2h,18h,0E8h,71h,28h,0EBh,0D4h	;@26DF
-L26E8:	call K2600	;@26E8
+L26E8:	call DrawChar	;@26E8
 	jmp L26CF	;@26EB
-L26ED:	call L26F4	;@26ED
+L26ED:	call ScrollMsg	;@26ED
 	mov dl, 18h	;@26F0
 	jmp L26CC	;@26F2
-L26F4:	push ax	;@26F4
+ScrollMsg:	push ax	;@26F4
 	push bx	;@26F5
 	push cx	;@26F6
 	push dx	;@26F7
@@ -206,7 +206,7 @@ L26F4:	push ax	;@26F4
 	int 10h	;@2707
 	mov dh, 17h	;@2709
 	mov dl, 18h	;@270B
-	call K25C7	;@270D
+	call SwapCursor	;@270D
 	pop bp	;@2710
 	pop dx	;@2711
 	pop cx	;@2712
@@ -218,56 +218,56 @@ L2716:	pushf	;@2716
 	push bx	;@2718
 	push cx	;@2719
 	mov ax, 0	;@271A
-	call K2749	;@271D
+	call ClearScreen	;@271D
 	mov ax, 2222h	;@2720
 	mov bx, 0	;@2723
 	mov cx, 18h	;@2726
-L2729:	call K26C3	;@2729
+L2729:	call FillCell	;@2729
 	add bx, 140h	;@272C
 	loop L2729	;@2730
 	mov bx, 2Eh	;@2732
 	mov cx, 18h	;@2735
-L2738:	call K26C3	;@2738
+L2738:	call FillCell	;@2738
 	add bx, 140h	;@273B
 	loop L2738	;@273F
 	mov bx, 0	;@2741
 	mov cx, 18h	;@2744
-L2747:	call K26C3	;@2747
+L2747:	call FillCell	;@2747
 	add bx, 2	;@274A
 	loop L2747	;@274D
 	mov bx, 1CC0h	;@274F
 	mov cx, 18h	;@2752
-L2755:	call K26C3	;@2755
+L2755:	call FillCell	;@2755
 	add bx, 2	;@2758
 	loop L2755	;@275B
 	mov bx, 30h	;@275D
 	mov cx, 11h	;@2760
-L2763:	call K26C3	;@2763
+L2763:	call FillCell	;@2763
 	add bx, 2	;@2766
 	loop L2763	;@2769
 	mov bx, 530h	;@276B
 	mov cx, 11h	;@276E
-L2771:	call K26C3	;@2771
+L2771:	call FillCell	;@2771
 	add bx, 2	;@2774
 	loop L2771	;@2777
 	mov bx, 0A30h	;@2779
 	mov cx, 11h	;@277C
-L277F:	call K26C3	;@277F
+L277F:	call FillCell	;@277F
 	add bx, 2	;@2782
 	loop L277F	;@2785
 	mov bx, 0F30h	;@2787
 	mov cx, 11h	;@278A
-L278D:	call K26C3	;@278D
+L278D:	call FillCell	;@278D
 	add bx, 2	;@2790
 	loop L278D	;@2793
 	mov bx, 1430h	;@2795
 	mov cx, 11h	;@2798
-L279B:	call K26C3	;@279B
+L279B:	call FillCell	;@279B
 	add bx, 2	;@279E
 	loop L279B	;@27A1
 	mov bx, 4Eh	;@27A3
 	mov cx, 11h	;@27A6
-L27A9:	call K26C3	;@27A9
+L27A9:	call FillCell	;@27A9
 	add bx, 140h	;@27AC
 	loop L27A9	;@27B0
 	pop cx	;@27B2
@@ -279,7 +279,7 @@ L27B7 label byte
 	db 1h,1h,1h,1h,1h,0h,0FFh,0FFh,0FFh,0FFh,0FFh	;@27B7
 L27C2 label byte
 	db 0Bh,0Bh,0Bh,0Bh,0Bh,0h,0F5h,0F5h,0F5h,0F5h,0F5h	;@27C2
-L27CD:	pushf	;@27CD
+BuildView:	pushf	;@27CD
 	push ax	;@27CE
 	push bx	;@27CF
 	push cx	;@27D0
@@ -287,10 +287,10 @@ L27CD:	pushf	;@27CD
 	push di	;@27D2
 	push bp	;@27D3
 	cld	;@27D4
-	mov dx, word ptr L15CC	;@27D5
+	mov dx, word ptr PlayerXY	;@27D5
 	sub dh, 5	;@27D9
 	sub dl, 5	;@27DC
-	lea di, L24C4	;@27DF
+	lea di, StartUp	;@27DF
 	mov cx, 0	;@27E3
 L27E6:	cmp byte ptr L24C0, 0FFh	;@27E6
 	je L2802	;@27EB
@@ -315,7 +315,7 @@ L280F:	mov bh, al	;@280F
 	shr bx, 1	;@2813
 	shr bx, 1	;@2815
 	or bl, ah	;@2817
-	mov al, byte ptr L0100[bx]	;@2819
+	mov al, byte ptr MapBuf[bx]	;@2819
 	shr al, 1	;@281D
 	shr al, 1	;@281F
 L2821:	stosb	;@2821
@@ -336,7 +336,7 @@ L2821:	stosb	;@2821
 	mov byte ptr L259A, al	;@2847
 	mov al, byte ptr L24FF+1	;@284A
 	mov byte ptr L259D, al	;@284D
-	mov al, byte ptr L14BA	;@2850
+	mov al, byte ptr PartyTile	;@2850
 	mov byte ptr L24FF+1, al	;@2853
 	mov dh, 0Ah	;@2856
 	mov dl, 0Ah	;@2858
@@ -356,7 +356,7 @@ L2869:	mov al, dl	;@2869
 	je L28A8	;@2879
 	mov dl, al	;@287B
 	mov bl, al	;@287D
-	mov al, byte ptr L24C4[bx]	;@287F
+	mov al, byte ptr StartUp[bx]	;@287F
 	cmp al, 3	;@2883
 	je L28A1	;@2885
 	cmp al, 4	;@2887
@@ -371,7 +371,7 @@ L2869:	mov al, dl	;@2869
 	add ch, byte ptr L27B7[bx]	;@289B
 	jmp L2869	;@289F
 L28A1:	mov bl, dh	;@28A1
-	mov byte ptr L24C4[bx], 24h	;@28A3
+	mov byte ptr StartUp[bx], 24h	;@28A3
 L28A8:	dec dh	;@28A8
 	dec byte ptr [bp]	;@28AA
 	jns L2861	;@28AD
@@ -379,7 +379,7 @@ L28A8:	dec dh	;@28A8
 	dec byte ptr [bp+1]	;@28B3
 	jns L2861	;@28B6
 	add sp, 2	;@28B8
-	call K2CAA	;@28BB
+	call DrawView	;@28BB
 	pop bp	;@28BE
 	pop di	;@28BF
 	pop dx	;@28C0
@@ -388,7 +388,7 @@ L28A8:	dec dh	;@28A8
 	pop ax	;@28C3
 	popf	;@28C4
 	ret	;@28C5
-L28C6:	push ax	;@28C6
+ClearView:	push ax	;@28C6
 	push bx	;@28C7
 	push cx	;@28C8
 	push dx	;@28C9
@@ -404,24 +404,24 @@ L28C6:	push ax	;@28C6
 	pop bx	;@28DC
 	pop ax	;@28DD
 	ret	;@28DE
-L28DF:	pushf	;@28DF
+MapCellAddr:	pushf	;@28DF
 	mov al, bl	;@28E0
 	mov bl, 0	;@28E2
 	shr bx, 1	;@28E4
 	shr bx, 1	;@28E6
 	add bl, al	;@28E8
-	lea bx, L0100[bx]	;@28EA
+	lea bx, MapBuf[bx]	;@28EA
 	mov al, byte ptr [bx]	;@28EE
 	popf	;@28F0
 	ret	;@28F1
-L28F2:	pushf	;@28F2
+DungeonCell:	pushf	;@28F2
 	shl bh, 1	;@28F3
 	shl bh, 1	;@28F5
 	shl bh, 1	;@28F7
 	shl bh, 1	;@28F9
 	add bl, bh	;@28FB
-	mov bh, byte ptr L15CF	;@28FD
-	lea bx, L0900[bx]	;@2901
+	mov bh, byte ptr DungeonLevel	;@28FD
+	lea bx, DungeonMap[bx]	;@2901
 	mov al, byte ptr [bx]	;@2905
 	popf	;@2907
 	ret	;@2908
@@ -429,12 +429,12 @@ L2909:	pushf	;@2909
 	push ax	;@290A
 	push bx	;@290B
 	push cx	;@290C
-	call L28C6	;@290D
-	push word ptr K0100	;@2910
+	call ClearView	;@290D
+	push word ptr CursorCol	;@2910
 	mov cx, 0	;@2914
-	mov word ptr K0100, 404h	;@2917
+	mov word ptr CursorCol, 404h	;@2917
 L291D:	mov bx, cx	;@291D
-	call L28F2	;@291F
+	call DungeonCell	;@291F
 	cmp al, 0C0h	;@2922
 	mov ah, 1	;@2924
 	je L294E	;@2926
@@ -458,26 +458,26 @@ L291D:	mov bx, cx	;@291D
 	je L294E	;@294A
 	mov ah, 3Fh	;@294C
 L294E:	mov al, ah	;@294E
-	call K25CC	;@2950
+	call PutChar	;@2950
 	inc cl	;@2953
 	and cl, 0Fh	;@2955
 	jne L291D	;@2958
 	inc ch	;@295A
-	inc byte ptr K0101	;@295C
-	mov byte ptr K0100, 4	;@2960
+	inc byte ptr CursorRow	;@295C
+	mov byte ptr CursorCol, 4	;@2960
 	cmp ch, 10h	;@2965
 	jb L291D	;@2968
-	mov ax, word ptr L15CC	;@296A
+	mov ax, word ptr PlayerXY	;@296A
 	add ax, 404h	;@296D
-	mov word ptr K0100, ax	;@2970
+	mov word ptr CursorCol, ax	;@2970
 L2973:	mov al, 2Ah	;@2973
-	call K2600	;@2975
+	call DrawChar	;@2975
 	mov al, 20h	;@2978
-	call K2600	;@297A
-	call K29AA	;@297D
+	call DrawChar	;@297A
+	call KeyReady	;@297D
 	je L2973	;@2980
-	call K29BD	;@2982
-	pop word ptr K0100	;@2985
+	call ReadKey	;@2982
+	pop word ptr CursorCol	;@2985
 	pop cx	;@2989
 	pop bx	;@298A
 	pop ax	;@298B

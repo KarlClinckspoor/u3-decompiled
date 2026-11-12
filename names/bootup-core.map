@@ -1,0 +1,22 @@
+; BOOTUP names established in phases 3-5. Scope bootup.
+L01BC PartyBuf         ; PARTY.ULT (112h bytes)
+L01BE PartyLocation    ; its location byte (the library's X01BE)
+L02CE Roster           ; ROSTER.ULT: 20 records of 40h bytes
+L07D2 DemoTiles        ; DEMO.ULT: 19 x 6 tiles of the title picture
+L0844 MovesCells       ; MOVES.ULT: 512 cell numbers ...
+L0A44 MovesValues      ; ... and 512 values
+L0C44 DemoStep         ; current step of the MOVES script (0-511)
+L0C51 FileShapesUlt
+L0C5C FileRosterUlt
+L0C67 FilePartyUlt
+L0C71 FileDemoUlt
+L0C7A FileMovesUlt
+L0C84 FileCharsetUlt
+L0D61 StatusNames
+L0DFF WeaponNames
+L0E1F ArmourNames
+L0E87 MainMenu
+L0F62 OrganizeMenu
+L1048 SexNames
+L1070 RaceNames
+L10DB ClassNames

@@ -24,7 +24,7 @@ import argparse, os, re, shutil, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
-import build, u3an, genlib
+import build, u3an, genlib, syms
 
 TAG = re.compile(r';@([0-9A-F]{4})')
 
@@ -67,7 +67,7 @@ def prepare(target, pads, work):
             at = next(i for i, l in enumerate(lines) if TAG.search(l) and TAG.search(l).group(1) == key) + 1
             addr = int(key, 16) + 2 if target == 'exodus' else 0x100 + u3an.analyse(target).insn[0x100].size
         else:
-            at = next(i for i, l in enumerate(lines) if TAG.search(l) or re.match(r'[LX][0-9A-F]{4}', l))
+            at = next(i for i, l in enumerate(lines) if TAG.search(l) or (syms.SYMDEF.match(l) and not syms.SYMDEF.match(l).group(4)))
             addr = first_tag(lines[at:])
         lines[at:at] = pad_lines(n)
         open(p, 'wb').write('\r\n'.join(lines).encode('latin1'))

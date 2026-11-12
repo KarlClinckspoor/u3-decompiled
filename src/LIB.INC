@@ -5,17 +5,17 @@
 CODE SEGMENT PARA PUBLIC
 ASSUME CS:CODE, DS:CODE, ES:CODE, SS:CODE
 EXTRN X0103:BYTE
-EXTRN X0109:BYTE
+EXTRN ViewTiles:BYTE
 EXTRN X01A9:BYTE
 EXTRN X01AD:BYTE
 EXTRN X01B1:BYTE
 EXTRN X01B5:BYTE
 EXTRN X01BE:BYTE
-PUBLIC K0000
-PUBLIC K0100
-PUBLIC K0101
-PUBLIC K0102
-PUBLIC K0103
+PUBLIC StackArea
+PUBLIC CursorCol
+PUBLIC CursorRow
+PUBLIC WindDir
+PUBLIC RandState
 PUBLIC K0105
 PUBLIC K0107
 PUBLIC K0109
@@ -24,48 +24,48 @@ PUBLIC K010D
 PUBLIC K010F
 PUBLIC K0111
 PUBLIC K011B
-PUBLIC K01A9
-PUBLIC K15A9
-PUBLIC K25A9
-PUBLIC K25C1
-PUBLIC K25C7
-PUBLIC K25CC
-PUBLIC K2600
-PUBLIC K2670
-PUBLIC K26C3
-PUBLIC K26E8
-PUBLIC K2749
-PUBLIC K2773
-PUBLIC K27C1
+PUBLIC TileGfx
+PUBLIC CharGfx
+PUBLIC ScreenSeg
+PUBLIC PrintStr
+PUBLIC SwapCursor
+PUBLIC PutChar
+PUBLIC DrawChar
+PUBLIC DiskCheckStub
+PUBLIC FillCell
+PUBLIC DrawTileBlock
+PUBLIC ClearScreen
+PUBLIC ReadLine
+PUBLIC Random
 PUBLIC K2820
 PUBLIC K286F
 PUBLIC K28E7
-PUBLIC K29AA
-PUBLIC K29BD
-PUBLIC K2A18
-PUBLIC K2A23
-PUBLIC K2A3C
-PUBLIC K2A4E
+PUBLIC KeyReady
+PUBLIC ReadKey
+PUBLIC PrintBcdWord
+PUBLIC PrintBcdByte
+PUBLIC PrintDigit
+PUBLIC ParseNumber
 PUBLIC K2AD8
-PUBLIC K2B4F
+PUBLIC ReadNumber
 PUBLIC K2BA0
-PUBLIC K2BF0
-PUBLIC K2C7E
-PUBLIC K2C87
-PUBLIC K2CAA
-PUBLIC K2CC5
-PUBLIC K2CEA
-PUBLIC K2D40
-PUBLIC K2D59
-K0000 label byte
+PUBLIC LoadFile
+PUBLIC PrintAt
+PUBLIC SignStep
+PUBLIC DrawView
+PUBLIC ViewTileAt
+PUBLIC WindUpdate
+PUBLIC SoundOn
+PUBLIC Sound
+StackArea label byte
 	db 256 dup (0)	;@1E40
-K0100 label byte
+CursorCol label byte
 	db 0h	;@1F40
-K0101 label byte
+CursorRow label byte
 	db 0h	;@1F41
-K0102 label byte
+WindDir label byte
 	db 0h	;@1F42
-K0103 label byte
+RandState label byte
 	db 0h,0h	;@1F43
 K0105 label byte
 	db 0h,0h	;@1F45
@@ -95,7 +95,7 @@ K0118 label byte
 	db 3h	;@1F58
 K0119 label byte
 	db 2h	;@1F59
-K011A label byte
+WindCount label byte
 	db 1h	;@1F5A
 K011B label byte
 	db 0Ah	;@1F5B
@@ -121,7 +121,7 @@ K0189 label byte
 	db 57h,72h,6Fh,6Eh,67h,20h,44h,69h,73h,6Bh,65h,74h,74h,65h,21h,0h	;@1FC9
 K0199 label byte
 	db 20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,0h	;@1FD9
-K01A9 label byte
+TileGfx label byte
 	db 768 dup (0)	;@1FE9
 K04A9 label byte
 	db 256 dup (0)	;@22E9
@@ -129,11 +129,11 @@ K05A9 label byte
 	db 3072 dup (0)	;@23E9
 K11A9 label byte
 	db 1024 dup (0)	;@2FE9
-K15A9 label byte
+CharGfx label byte
 	db 4096 dup (0)	;@33E9
-K25A9 label byte
+ScreenSeg label byte
 	db 0h,0B8h	;@43E9
-K25AB:	pushf	;@43EB
+PrintStrLen:	pushf	;@43EB
 	push ax	;@43EC
 	push si	;@43ED
 	cld	;@43EE
@@ -142,51 +142,51 @@ K25B2:	lodsb	;@43F2
 	cmp al, 0	;@43F3
 	je K25BD	;@43F5
 	inc cx	;@43F7
-	call K25CC	;@43F8
+	call PutChar	;@43F8
 	jmp K25B2	;@43FB
 K25BD:	pop si	;@43FD
 	pop ax	;@43FE
 	popf	;@43FF
 	ret	;@4400
-K25C1:	push cx	;@4401
-	call K25AB	;@4402
+PrintStr:	push cx	;@4401
+	call PrintStrLen	;@4402
 	pop cx	;@4405
 	ret	;@4406
-K25C7:	xchg word ptr K0100, dx	;@4407
+SwapCursor:	xchg word ptr CursorCol, dx	;@4407
 	ret	;@440B
-K25CC:	push ax	;@440C
+PutChar:	push ax	;@440C
 	cmp al, 8	;@440D
 	je K25EA	;@440F
-	call K2600	;@4411
-	inc byte ptr K0100	;@4414
-	cmp byte ptr K0100, 28h	;@4418
+	call DrawChar	;@4411
+	inc byte ptr CursorCol	;@4414
+	cmp byte ptr CursorCol, 28h	;@4418
 	jne K25E8	;@441D
-	inc byte ptr K0101	;@441F
-	mov byte ptr K0100, 0	;@4423
+	inc byte ptr CursorRow	;@441F
+	mov byte ptr CursorCol, 0	;@4423
 K25E8:	pop ax	;@4428
 	ret	;@4429
-K25EA:	dec byte ptr K0100	;@442A
-	cmp byte ptr K0100, 0FFh	;@442E
+K25EA:	dec byte ptr CursorCol	;@442A
+	cmp byte ptr CursorCol, 0FFh	;@442E
 	jne K25E8	;@4433
-	mov byte ptr K0100, 27h	;@4435
-	dec byte ptr K0101	;@443A
+	mov byte ptr CursorCol, 27h	;@4435
+	dec byte ptr CursorRow	;@443A
 	jmp K25E8	;@443E
-K2600:	pushf	;@4440
+DrawChar:	pushf	;@4440
 	push ax	;@4441
 	push bx	;@4442
 	push si	;@4443
 	push es	;@4444
 	cld	;@4445
-	mov es, word ptr K25A9	;@4446
+	mov es, word ptr ScreenSeg	;@4446
 	mov ah, 0	;@444A
 	shl ax, 1	;@444C
 	shl ax, 1	;@444E
 	shl ax, 1	;@4450
 	shl ax, 1	;@4452
 	mov si, ax	;@4454
-	lea si, K15A9[si]	;@4456
+	lea si, CharGfx[si]	;@4456
 	mov bh, 0	;@445A
-	mov bl, byte ptr K0101	;@445C
+	mov bl, byte ptr CursorRow	;@445C
 	shl bx, 1	;@4460
 	shl bx, 1	;@4462
 	shl bx, 1	;@4464
@@ -198,7 +198,7 @@ K2600:	pushf	;@4440
 	shl bx, 1	;@4470
 	add bx, ax	;@4472
 	mov ah, 0	;@4474
-	mov al, byte ptr K0100	;@4476
+	mov al, byte ptr CursorCol	;@4476
 	shl ax, 1	;@4479
 	add bx, ax	;@447B
 	lodsw	;@447D
@@ -223,7 +223,7 @@ K2600:	pushf	;@4440
 	pop ax	;@44AD
 	popf	;@44AE
 	ret	;@44AF
-K2670 label near
+DiskCheckStub label near
 IFDEF PROG_EXODUS
 	db 0B0h,0FFh,0C3h,50h,51h,52h,56h,57h,55h,6h,0B4h,19h,0CDh,21h,3Ch,1h	;@44B0
 	db 76h,2h,0B0h,0h,8Ah,0D0h,0BEh,4h,0h,0B1h,10h,0B8h,1h,2h,0B6h,0h	;@44C0
@@ -238,8 +238,8 @@ ELSE
 	db 90h,0BBh,0h,0h,5Eh,5Fh,8Bh,0E5h,5Dh,7h,1Fh,5Ah,59h,58h,8Ah,0C3h	;@44F0
 	db 5Bh,9Dh,0C3h	;@4500
 ENDIF
-K26C3:	push ds	;@4503
-	mov ds, word ptr ss:K25A9	;@4504
+FillCell:	push ds	;@4503
+	mov ds, word ptr ss:ScreenSeg	;@4504
 	mov word ptr [bx], ax	;@4509
 	mov word ptr [bx+50h], ax	;@450B
 	mov word ptr [bx+0A0h], ax	;@450E
@@ -250,7 +250,7 @@ K26C3:	push ds	;@4503
 	mov word ptr [bx+20F0h], ax	;@4522
 	pop ds	;@4526
 	ret	;@4527
-K26E8:	pushf	;@4528
+DrawTileBlock:	pushf	;@4528
 	push ax	;@4529
 	push bx	;@452A
 	push cx	;@452B
@@ -259,7 +259,7 @@ K26E8:	pushf	;@4528
 	push di	;@452E
 	push es	;@452F
 	cld	;@4530
-	mov es, word ptr K25A9	;@4531
+	mov es, word ptr ScreenSeg	;@4531
 	mov dh, al	;@4535
 	shl dh, 1	;@4537
 	shl dh, 1	;@4539
@@ -303,21 +303,21 @@ K2723:	movsw	;@4563
 	pop ax	;@4586
 	popf	;@4587
 	ret	;@4588
-K2749:	pushf	;@4589
+ClearScreen:	pushf	;@4589
 	push ax	;@458A
 	push cx	;@458B
 	push di	;@458C
 	push es	;@458D
 	mov ax, 0	;@458E
 	cld	;@4591
-	mov es, word ptr K25A9	;@4592
+	mov es, word ptr ScreenSeg	;@4592
 	mov di, 0	;@4596
 	mov cx, 0FA0h	;@4599
 	rep stosw	;@459C
 	mov di, 2000h	;@459E
 	mov cx, 0FA0h	;@45A1
 	rep stosw	;@45A4
-	mov word ptr K0100, 0	;@45A6
+	mov word ptr CursorCol, 0	;@45A6
 	pop es	;@45AC
 	pop di	;@45AD
 	pop cx	;@45AE
@@ -325,13 +325,13 @@ K2749:	pushf	;@4589
 	popf	;@45B0
 	ret	;@45B1
 K2772:	ret	;@45B2
-K2773:	pushf	;@45B3
+ReadLine:	pushf	;@45B3
 	push ax	;@45B4
 	push cx	;@45B5
 	push di	;@45B6
 	cld	;@45B7
 	mov bx, cx	;@45B8
-K277A:	call K29BD	;@45BA
+K277A:	call ReadKey	;@45BA
 	cmp ax, 0E08h	;@45BD
 	je K27A9	;@45C0
 	cmp ax, 0E7Fh	;@45C2
@@ -346,7 +346,7 @@ K277A:	call K29BD	;@45BA
 	jae K27BA	;@45D7
 	jcxz K27BA	;@45D9
 	stosb	;@45DB
-	call K25CC	;@45DC
+	call PutChar	;@45DC
 	dec cx	;@45DF
 	jmp K277A	;@45E0
 K27A2:	sub bx, cx	;@45E2
@@ -358,22 +358,22 @@ K27A2:	sub bx, cx	;@45E2
 K27A9:	cmp bx, cx	;@45E9
 	je K27BA	;@45EB
 	mov al, 8	;@45ED
-	call K25CC	;@45EF
+	call PutChar	;@45EF
 	inc cx	;@45F2
 	dec di	;@45F3
 	mov byte ptr es:[di], 20h	;@45F4
 	jmp K277A	;@45F8
 K27BA:	mov al, 0FEh	;@45FA
-	call K2D59	;@45FC
+	call Sound	;@45FC
 	jmp K277A	;@45FF
-K27C1:	pushf	;@4601
+Random:	pushf	;@4601
 	push ax	;@4602
 	push cx	;@4603
 	push si	;@4604
 	push di	;@4605
 	std	;@4606
 	mov cx, 0Fh	;@4607
-	lea si, K0103	;@460A
+	lea si, RandState	;@460A
 	add si, cx	;@460E
 	mov di, si	;@4610
 	dec di	;@4612
@@ -383,12 +383,12 @@ K27D4:	lodsb	;@4614
 	stosb	;@4617
 	loop K27D4	;@4618
 	mov cx, 10h	;@461A
-	lea di, K0103	;@461D
+	lea di, RandState	;@461D
 	add di, cx	;@4621
 K27E3:	dec di	;@4623
 	inc byte ptr [di]	;@4624
 	loope K27E3	;@4626
-	mov dl, byte ptr K0103	;@4628
+	mov dl, byte ptr RandState	;@4628
 K27EC:	cmp dl, dh	;@462C
 	jb K27F4	;@462E
 	sub dl, dh	;@4630
@@ -423,7 +423,7 @@ K280A:	xchg word ptr [bx], ax	;@464A
 K2820:	pushf	;@4660
 	push bx	;@4661
 	push dx	;@4662
-	lea dx, K01A9	;@4663
+	lea dx, TileGfx	;@4663
 	dec byte ptr K0113	;@4667
 	jne K2838	;@466B
 	mov bx, 0	;@466D
@@ -454,7 +454,7 @@ K286F:	pushf	;@46AF
 	push di	;@46B2
 	dec byte ptr K0117	;@46B3
 	jne K2898	;@46B7
-	lea bx, K01A9	;@46B9
+	lea bx, TileGfx	;@46B9
 	add bx, 1C0h	;@46BD
 	mov ax, word ptr [bx+20h]	;@46C1
 	mov di, word ptr [bx+22h]	;@46C4
@@ -465,7 +465,7 @@ K286F:	pushf	;@46AF
 	mov byte ptr K0117, 4	;@46D3
 K2898:	dec byte ptr K0118	;@46D8
 	jne K28BD	;@46DC
-	lea bx, K01A9	;@46DE
+	lea bx, TileGfx	;@46DE
 	add bx, 180h	;@46E2
 	mov ax, word ptr [bx+24h]	;@46E6
 	mov di, word ptr [bx+26h]	;@46E9
@@ -476,7 +476,7 @@ K2898:	dec byte ptr K0118	;@46D8
 	mov byte ptr K0118, 3	;@46F8
 K28BD:	dec byte ptr K0119	;@46FD
 	jne K28E2	;@4701
-	lea bx, K01A9	;@4703
+	lea bx, TileGfx	;@4703
 	add bx, 2C0h	;@4707
 	mov ax, word ptr [bx+4]	;@470B
 	mov di, word ptr [bx+6]	;@470E
@@ -528,7 +528,7 @@ K2928:	pushf	;@4768
 	cmp byte ptr X01BE, 80h	;@476B
 	jne K2983	;@4770
 	mov al, byte ptr K011B	;@4772
-	call K2C87	;@4775
+	call SignStep	;@4775
 	neg ah	;@4778
 	add byte ptr K011B, ah	;@477A
 	jne K2983	;@477E
@@ -541,7 +541,7 @@ K2928:	pushf	;@4768
 	mov al, byte ptr X01AD[bx]	;@4794
 	mov bl, byte ptr X01A9[bx]	;@4798
 	mov bh, al	;@479C
-	call K2CC5	;@479E
+	call ViewTileAt	;@479E
 	mov byte ptr [bx], ah	;@47A1
 	jmp short K2983	;@47A3
 K2965:	mov byte ptr K011B, 0Ah	;@47A5
@@ -551,7 +551,7 @@ K2965:	mov byte ptr K011B, 0Ah	;@47A5
 	mov al, byte ptr X01AD[bx]	;@47B4
 	mov bl, byte ptr X01A9[bx]	;@47B8
 	mov bh, al	;@47BC
-	call K2CC5	;@47BE
+	call ViewTileAt	;@47BE
 	mov byte ptr [bx], ah	;@47C1
 K2983:	pop bx	;@47C3
 	pop ax	;@47C4
@@ -562,15 +562,15 @@ K2987:	pushf	;@47C7
 	je K2999	;@47CD
 	cmp byte ptr X01BE, 4	;@47CF
 	je K2999	;@47D4
-	call K2CEA	;@47D6
+	call WindUpdate	;@47D6
 K2999:	call K2820	;@47D9
 	call K286F	;@47DC
 	call K2928	;@47DF
 	call K28E7	;@47E2
-	call K2CAA	;@47E5
+	call DrawView	;@47E5
 	popf	;@47E8
 	ret	;@47E9
-K29AA:	push ax	;@47EA
+KeyReady:	push ax	;@47EA
 	mov ah, 1	;@47EB
 	int 16h	;@47ED
 	pushf	;@47EF
@@ -580,34 +580,34 @@ K29AA:	push ax	;@47EA
 K29BA:	popf	;@47FA
 	pop ax	;@47FB
 	ret	;@47FC
-K29BD:	pushf	;@47FD
+ReadKey:	pushf	;@47FD
 	push cx	;@47FE
 	push bx	;@47FF
 	push ax	;@4800
-	call K29AA	;@4801
+	call KeyReady	;@4801
 	jne K29DF	;@4804
 K29C6:	mov al, 1Eh	;@4806
-	call K2600	;@4808
+	call DrawChar	;@4808
 	mov cx, 50h	;@480B
-K29CE:	call K29AA	;@480E
+K29CE:	call KeyReady	;@480E
 	loope K29CE	;@4811
 	jne K29DA	;@4813
 	call K2772	;@4815
 	jmp K29C6	;@4818
 K29DA:	mov al, 20h	;@481A
-	call K2600	;@481C
+	call DrawChar	;@481C
 K29DF:	cmp byte ptr X01BE, 80h	;@481F
 	jne K2A0B	;@4824
 	mov bl, byte ptr X0103	;@4826
 	mov bh, 0	;@482A
-	lea bx, X0109[bx]	;@482C
+	lea bx, ViewTiles[bx]	;@482C
 	mov ah, byte ptr [bx+0ACh]	;@4830
 	mov al, byte ptr [bx+0A4h]	;@4834
 	mov bl, byte ptr [bx+0A0h]	;@4838
 	mov bh, al	;@483C
-	call K2CC5	;@483E
+	call ViewTileAt	;@483E
 	mov byte ptr [bx], ah	;@4841
-	call K2CAA	;@4843
+	call DrawView	;@4843
 	mov byte ptr K011B, 2	;@4846
 K2A0B:	mov ah, 0	;@484B
 	int 16h	;@484D
@@ -618,36 +618,36 @@ K2A0B:	mov ah, 0	;@484B
 	pop cx	;@4855
 	popf	;@4856
 	ret	;@4857
-K2A18:	xchg al, ah	;@4858
-	call K2A23	;@485A
+PrintBcdWord:	xchg al, ah	;@4858
+	call PrintBcdByte	;@485A
 	xchg al, ah	;@485D
-	call K2A23	;@485F
+	call PrintBcdByte	;@485F
 	ret	;@4862
-K2A23:	pushf	;@4863
+PrintBcdByte:	pushf	;@4863
 	rol al, 1	;@4864
 	rol al, 1	;@4866
 	rol al, 1	;@4868
 	rol al, 1	;@486A
-	call K2A3C	;@486C
+	call PrintDigit	;@486C
 	rol al, 1	;@486F
 	rol al, 1	;@4871
 	rol al, 1	;@4873
 	rol al, 1	;@4875
-	call K2A3C	;@4877
+	call PrintDigit	;@4877
 	popf	;@487A
 	ret	;@487B
-K2A3C:	pushf	;@487C
+PrintDigit:	pushf	;@487C
 	push ax	;@487D
 	and al, 0Fh	;@487E
 	add al, 30h	;@4880
 	cmp al, 3Ah	;@4882
 	jb K2A48	;@4884
 	add al, 7	;@4886
-K2A48:	call K25CC	;@4888
+K2A48:	call PutChar	;@4888
 	pop ax	;@488B
 	popf	;@488C
 	ret	;@488D
-K2A4E:	pushf	;@488E
+ParseNumber:	pushf	;@488E
 	push ax	;@488F
 	push cx	;@4890
 	push bp	;@4891
@@ -731,9 +731,9 @@ K2AD8:	pushf	;@4918
 	mov bp, sp	;@491F
 	cld	;@4921
 	mov bx, si	;@4922
-	mov dx, word ptr K0100	;@4924
+	mov dx, word ptr CursorCol	;@4924
 	jcxz K2B33	;@4928
-K2AEA:	call K29BD	;@492A
+K2AEA:	call ReadKey	;@492A
 	cmp al, 0	;@492D
 	je K2B07	;@492F
 	cmp al, 61h	;@4931
@@ -747,15 +747,15 @@ K2AFB:	mov cx, word ptr [bp+8]	;@493B
 	repne scasb	;@4943
 	je K2B0E	;@4945
 K2B07:	mov al, 0FEh	;@4947
-	call K2D59	;@4949
+	call Sound	;@4949
 	jmp K2AEA	;@494C
 K2B0E:	sub si, cx	;@494E
 	dec si	;@4950
 	shl si, 1	;@4951
 	mov si, word ptr [bx+si]	;@4953
-	call K25AB	;@4955
+	call PrintStrLen	;@4955
 	push ax	;@4958
-K2B19:	call K29BD	;@4959
+K2B19:	call ReadKey	;@4959
 	cmp ax, 4B00h	;@495C
 	je K2B3B	;@495F
 	cmp ax, 0E08h	;@4961
@@ -763,7 +763,7 @@ K2B19:	call K29BD	;@4959
 	cmp ax, 1C0Dh	;@4966
 	je K2B32	;@4969
 	mov al, 0FEh	;@496B
-	call K2D59	;@496D
+	call Sound	;@496D
 	jmp K2B19	;@4970
 K2B32:	pop ax	;@4972
 K2B33:	pop di	;@4973
@@ -775,14 +775,14 @@ K2B33:	pop di	;@4973
 	popf	;@4979
 	ret	;@497A
 K2B3B:	pop ax	;@497B
-	mov word ptr K0100, dx	;@497C
+	mov word ptr CursorCol, dx	;@497C
 	jcxz K2B49	;@4980
 	mov al, 20h	;@4982
-K2B44:	call K25CC	;@4984
+K2B44:	call PutChar	;@4984
 	loop K2B44	;@4987
-K2B49:	mov word ptr K0100, dx	;@4989
+K2B49:	mov word ptr CursorCol, dx	;@4989
 	jmp K2AEA	;@498D
-K2B4F:	pushf	;@498F
+ReadNumber:	pushf	;@498F
 	push bx	;@4990
 	push cx	;@4991
 	push dx	;@4992
@@ -791,25 +791,25 @@ K2B4F:	pushf	;@498F
 	push di	;@4995
 	sub sp, 2	;@4996
 	mov bp, sp	;@4999
-	mov dx, word ptr K0100	;@499B
-K2B5F:	call K25C7	;@499F
+	mov dx, word ptr CursorCol	;@499B
+K2B5F:	call SwapCursor	;@499F
 	mov al, 20h	;@49A2
-	call K25CC	;@49A4
-	call K25CC	;@49A7
-	mov word ptr K0100, dx	;@49AA
+	call PutChar	;@49A4
+	call PutChar	;@49A7
+	mov word ptr CursorCol, dx	;@49AA
 	mov cx, 2	;@49AE
 	lea di, [bp]	;@49B1
-	call K2773	;@49B4
+	call ReadLine	;@49B4
 	mov ax, dx	;@49B7
 	mov cx, bx	;@49B9
 	mov si, di	;@49BB
-	call K2A4E	;@49BD
+	call ParseNumber	;@49BD
 	cmp dx, -2	;@49C0
 	jne K2B91	;@49C3
-	mov word ptr K0100, ax	;@49C5
+	mov word ptr CursorCol, ax	;@49C5
 	mov dx, ax	;@49C8
 	mov al, 0FEh	;@49CA
-	call K2D59	;@49CC
+	call Sound	;@49CC
 	jmp K2B5F	;@49CF
 K2B91:	mov al, bl	;@49D1
 	mov ah, dl	;@49D3
@@ -857,11 +857,11 @@ K2BA0:	pushf	;@49E0
 K2BDF:	push si	;@4A1F
 	lea si, K0173	;@4A20
 	mov dx, 1800h	;@4A24
-	call K2C7E	;@4A27
+	call PrintAt	;@4A27
 	pop si	;@4A2A
-	call K25C1	;@4A2B
+	call PrintStr	;@4A2B
 K2BEE:	jmp K2BEE	;@4A2E
-K2BF0:	pushf	;@4A30
+LoadFile:	pushf	;@4A30
 	push ax	;@4A31
 	push dx	;@4A32
 	push si	;@4A33
@@ -896,12 +896,12 @@ K2BF0:	pushf	;@4A30
 K2C32:	push si	;@4A72
 	lea si, K015E	;@4A73
 	mov dx, 1800h	;@4A77
-	call K2C7E	;@4A7A
+	call PrintAt	;@4A7A
 	pop si	;@4A7D
-	call K25C1	;@4A7E
+	call PrintStr	;@4A7E
 K2C41:	jmp K2C41	;@4A81
 K2C43:	push dx	;@4A83
-	push word ptr K0100	;@4A84
+	push word ptr CursorCol	;@4A84
 K2C48:	mov dx, di	;@4A88
 	mov ah, 0Fh	;@4A8A
 	int 21h	;@4A8C
@@ -909,25 +909,25 @@ K2C48:	mov dx, di	;@4A88
 	je K2C62	;@4A90
 	lea si, K0199	;@4A92
 	mov dx, 1800h	;@4A96
-	call K2C7E	;@4A99
-	pop word ptr K0100	;@4A9C
+	call PrintAt	;@4A99
+	pop word ptr CursorCol	;@4A9C
 	pop dx	;@4AA0
 	ret	;@4AA1
 K2C62:	lea si, K0189	;@4AA2
-	mov word ptr K0100, 1800h	;@4AA6
-	call K25C1	;@4AAC
+	mov word ptr CursorCol, 1800h	;@4AA6
+	call PrintStr	;@4AAC
 	mov al, 0FEh	;@4AAF
-	call K2D59	;@4AB1
-K2C74:	call K29AA	;@4AB4
+	call Sound	;@4AB1
+K2C74:	call KeyReady	;@4AB4
 	je K2C74	;@4AB7
-	call K29BD	;@4AB9
+	call ReadKey	;@4AB9
 	jmp K2C48	;@4ABC
-K2C7E:	push dx	;@4ABE
-	call K25C7	;@4ABF
-	call K25C1	;@4AC2
+PrintAt:	push dx	;@4ABE
+	call SwapCursor	;@4ABF
+	call PrintStr	;@4AC2
 	pop dx	;@4AC5
 	ret	;@4AC6
-K2C87:	pushf	;@4AC7
+SignStep:	pushf	;@4AC7
 	cmp byte ptr X01BE, 0	;@4AC8
 	jne K2C93	;@4ACD
 	shl al, 1	;@4ACF
@@ -943,22 +943,22 @@ K2C9D:	cmp byte ptr X01BE, 0	;@4ADD
 	shr al, 1	;@4AE6
 K2CA8:	popf	;@4AE8
 	ret	;@4AE9
-K2CAA:	push ax	;@4AEA
+DrawView:	push ax	;@4AEA
 	push bx	;@4AEB
 	push bp	;@4AEC
 	push di	;@4AED
 	mov al, 0Bh	;@4AEE
 	mov ah, 0Bh	;@4AF0
-	lea bx, X0109	;@4AF2
-	lea bp, K01A9	;@4AF6
+	lea bx, ViewTiles	;@4AF2
+	lea bp, TileGfx	;@4AF6
 	mov di, 142h	;@4AFA
-	call K26E8	;@4AFD
+	call DrawTileBlock	;@4AFD
 	pop di	;@4B00
 	pop bp	;@4B01
 	pop bx	;@4B02
 	pop ax	;@4B03
 	ret	;@4B04
-K2CC5:	pushf	;@4B05
+ViewTileAt:	pushf	;@4B05
 	mov al, bh	;@4B06
 	shl bh, 1	;@4B08
 	shl bh, 1	;@4B0A
@@ -968,7 +968,7 @@ K2CC5:	pushf	;@4B05
 	add bh, al	;@4B12
 	add bl, bh	;@4B14
 	mov bh, 0	;@4B16
-	lea bx, X0109[bx]	;@4B18
+	lea bx, ViewTiles[bx]	;@4B18
 	mov al, byte ptr [bx]	;@4B1C
 	popf	;@4B1E
 	ret	;@4B1F
@@ -977,29 +977,29 @@ K2CE0	dw K011D	;@4B20
 	dw K0144	;@4B24
 	dw K0137	;@4B26
 	dw K0151	;@4B28
-K2CEA:	pushf	;@4B2A
+WindUpdate:	pushf	;@4B2A
 	push ax	;@4B2B
 	push dx	;@4B2C
 	push si	;@4B2D
-	dec byte ptr K011A	;@4B2E
+	dec byte ptr WindCount	;@4B2E
 	jne K2D10	;@4B32
-	mov byte ptr K011A, 19h	;@4B34
+	mov byte ptr WindCount, 19h	;@4B34
 K2CF9:	mov dh, 9	;@4B39
-	call K27C1	;@4B3B
+	call Random	;@4B3B
 	cmp dl, 5	;@4B3E
 	jb K2D0C	;@4B41
 	sub dl, 4	;@4B43
-	cmp dl, byte ptr K0102	;@4B46
+	cmp dl, byte ptr WindDir	;@4B46
 	je K2CF9	;@4B4A
-K2D0C:	mov byte ptr K0102, dl	;@4B4C
+K2D0C:	mov byte ptr WindDir, dl	;@4B4C
 K2D10:	mov dx, 1706h	;@4B50
-	xchg word ptr K0100, dx	;@4B53
-	mov si, word ptr K0102	;@4B57
+	xchg word ptr CursorCol, dx	;@4B53
+	mov si, word ptr WindDir	;@4B57
 	and si, 0FFh	;@4B5B
 	shl si, 1	;@4B5F
 	mov si, word ptr K2CE0[si]	;@4B61
-	call K25C1	;@4B65
-	mov word ptr K0100, dx	;@4B68
+	call PrintStr	;@4B65
+	mov word ptr CursorCol, dx	;@4B68
 	pop si	;@4B6C
 	pop dx	;@4B6D
 	pop ax	;@4B6E
@@ -1010,9 +1010,9 @@ IFDEF PROG_EXODUS
 ELSE
 	db 0h,0h,0h,0h,0h,0h,0h,0h,0h,0h	;@4B76
 ENDIF
-K2D40 label byte
+SoundOn label byte
 	db 0FFh	;@4B80
-K2D41	dw K2D79	;@4B81
+SoundTbl	dw K2D79	;@4B81
 	dw K2D9B	;@4B83
 	dw K2DBD	;@4B85
 	dw K2E16	;@4B87
@@ -1024,8 +1024,8 @@ K2D41	dw K2D79	;@4B81
 	dw K2EB2	;@4B93
 	dw K2EDE	;@4B95
 	dw K2F0E	;@4B97
-K2D59:	pushf	;@4B99
-	cmp byte ptr K2D40, 0	;@4B9A
+Sound:	pushf	;@4B99
+	cmp byte ptr SoundOn, 0	;@4B9A
 	je K2D77	;@4B9F
 	cmp al, 0F4h	;@4BA1
 	jb K2D77	;@4BA3
@@ -1035,7 +1035,7 @@ K2D59:	pushf	;@4B99
 	shl al, 1	;@4BA9
 	mov di, ax	;@4BAB
 	and di, 0FFh	;@4BAD
-	call word ptr K2D41[di]	;@4BB1
+	call word ptr SoundTbl[di]	;@4BB1
 	pop di	;@4BB5
 	pop ax	;@4BB6
 K2D77:	popf	;@4BB7
@@ -1136,7 +1136,7 @@ K2E16:	push bx	;@4C56
 	and al, 0FCh	;@4C5C
 	mov bh, 80h	;@4C5E
 K2E20:	mov dh, 0Fh	;@4C60
-	call K27C1	;@4C62
+	call Random	;@4C62
 	adc dl, bl	;@4C65
 K2E27:	mov cx, 3	;@4C67
 K2E2A:	loop K2E2A	;@4C6A
@@ -1201,7 +1201,7 @@ K2E82:	push bx	;@4CC2
 	mov dh, 0FFh	;@4CC9
 	mov bl, 0E0h	;@4CCB
 	mov bh, 40h	;@4CCD
-K2E8F:	call K27C1	;@4CCF
+K2E8F:	call Random	;@4CCF
 	or dl, bl	;@4CD2
 K2E94:	dec dl	;@4CD4
 	jne K2E94	;@4CD6
@@ -1233,7 +1233,7 @@ K2EBC:	mov di, bx	;@4CFC
 	push ax	;@4D01
 	and al, 0FCh	;@4D02
 	mov dh, 0FFh	;@4D04
-K2EC6:	call K27C1	;@4D06
+K2EC6:	call Random	;@4D06
 	or dl, bh	;@4D09
 K2ECB:	dec dl	;@4D0B
 	jne K2ECB	;@4D0D
@@ -1256,7 +1256,7 @@ K2EDE:	push cx	;@4D1E
 	add dl, 8	;@4D2A
 	mov cl, dl	;@4D2D
 K2EEF:	mov dh, 0FFh	;@4D2F
-	call K27C1	;@4D31
+	call Random	;@4D31
 	mov ch, 28h	;@4D34
 K2EF6:	mov dh, dl	;@4D36
 K2EF8:	dec dh	;@4D38

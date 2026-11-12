@@ -1,0 +1,10 @@
+; ULTIMA names established in phases 3-5. Scope ultima.
+L0115 PictureBuf       ; 4000h: BLANK.IBM, then EXOD.IBM
+L4117 NamePoints       ; NAME.DAT: the title's wave line
+L432C DiskCheckResult  ; the protection's answer: the intro hangs while it is 0FFh
+L432D AnimFrames       ; ANIMATE.DAT: 4 pictures x 4 shifts x 368 bytes
+L5A62 RowTbl           ; screen offset of each scan line
+L5A2F FileBlankIbm
+L5A39 FileExodIbm
+L5A42 FileNameDat
+L5A4B FileAnimateDat

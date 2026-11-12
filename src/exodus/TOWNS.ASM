@@ -3,19 +3,19 @@
 ; TOWNS: pub, grocer, temple, weapons, armour, guild, horses (A5AC-ADCA).
 CODE SEGMENT BYTE PUBLIC
 ASSUME CS:CODE, DS:CODE, ES:CODE, SS:CODE
-EXTRN K2A3C:NEAR
+EXTRN PrintDigit:NEAR
 EXTRN K2AD8:NEAR
-EXTRN K2B4F:NEAR
-EXTRN K2D59:NEAR
-EXTRN L14BA:BYTE
-EXTRN L14C1:BYTE
-EXTRN L14C2:BYTE
-EXTRN L14CA:BYTE
-EXTRN L14CB:BYTE
-EXTRN L26A9:NEAR
-EXTRN L26F4:NEAR
-EXTRN L6C76:NEAR
-EXTRN L6CC3:NEAR
+EXTRN ReadNumber:NEAR
+EXTRN Sound:NEAR
+EXTRN PartyTile:BYTE
+EXTRN PartySize:BYTE
+EXTRN PartyXY:BYTE
+EXTRN WeaponFlag2:BYTE
+EXTRN ArmourFlag2:BYTE
+EXTRN PrintMsg:NEAR
+EXTRN ScrollMsg:NEAR
+EXTRN AskPlayer:NEAR
+EXTRN StatusLine:NEAR
 EXTRN L6FB1:NEAR
 EXTRN L7176:NEAR
 EXTRN L71C1:NEAR
@@ -118,39 +118,39 @@ LA5AC:	pushf	;@A5AC
 	push dx	;@A5AF
 	push si	;@A5B0
 	lea si, L96A7	;@A5B1
-	call L26A9	;@A5B5
+	call PrintMsg	;@A5B5
 LA5B8:	lea si, L96C4	;@A5B8
-	call L26A9	;@A5BC
-	call K2B4F	;@A5BF
+	call PrintMsg	;@A5BC
+	call ReadNumber	;@A5BF
 	cmp ah, 0FFh	;@A5C2
 	je LA61F	;@A5C5
-	call L26F4	;@A5C7
+	call ScrollMsg	;@A5C7
 	cmp al, 7	;@A5CA
 	jae LA5DC	;@A5CC
 	lea si, L96FB	;@A5CE
-	call L26A9	;@A5D2
+	call PrintMsg	;@A5D2
 	mov al, 0FFh	;@A5D5
-	call K2D59	;@A5D7
+	call Sound	;@A5D7
 	jmp short LA610	;@A5DA
 LA5DC:	mov ah, 0	;@A5DC
 	cmp ax, word ptr [di+23h]	;@A5DE
 	jae LA616	;@A5E1
-	call L26F4	;@A5E3
+	call ScrollMsg	;@A5E3
 	call LA587	;@A5E6
 	mov cl, 4	;@A5E9
 	shr ax, cl	;@A5EB
 	mov si, ax	;@A5ED
 	shl si, 1	;@A5EF
 	mov si, word ptr L9979[si]	;@A5F1
-	call L26A9	;@A5F5
+	call PrintMsg	;@A5F5
 	lea si, L9956	;@A5F8
-	call L26A9	;@A5FC
+	call PrintMsg	;@A5FC
 	call LA561	;@A5FF
-	call L26F4	;@A602
+	call ScrollMsg	;@A602
 	cmp al, 59h	;@A605
 	je LA5B8	;@A607
 	lea si, L9961	;@A609
-	call L26A9	;@A60D
+	call PrintMsg	;@A60D
 LA610:	pop si	;@A610
 	pop dx	;@A611
 	pop cx	;@A612
@@ -158,19 +158,19 @@ LA610:	pop si	;@A610
 	popf	;@A614
 	ret	;@A615
 LA616:	lea si, L971B	;@A616
-	call L26A9	;@A61A
+	call PrintMsg	;@A61A
 	jmp short LA629	;@A61D
-LA61F:	call L26F4	;@A61F
+LA61F:	call ScrollMsg	;@A61F
 	lea si, L7967	;@A622
-	call L26A9	;@A626
+	call PrintMsg	;@A626
 LA629:	mov al, 0FEh	;@A629
-	call K2D59	;@A62B
+	call Sound	;@A62B
 	jmp LA610	;@A62E
 LA630:	pushf	;@A630
 	push ax	;@A631
 	push si	;@A632
 	lea si, L998D	;@A633
-	call L26A9	;@A637
+	call PrintMsg	;@A637
 	call L7D1A	;@A63A
 	cmp ax, 0	;@A63D
 	je LA667	;@A640
@@ -188,24 +188,24 @@ LA630:	pushf	;@A630
 	jb LA680	;@A65C
 	add sp, 2	;@A65E
 	call LA587	;@A661
-	call L6CC3	;@A664
+	call StatusLine	;@A664
 LA667:	lea si, L99D7	;@A667
-	call L26A9	;@A66B
+	call PrintMsg	;@A66B
 LA66E:	pop si	;@A66E
 	pop ax	;@A66F
 	popf	;@A670
 	ret	;@A671
 LA672:	lea si, L971B	;@A672
-	call L26A9	;@A676
+	call PrintMsg	;@A676
 	mov al, 0FFh	;@A679
-	call K2D59	;@A67B
+	call Sound	;@A67B
 	jmp LA66E	;@A67E
 LA680:	lea si, L99F1	;@A680
-	call L26A9	;@A684
+	call PrintMsg	;@A684
 	pop ax	;@A687
 	mov word ptr [di+21h], ax	;@A688
 	mov al, 0FFh	;@A68B
-	call K2D59	;@A68D
+	call Sound	;@A68D
 	jmp LA66E	;@A690
 LA692:	pushf	;@A692
 	push ax	;@A693
@@ -213,7 +213,7 @@ LA692:	pushf	;@A692
 	push cx	;@A695
 	push si	;@A696
 	lea si, L9A06	;@A697
-	call L26A9	;@A69B
+	call PrintMsg	;@A69B
 	push di	;@A69E
 	mov cx, 6	;@A69F
 	lea si, L9BFA	;@A6A2
@@ -231,8 +231,8 @@ LA692:	pushf	;@A692
 	shl bx, 1	;@A6BE
 	jmp word ptr L9BEC[bx]	;@A6C0
 LA6C4:	lea si, L9A68	;@A6C4
-	call L26A9	;@A6C8
-	call L6CC3	;@A6CB
+	call PrintMsg	;@A6C8
+	call StatusLine	;@A6CB
 LA6CE:	pop si	;@A6CE
 	pop cx	;@A6CF
 	pop bx	;@A6D0
@@ -240,15 +240,15 @@ LA6CE:	pop si	;@A6CE
 	popf	;@A6D2
 	ret	;@A6D3
 LA6D4:	lea si, L9A86	;@A6D4
-	call L26A9	;@A6D8
+	call PrintMsg	;@A6D8
 	call LA561	;@A6DB
 	cmp al, 4Eh	;@A6DE
 	je LA72C	;@A6E0
 	cmp word ptr [di+23h], 100h	;@A6E2
 	jb LA735	;@A6E7
 	lea si, L9AB3	;@A6E9
-	call L26A9	;@A6ED
-	call L6C76	;@A6F0
+	call PrintMsg	;@A6ED
+	call AskPlayer	;@A6F0
 	je LA6CE	;@A6F3
 	dec al	;@A6F5
 	mov cx, ax	;@A6F7
@@ -261,7 +261,7 @@ LA6D4:	lea si, L9A86	;@A6D4
 	mov al, 0FDh	;@A708
 	mov bl, 0C0h	;@A70A
 	mov bh, 80h	;@A70C
-	call K2D59	;@A70E
+	call Sound	;@A70E
 	pop bx	;@A711
 	mov ax, cx	;@A712
 	call L7176	;@A714
@@ -273,33 +273,33 @@ LA6D4:	lea si, L9A86	;@A6D4
 	call LA587	;@A727
 	jmp LA6C4	;@A72A
 LA72C:	lea si, L9B69	;@A72C
-	call L26A9	;@A730
+	call PrintMsg	;@A730
 	jmp LA6CE	;@A733
 LA735:	lea si, L9B93	;@A735
-	call L26A9	;@A739
+	call PrintMsg	;@A739
 	mov al, 0FFh	;@A73C
-	call K2D59	;@A73E
+	call Sound	;@A73E
 	jmp LA6CE	;@A741
 LA743:	lea si, L9BBE	;@A743
-	call L26A9	;@A747
+	call PrintMsg	;@A747
 	mov al, 0FFh	;@A74A
-	call K2D59	;@A74C
+	call Sound	;@A74C
 	jmp LA6CE	;@A74F
 LA752:	lea si, L9BCC	;@A752
-	call L26A9	;@A756
+	call PrintMsg	;@A756
 	mov al, 0FFh	;@A759
-	call K2D59	;@A75B
+	call Sound	;@A75B
 	jmp LA6CE	;@A75E
 LA761:	lea si, L9ABF	;@A761
-	call L26A9	;@A765
+	call PrintMsg	;@A765
 	call LA561	;@A768
 	cmp al, 4Eh	;@A76B
 	je LA72C	;@A76D
 	cmp word ptr [di+23h], 200h	;@A76F
 	jb LA735	;@A774
 	lea si, L9AE8	;@A776
-	call L26A9	;@A77A
-	call L6C76	;@A77D
+	call PrintMsg	;@A77A
+	call AskPlayer	;@A77D
 	jne LA785	;@A780
 	jmp LA6CE	;@A782
 LA785:	dec al	;@A785
@@ -314,7 +314,7 @@ LA785:	dec al	;@A785
 	mov al, 0FDh	;@A79C
 	mov bl, 0C0h	;@A79E
 	mov bh, 80h	;@A7A0
-	call K2D59	;@A7A2
+	call Sound	;@A7A2
 	mov ax, cx	;@A7A5
 	call L7176	;@A7A7
 	call L71C1	;@A7AA
@@ -322,7 +322,7 @@ LA785:	dec al	;@A785
 	call LA587	;@A7B0
 	jmp LA6C4	;@A7B3
 LA7B6:	lea si, L9AF4	;@A7B6
-	call L26A9	;@A7BA
+	call PrintMsg	;@A7BA
 	call LA561	;@A7BD
 	cmp al, 4Eh	;@A7C0
 	jne LA7C7	;@A7C2
@@ -331,8 +331,8 @@ LA7C7:	cmp word ptr [di+23h], 500h	;@A7C7
 	jae LA7D1	;@A7CC
 	jmp LA735	;@A7CE
 LA7D1:	lea si, L9B21	;@A7D1
-	call L26A9	;@A7D5
-	call L6C76	;@A7D8
+	call PrintMsg	;@A7D5
+	call AskPlayer	;@A7D8
 	jne LA7E0	;@A7DB
 	jmp LA6CE	;@A7DD
 LA7E0:	dec al	;@A7E0
@@ -349,7 +349,7 @@ LA7ED:	cmp byte ptr [bx+11h], 50h	;@A7ED
 	mov al, 0FDh	;@A7FC
 	mov bl, 0C0h	;@A7FE
 	mov bh, 80h	;@A800
-	call K2D59	;@A802
+	call Sound	;@A802
 	pop bx	;@A805
 	mov ax, cx	;@A806
 	call L7176	;@A808
@@ -362,12 +362,12 @@ LA817:	mov byte ptr [bx+11h], 47h	;@A817
 	call LA587	;@A81E
 	jmp LA6C4	;@A821
 LA824:	lea si, L9BD5	;@A824
-	call L26A9	;@A828
+	call PrintMsg	;@A828
 	mov al, 0FFh	;@A82B
-	call K2D59	;@A82D
+	call Sound	;@A82D
 	jmp LA6CE	;@A830
 LA833:	lea si, L9B32	;@A833
-	call L26A9	;@A837
+	call PrintMsg	;@A837
 	call LA561	;@A83A
 	cmp al, 4Eh	;@A83D
 	jne LA844	;@A83F
@@ -376,8 +376,8 @@ LA844:	cmp word ptr [di+23h], 900h	;@A844
 	jae LA84E	;@A849
 	jmp LA735	;@A84B
 LA84E:	lea si, L9B5B	;@A84E
-	call L26A9	;@A852
-	call L6C76	;@A855
+	call PrintMsg	;@A852
+	call AskPlayer	;@A855
 	jne LA85D	;@A858
 	jmp LA6CE	;@A85A
 LA85D:	dec al	;@A85D
@@ -394,7 +394,7 @@ LA86A:	cmp byte ptr [bx+11h], 41h	;@A86A
 	mov al, 0FDh	;@A87C
 	mov bl, 0C0h	;@A87E
 	mov bh, 80h	;@A880
-	call K2D59	;@A882
+	call Sound	;@A882
 	mov ax, cx	;@A885
 	call L7176	;@A887
 	call L71C1	;@A88A
@@ -402,9 +402,9 @@ LA86A:	cmp byte ptr [bx+11h], 41h	;@A86A
 	call LA587	;@A890
 	jmp LA6C4	;@A893
 LA896:	lea si, L9BE0	;@A896
-	call L26A9	;@A89A
+	call PrintMsg	;@A89A
 	mov al, 0FFh	;@A89D
-	call K2D59	;@A89F
+	call Sound	;@A89F
 	jmp LA6CE	;@A8A2
 LA8A5:	pushf	;@A8A5
 	push ax	;@A8A6
@@ -414,20 +414,20 @@ LA8A5:	pushf	;@A8A5
 	push si	;@A8AA
 	push di	;@A8AB
 	lea si, L9C25	;@A8AC
-	call L26A9	;@A8B0
+	call PrintMsg	;@A8B0
 	call LA561	;@A8B3
 	cmp al, 4Eh	;@A8B6
 	je LA8BD	;@A8B8
 	call LA9E8	;@A8BA
 LA8BD:	lea si, L9C4B	;@A8BD
-	call L26A9	;@A8C1
+	call PrintMsg	;@A8C1
 	push di	;@A8C4
 	mov cx, 4	;@A8C5
 	lea si, L9C1D	;@A8C8
 	lea di, L9C10	;@A8CC
 	call K2AD8	;@A8D0
 	pop di	;@A8D3
-	call L26F4	;@A8D4
+	call ScrollMsg	;@A8D4
 	cmp al, 51h	;@A8D7
 	je LA959	;@A8D9
 	cmp al, 1Bh	;@A8DB
@@ -436,12 +436,12 @@ LA8BD:	lea si, L9C4B	;@A8BD
 	jne LA8E6	;@A8E1
 	jmp LA96A	;@A8E3
 LA8E6:	lea si, L9CD8	;@A8E6
-	call L26A9	;@A8EA
+	call PrintMsg	;@A8EA
 	push di	;@A8ED
 	mov cx, 0Ah	;@A8EE
-	cmp byte ptr L14C2, 25h	;@A8F1
+	cmp byte ptr PartyXY, 25h	;@A8F1
 	jne LA902	;@A8F6
-	cmp byte ptr L14CA, 0	;@A8F8
+	cmp byte ptr WeaponFlag2, 0	;@A8F8
 	je LA902	;@A8FD
 	mov cx, 11h	;@A8FF
 LA902:	lea si, L7904	;@A902
@@ -477,9 +477,9 @@ LA93C:	xchg al, ah	;@A93C
 	mov byte ptr [bx+di+31h], al	;@A946
 	mov byte ptr [di+30h], 0	;@A949
 	lea si, L9D01	;@A94D
-	call L26A9	;@A951
+	call PrintMsg	;@A951
 	jmp LA8E6	;@A954
-LA956:	call L26F4	;@A956
+LA956:	call ScrollMsg	;@A956
 LA959:	pop di	;@A959
 	pop si	;@A95A
 	pop dx	;@A95B
@@ -489,15 +489,15 @@ LA959:	pop di	;@A959
 	popf	;@A95F
 	ret	;@A960
 LA961:	lea si, L9CE3	;@A961
-	call L26A9	;@A965
+	call PrintMsg	;@A965
 	jmp short LA9E0	;@A968
 LA96A:	lea si, L9C5A	;@A96A
-	call L26A9	;@A96E
+	call PrintMsg	;@A96E
 	push di	;@A971
 	mov cx, 0Ah	;@A972
-	cmp byte ptr L14C2, 25h	;@A975
+	cmp byte ptr PartyXY, 25h	;@A975
 	jne LA986	;@A97A
-	cmp byte ptr L14CA, 0	;@A97C
+	cmp byte ptr WeaponFlag2, 0	;@A97C
 	je LA986	;@A981
 	mov cx, 11h	;@A983
 LA986:	lea si, L7904	;@A986
@@ -525,39 +525,39 @@ LA986:	lea si, L7904	;@A986
 	daa	;@A9BA
 	mov byte ptr [bx+di+31h], al	;@A9BB
 	lea si, L9CB1	;@A9BE
-	call L26A9	;@A9C2
+	call PrintMsg	;@A9C2
 	jmp LA96A	;@A9C5
 LA9C7:	lea si, L9DFE	;@A9C7
-	call L26A9	;@A9CB
+	call PrintMsg	;@A9CB
 	jmp short LA9E0	;@A9CE
 LA9D0:	lea si, L9C6A	;@A9D0
-	call L26A9	;@A9D4
+	call PrintMsg	;@A9D4
 	jmp short LA9E0	;@A9D7
 LA9D9:	lea si, L9E0F	;@A9D9
-	call L26A9	;@A9DD
+	call PrintMsg	;@A9DD
 LA9E0:	mov al, 0FEh	;@A9E0
-	call K2D59	;@A9E2
+	call Sound	;@A9E2
 	jmp LA959	;@A9E5
 LA9E8:	pushf	;@A9E8
 	push ax	;@A9E9
 	push si	;@A9EA
 	lea si, L9D0E	;@A9EB
-	call L26A9	;@A9EF
+	call PrintMsg	;@A9EF
 	call L6FB1	;@A9F2
 	cmp al, 0FFh	;@A9F5
 	je LAA21	;@A9F7
 	lea si, L9D7A	;@A9F9
-	call L26A9	;@A9FD
-	cmp byte ptr L14C2, 25h	;@AA00
+	call PrintMsg	;@A9FD
+	cmp byte ptr PartyXY, 25h	;@AA00
 	jne LAA21	;@AA05
-	mov byte ptr L14CA, 0FFh	;@AA07
+	mov byte ptr WeaponFlag2, 0FFh	;@AA07
 	lea si, L9D8C	;@AA0C
-	call L26A9	;@AA10
+	call PrintMsg	;@AA10
 	call L6FB1	;@AA13
 	cmp al, 0FFh	;@AA16
 	je LAA21	;@AA18
 	lea si, L9DEC	;@AA1A
-	call L26A9	;@AA1E
+	call PrintMsg	;@AA1E
 LAA21:	pop si	;@AA21
 	pop ax	;@AA22
 	popf	;@AA23
@@ -570,20 +570,20 @@ LAA25:	pushf	;@AA25
 	push si	;@AA2A
 	push di	;@AA2B
 	lea si, L9E3B	;@AA2C
-	call L26A9	;@AA30
+	call PrintMsg	;@AA30
 	call LA561	;@AA33
 	cmp al, 4Eh	;@AA36
 	je LAA3D	;@AA38
 	call LAB68	;@AA3A
 LAA3D:	lea si, L9C4B	;@AA3D
-	call L26A9	;@AA41
+	call PrintMsg	;@AA41
 	push di	;@AA44
 	mov cx, 4	;@AA45
 	lea si, L9C1D	;@AA48
 	lea di, L9C10	;@AA4C
 	call K2AD8	;@AA50
 	pop di	;@AA53
-	call L26F4	;@AA54
+	call ScrollMsg	;@AA54
 	cmp al, 51h	;@AA57
 	je LAAD9	;@AA59
 	cmp al, 1Bh	;@AA5B
@@ -592,12 +592,12 @@ LAA3D:	lea si, L9C4B	;@AA3D
 	jne LAA66	;@AA61
 	jmp LAAEA	;@AA63
 LAA66:	lea si, L9CD8	;@AA66
-	call L26A9	;@AA6A
+	call PrintMsg	;@AA6A
 	push di	;@AA6D
 	mov cx, 7	;@AA6E
-	cmp byte ptr L14C2, 25h	;@AA71
+	cmp byte ptr PartyXY, 25h	;@AA71
 	jne LAA82	;@AA76
-	cmp byte ptr L14CB, 0	;@AA78
+	cmp byte ptr ArmourFlag2, 0	;@AA78
 	je LAA82	;@AA7D
 	mov cx, 9	;@AA7F
 LAA82:	lea si, L7932	;@AA82
@@ -633,9 +633,9 @@ LAABC:	xchg al, ah	;@AABC
 	mov byte ptr [bx+di+29h], al	;@AAC6
 	mov byte ptr [di+28h], 0	;@AAC9
 	lea si, L9D01	;@AACD
-	call L26A9	;@AAD1
+	call PrintMsg	;@AAD1
 	jmp LAA66	;@AAD4
-LAAD6:	call L26F4	;@AAD6
+LAAD6:	call ScrollMsg	;@AAD6
 LAAD9:	pop di	;@AAD9
 	pop si	;@AADA
 	pop dx	;@AADB
@@ -645,15 +645,15 @@ LAAD9:	pop di	;@AAD9
 	popf	;@AADF
 	ret	;@AAE0
 LAAE1:	lea si, L9CE3	;@AAE1
-	call L26A9	;@AAE5
+	call PrintMsg	;@AAE5
 	jmp short LAB60	;@AAE8
 LAAEA:	lea si, L9C5A	;@AAEA
-	call L26A9	;@AAEE
+	call PrintMsg	;@AAEE
 	push di	;@AAF1
 	mov cx, 7	;@AAF2
-	cmp byte ptr L14C2, 25h	;@AAF5
+	cmp byte ptr PartyXY, 25h	;@AAF5
 	jne LAB06	;@AAFA
-	cmp byte ptr L14CB, 0FFh	;@AAFC
+	cmp byte ptr ArmourFlag2, 0FFh	;@AAFC
 	jne LAB06	;@AB01
 	mov cx, 9	;@AB03
 LAB06:	lea si, L7932	;@AB06
@@ -681,33 +681,33 @@ LAB06:	lea si, L7932	;@AB06
 	daa	;@AB3A
 	mov byte ptr [bx+di+29h], al	;@AB3B
 	lea si, L9CB1	;@AB3E
-	call L26A9	;@AB42
+	call PrintMsg	;@AB42
 	jmp LAAEA	;@AB45
 LAB47:	lea si, L9DFE	;@AB47
-	call L26A9	;@AB4B
+	call PrintMsg	;@AB4B
 	jmp short LAB60	;@AB4E
 LAB50:	lea si, L9C6A	;@AB50
-	call L26A9	;@AB54
+	call PrintMsg	;@AB54
 	jmp short LAB60	;@AB57
 LAB59:	lea si, L9E0F	;@AB59
-	call L26A9	;@AB5D
+	call PrintMsg	;@AB5D
 LAB60:	mov al, 0FEh	;@AB60
-	call K2D59	;@AB62
+	call Sound	;@AB62
 	jmp LAAD9	;@AB65
 LAB68:	pushf	;@AB68
 	push ax	;@AB69
 	push si	;@AB6A
 	lea si, L9E60	;@AB6B
-	call L26A9	;@AB6F
+	call PrintMsg	;@AB6F
 	call L6FB1	;@AB72
 	cmp al, 0FFh	;@AB75
 	je LAB8F	;@AB77
-	cmp byte ptr L14C2, 25h	;@AB79
+	cmp byte ptr PartyXY, 25h	;@AB79
 	jne LAB8C	;@AB7E
-	mov byte ptr L14CB, 0FFh	;@AB80
+	mov byte ptr ArmourFlag2, 0FFh	;@AB80
 	lea si, L9EB0	;@AB85
-	call L26A9	;@AB89
-LAB8C:	call L26F4	;@AB8C
+	call PrintMsg	;@AB89
+LAB8C:	call ScrollMsg	;@AB8C
 LAB8F:	pop si	;@AB8F
 	pop ax	;@AB90
 	popf	;@AB91
@@ -718,7 +718,7 @@ LAB93:	pushf	;@AB93
 	push si	;@AB96
 	push di	;@AB97
 LAB98:	lea si, LA3B3	;@AB98
-	call L26A9	;@AB9C
+	call PrintMsg	;@AB9C
 	push di	;@AB9F
 	lea si, LA39B	;@ABA0
 	lea di, LA395	;@ABA4
@@ -732,8 +732,8 @@ LAB98:	lea si, LA3B3	;@AB98
 	pop di	;@ABB8
 	jmp word ptr LA3A7[bx]	;@ABB9
 LABBD:	lea si, LA463	;@ABBD
-	call L26A9	;@ABC1
-	call K2B4F	;@ABC4
+	call PrintMsg	;@ABC1
+	call ReadNumber	;@ABC4
 	cmp ah, 0FFh	;@ABC7
 	jne LABCF	;@ABCA
 	jmp LAC60	;@ABCC
@@ -761,8 +761,8 @@ LABCF:	mov bx, ax	;@ABCF
 	mov byte ptr [di+25h], bl	;@ABFA
 	jmp short LAC3C	;@ABFD
 LABFF:	lea si, LA463	;@ABFF
-	call L26A9	;@AC03
-	call K2B4F	;@AC06
+	call PrintMsg	;@AC03
+	call ReadNumber	;@AC06
 	cmp ah, 0FFh	;@AC09
 	je LAC60	;@AC0C
 	mov bx, ax	;@AC0E
@@ -788,24 +788,24 @@ LABFF:	lea si, LA463	;@ABFF
 	jb LAC59	;@AC37
 	mov byte ptr [di+26h], bl	;@AC39
 LAC3C:	lea si, LA452	;@AC3C
-	call L26A9	;@AC40
+	call PrintMsg	;@AC40
 	call LA561	;@AC43
 	cmp al, 4Eh	;@AC46
 	je LAC4D	;@AC48
 	jmp LAB98	;@AC4A
 LAC4D:	jmp LACEF	;@AC4D
 LAC50:	lea si, L99F1	;@AC50
-	call L26A9	;@AC54
+	call PrintMsg	;@AC54
 	jmp short LAC63	;@AC57
 LAC59:	lea si, LA429	;@AC59
-	call L26A9	;@AC5D
-LAC60:	call L26F4	;@AC60
+	call PrintMsg	;@AC5D
+LAC60:	call ScrollMsg	;@AC60
 LAC63:	mov al, 0FFh	;@AC63
-	call K2D59	;@AC65
+	call Sound	;@AC65
 	jmp LACF6	;@AC68
 LAC6B:	lea si, LA463	;@AC6B
-	call L26A9	;@AC6F
-	call K2B4F	;@AC72
+	call PrintMsg	;@AC6F
+	call ReadNumber	;@AC72
 	cmp ah, 0FFh	;@AC75
 	je LAC60	;@AC78
 	mov bx, ax	;@AC7A
@@ -833,8 +833,8 @@ LAC6B:	lea si, LA463	;@AC6B
 LACA7:	mov byte ptr [di+27h], bl	;@ACA7
 	jmp LAC3C	;@ACAA
 LACAC:	lea si, LA463	;@ACAC
-	call L26A9	;@ACB0
-	call K2B4F	;@ACB3
+	call PrintMsg	;@ACB0
+	call ReadNumber	;@ACB3
 	cmp ah, 0FFh	;@ACB6
 	je LAC60	;@ACB9
 	mov bx, ax	;@ACBB
@@ -862,7 +862,7 @@ LACAC:	lea si, LA463	;@ACAC
 LACE9:	mov byte ptr [di+0Fh], bl	;@ACE9
 	jmp LAC3C	;@ACEC
 LACEF:	lea si, LA410	;@ACEF
-	call L26A9	;@ACF3
+	call PrintMsg	;@ACF3
 LACF6:	pop di	;@ACF6
 	pop si	;@ACF7
 	pop cx	;@ACF8
@@ -875,14 +875,14 @@ LACFC:	pushf	;@ACFC
 	push dx	;@ACFF
 	push si	;@AD00
 	lea si, L9EDF	;@AD01
-	call L26A9	;@AD05
+	call PrintMsg	;@AD05
 LAD08:	lea si, L9EFF	;@AD08
-	call L26A9	;@AD0C
-	call K2B4F	;@AD0F
+	call PrintMsg	;@AD0C
+	call ReadNumber	;@AD0F
 	cmp ah, 0FFh	;@AD12
 	je LAD5F	;@AD15
-	call L26F4	;@AD17
-	call L26F4	;@AD1A
+	call ScrollMsg	;@AD17
+	call ScrollMsg	;@AD1A
 	mov ah, al	;@AD1D
 	mov al, 0	;@AD1F
 	call LA587	;@AD21
@@ -892,16 +892,16 @@ LAD08:	lea si, L9EFF	;@AD08
 	mov si, ax	;@AD2A
 	shl si, 1	;@AD2C
 	mov si, word ptr LA1B0[si]	;@AD2E
-	call L26A9	;@AD32
+	call PrintMsg	;@AD32
 	lea si, LA17F	;@AD35
-	call L26A9	;@AD39
+	call PrintMsg	;@AD39
 	call LA561	;@AD3C
-	call L26F4	;@AD3F
+	call ScrollMsg	;@AD3F
 	cmp al, 59h	;@AD42
 	je LAD08	;@AD44
-	call L26F4	;@AD46
+	call ScrollMsg	;@AD46
 	lea si, LA190	;@AD49
-	call L26A9	;@AD4D
+	call PrintMsg	;@AD4D
 LAD50:	pop si	;@AD50
 	pop dx	;@AD51
 	pop cx	;@AD52
@@ -909,27 +909,27 @@ LAD50:	pop si	;@AD50
 	popf	;@AD54
 	ret	;@AD55
 LAD56:	lea si, L971B	;@AD56
-	call L26A9	;@AD5A
+	call PrintMsg	;@AD5A
 	jmp short LAD69	;@AD5D
-LAD5F:	call L26F4	;@AD5F
+LAD5F:	call ScrollMsg	;@AD5F
 	lea si, L7967	;@AD62
-	call L26A9	;@AD66
+	call PrintMsg	;@AD66
 LAD69:	mov al, 0FEh	;@AD69
-	call K2D59	;@AD6B
+	call Sound	;@AD6B
 	jmp LAD50	;@AD6E
 LAD70:	pushf	;@AD70
 	push ax	;@AD71
 	push si	;@AD72
 	lea si, LA1C4	;@AD73
-	call L26A9	;@AD77
-	mov al, byte ptr L14C1	;@AD7A
-	call K2A3C	;@AD7D
+	call PrintMsg	;@AD77
+	mov al, byte ptr PartySize	;@AD7A
+	call PrintDigit	;@AD7D
 	lea si, LA1D9	;@AD80
-	call L26A9	;@AD84
+	call PrintMsg	;@AD84
 	shl al, 1	;@AD87
-	call K2A3C	;@AD89
+	call PrintDigit	;@AD89
 	lea si, LA1E7	;@AD8C
-	call L26A9	;@AD90
+	call PrintMsg	;@AD90
 	mov ah, al	;@AD93
 	call LA561	;@AD95
 	cmp al, 4Eh	;@AD98
@@ -938,16 +938,16 @@ LAD70:	pushf	;@AD70
 	call LA587	;@AD9E
 	jb LADB1	;@ADA1
 	lea si, LA226	;@ADA3
-	call L26A9	;@ADA7
-	mov byte ptr L14BA, 0Ah	;@ADAA
+	call PrintMsg	;@ADA7
+	mov byte ptr PartyTile, 0Ah	;@ADAA
 	jmp short LADC6	;@ADAF
 LADB1:	lea si, L9B93	;@ADB1
-	call L26A9	;@ADB5
+	call PrintMsg	;@ADB5
 	mov al, 0FFh	;@ADB8
-	call K2D59	;@ADBA
+	call Sound	;@ADBA
 	jmp short LADC6	;@ADBD
 LADBF:	lea si, LA1FC	;@ADBF
-	call L26A9	;@ADC3
+	call PrintMsg	;@ADC3
 LADC6:	pop si	;@ADC6
 	pop ax	;@ADC7
 	popf	;@ADC8

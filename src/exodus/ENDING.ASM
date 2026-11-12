@@ -3,17 +3,17 @@
 ; ENDING: the move count and the end of the game (A46F-A5AC).
 CODE SEGMENT BYTE PUBLIC
 ASSUME CS:CODE, DS:CODE, ES:CODE, SS:CODE
-EXTRN K29AA:NEAR
-EXTRN K29BD:NEAR
-EXTRN K2A23:NEAR
+EXTRN KeyReady:NEAR
+EXTRN ReadKey:NEAR
+EXTRN PrintBcdByte:NEAR
 EXTRN K2AD8:NEAR
-EXTRN K2C7E:NEAR
-EXTRN K2D59:NEAR
-EXTRN L14BC:BYTE
-EXTRN L14BD:BYTE
-EXTRN L26A9:NEAR
-EXTRN L26F4:NEAR
-EXTRN L28C6:NEAR
+EXTRN PrintAt:NEAR
+EXTRN Sound:NEAR
+EXTRN Location:BYTE
+EXTRN MoveCount:BYTE
+EXTRN PrintMsg:NEAR
+EXTRN ScrollMsg:NEAR
+EXTRN ClearView:NEAR
 EXTRN L6B91:NEAR
 EXTRN L7252:NEAR
 EXTRN L9657:BYTE
@@ -41,15 +41,15 @@ LA46F:	pushf	;@A46F
 	push cx	;@A471
 	push si	;@A472
 	std	;@A473
-	lea si, L14BD	;@A474
+	lea si, MoveCount	;@A474
 	add si, 3	;@A478
 	mov cx, 4	;@A47B
 LA47E:	lodsb	;@A47E
-	call K2A23	;@A47F
+	call PrintBcdByte	;@A47F
 	loop LA47E	;@A482
 	cld	;@A484
 	lea si, LA24A	;@A485
-	call L26A9	;@A489
+	call PrintMsg	;@A489
 	pop si	;@A48C
 	pop cx	;@A48D
 	pop ax	;@A48E
@@ -79,64 +79,64 @@ LA4A3:	xor word ptr [bx], ax	;@A4A3
 	popf	;@A4B7
 	ret	;@A4B8
 LA4B9:	lea si, LA252	;@A4B9
-	call L26A9	;@A4BD
+	call PrintMsg	;@A4BD
 	call LA46F	;@A4C0
 	lea si, LA29B	;@A4C3
-	call L26A9	;@A4C7
+	call PrintMsg	;@A4C7
 	cld	;@A4CA
 	lea si, L967D	;@A4CB
 	mov cx, 15h	;@A4CF
 LA4D2:	mov al, 0F7h	;@A4D2
-	call K2D59	;@A4D4
+	call Sound	;@A4D4
 	lodsw	;@A4D7
 	call LA491	;@A4D8
 	loop LA4D2	;@A4DB
-	call L28C6	;@A4DD
+	call ClearView	;@A4DD
 	mov dh, 3	;@A4E0
 	mov dl, 5	;@A4E2
 	lea si, LA2AC	;@A4E4
-	call K2C7E	;@A4E8
+	call PrintAt	;@A4E8
 	mov dh, 5	;@A4EB
 	mov dl, 2	;@A4ED
 	lea si, LA2BE	;@A4EF
-	call K2C7E	;@A4F3
+	call PrintAt	;@A4F3
 	mov dh, 7	;@A4F6
 	mov dl, 2	;@A4F8
 	lea si, LA2D3	;@A4FA
-	call K2C7E	;@A4FE
+	call PrintAt	;@A4FE
 	mov dh, 9	;@A501
 	mov dl, 2	;@A503
 	lea si, LA2E8	;@A505
-	call K2C7E	;@A509
+	call PrintAt	;@A509
 	mov dh, 0Bh	;@A50C
 	mov dl, 2	;@A50E
 	lea si, LA2FD	;@A510
-	call K2C7E	;@A514
+	call PrintAt	;@A514
 	mov dh, 0Dh	;@A517
 	mov dl, 2	;@A519
 	lea si, LA312	;@A51B
-	call K2C7E	;@A51F
+	call PrintAt	;@A51F
 	mov dh, 0Fh	;@A522
 	mov dl, 2	;@A524
 	lea si, LA327	;@A526
-	call K2C7E	;@A52A
+	call PrintAt	;@A52A
 	mov dh, 11h	;@A52D
 	mov dl, 2	;@A52F
 	lea si, LA33C	;@A531
-	call K2C7E	;@A535
+	call PrintAt	;@A535
 	mov dh, 13h	;@A538
 	mov dl, 2	;@A53A
 	lea si, LA351	;@A53C
-	call K2C7E	;@A540
+	call PrintAt	;@A540
 	mov dh, 15h	;@A543
 	mov dl, 2	;@A545
 	lea si, LA366	;@A547
-	call K2C7E	;@A54B
+	call PrintAt	;@A54B
 	call L6B91	;@A54E
-	mov byte ptr L14BC, 1	;@A551
-LA556:	call K29AA	;@A556
+	mov byte ptr Location, 1	;@A551
+LA556:	call KeyReady	;@A556
 	je LA556	;@A559
-	call K29BD	;@A55B
+	call ReadKey	;@A55B
 	jmp L7252	;@A55E
 LA561:	pushf	;@A561
 	push cx	;@A562
@@ -147,7 +147,7 @@ LA561:	pushf	;@A561
 	lea si, L965B	;@A569
 	lea di, L9657	;@A56D
 	call K2AD8	;@A571
-	call L26F4	;@A574
+	call ScrollMsg	;@A574
 	cmp al, 59h	;@A577
 	je LA57D	;@A579
 	mov al, 4Eh	;@A57B

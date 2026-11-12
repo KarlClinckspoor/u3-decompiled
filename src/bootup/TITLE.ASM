@@ -3,17 +3,17 @@
 ; TITLE: start-up and the scrolling title picture (1209-14C9).
 CODE SEGMENT BYTE PUBLIC
 ASSUME CS:CODE, DS:CODE, ES:CODE, SS:CODE
-EXTRN K0000:BYTE
-EXTRN K01A9:BYTE
-EXTRN K15A9:BYTE
-EXTRN K25C7:NEAR
-EXTRN K26C3:NEAR
-EXTRN K26E8:NEAR
-EXTRN K29AA:NEAR
-EXTRN K29BD:NEAR
+EXTRN StackArea:BYTE
+EXTRN TileGfx:BYTE
+EXTRN CharGfx:BYTE
+EXTRN SwapCursor:NEAR
+EXTRN FillCell:NEAR
+EXTRN DrawTileBlock:NEAR
+EXTRN KeyReady:NEAR
+EXTRN ReadKey:NEAR
 EXTRN K2AD8:NEAR
-EXTRN K2BF0:NEAR
-EXTRN K2C7E:NEAR
+EXTRN LoadFile:NEAR
+EXTRN PrintAt:NEAR
 EXTRN L005C:BYTE
 EXTRN L0068:BYTE
 EXTRN L006A:BYTE
@@ -23,21 +23,21 @@ EXTRN L00FA:BYTE
 EXTRN L00FC:BYTE
 EXTRN L00FE:BYTE
 EXTRN L01B9:BYTE
-EXTRN L01BC:BYTE
-EXTRN L01BE:BYTE
+EXTRN PartyBuf:BYTE
+EXTRN PartyLocation:BYTE
 EXTRN L01C3:BYTE
-EXTRN L02CE:BYTE
-EXTRN L07D2:BYTE
-EXTRN L0844:BYTE
-EXTRN L0A44:BYTE
-EXTRN L0C44:BYTE
+EXTRN Roster:BYTE
+EXTRN DemoTiles:BYTE
+EXTRN MovesCells:BYTE
+EXTRN MovesValues:BYTE
+EXTRN DemoStep:BYTE
 EXTRN L0C46:BYTE
-EXTRN L0C51:BYTE
-EXTRN L0C5C:BYTE
-EXTRN L0C67:BYTE
-EXTRN L0C71:BYTE
-EXTRN L0C7A:BYTE
-EXTRN L0C84:BYTE
+EXTRN FileShapesUlt:BYTE
+EXTRN FileRosterUlt:BYTE
+EXTRN FilePartyUlt:BYTE
+EXTRN FileDemoUlt:BYTE
+EXTRN FileMovesUlt:BYTE
+EXTRN FileCharsetUlt:BYTE
 EXTRN L0CA9:BYTE
 EXTRN L0CB6:BYTE
 EXTRN L0CC6:BYTE
@@ -49,7 +49,7 @@ EXTRN L0E38:BYTE
 EXTRN L0E4B:BYTE
 EXTRN L0E5C:BYTE
 EXTRN L0E83:BYTE
-EXTRN L0E87:BYTE
+EXTRN MainMenu:BYTE
 EXTRN L11B9:BYTE
 EXTRN L11CD:BYTE
 EXTRN L11DC:BYTE
@@ -63,7 +63,7 @@ PUBLIC L120A
 PUBLIC L132B
 PUBLIC L1385
 L1209:	iret	;@1209
-L120A:	lea sp, K0000	;@120A
+L120A:	lea sp, StackArea	;@120A
 	add sp, 100h	;@120E
 	mov ax, 0	;@1212
 	push es	;@1215
@@ -74,70 +74,70 @@ L120A:	lea sp, K0000	;@120A
 	mov word ptr es:[90h], offset L1207	;@1225
 	mov word ptr es:[92h], ax	;@122C
 	pop es	;@1230
-	mov byte ptr L01BE, 1	;@1231
-	lea bx, K15A9	;@1236
+	mov byte ptr PartyLocation, 1	;@1231
+	lea bx, CharGfx	;@1236
 	mov cx, 800h	;@123A
-	lea dx, L0C84	;@123D
-	call K2BF0	;@1241
-	lea bx, K01A9	;@1244
+	lea dx, FileCharsetUlt	;@123D
+	call LoadFile	;@1241
+	lea bx, TileGfx	;@1244
 	mov cx, 1400h	;@1248
-	lea dx, L0C51	;@124B
-	call K2BF0	;@124F
-	lea bx, L07D2	;@1252
+	lea dx, FileShapesUlt	;@124B
+	call LoadFile	;@124F
+	lea bx, DemoTiles	;@1252
 	mov cx, 72h	;@1256
-	lea dx, L0C71	;@1259
-	call K2BF0	;@125D
-	lea bx, L0844	;@1260
+	lea dx, FileDemoUlt	;@1259
+	call LoadFile	;@125D
+	lea bx, MovesCells	;@1260
 	mov cx, 400h	;@1264
-	lea dx, L0C7A	;@1267
-	call K2BF0	;@126B
+	lea dx, FileMovesUlt	;@1267
+	call LoadFile	;@126B
 	call L1DC6	;@126E
-	lea bx, L02CE	;@1271
+	lea bx, Roster	;@1271
 	mov cx, 500h	;@1275
-	lea dx, L0C5C	;@1278
-	call K2BF0	;@127C
+	lea dx, FileRosterUlt	;@1278
+	call LoadFile	;@127C
 	mov dx, 1CC0h	;@127F
 	call L132B	;@1282
 	mov dh, 0Ah	;@1285
 	mov dl, 0Eh	;@1287
 	lea si, L0CA9	;@1289
-	call K2C7E	;@128D
+	call PrintAt	;@128D
 	mov ah, 6	;@1290
 	mov al, 13h	;@1292
-	lea bx, L07D2	;@1294
-	lea bp, K01A9	;@1298
+	lea bx, DemoTiles	;@1294
+	lea bp, TileGfx	;@1298
 	mov di, 0DC2h	;@129C
-	call K26E8	;@129F
-	lea bx, L01BC	;@12A2
+	call DrawTileBlock	;@129F
+	lea bx, PartyBuf	;@12A2
 	mov cx, 112h	;@12A6
-	lea dx, L0C67	;@12A9
-	call K2BF0	;@12AD
-	mov byte ptr L01BE, 1	;@12B0
+	lea dx, FilePartyUlt	;@12A9
+	call LoadFile	;@12AD
+	mov byte ptr PartyLocation, 1	;@12B0
 	jmp short L12C8	;@12B5
 L12B7:	mov dx, 1CC0h	;@12B7
 	call L132B	;@12BA
 	mov dh, 0Ah	;@12BD
 	mov dl, 0Eh	;@12BF
 	lea si, L0CA9	;@12C1
-	call K2C7E	;@12C5
+	call PrintAt	;@12C5
 L12C8:	mov dh, 17h	;@12C8
 	mov dl, 0Ch	;@12CA
 	lea si, L0CB6	;@12CC
-	call K2C7E	;@12D0
-L12D3:	inc word ptr L0C44	;@12D3
-	cmp word ptr L0C44, 200h	;@12D7
+	call PrintAt	;@12D0
+L12D3:	inc word ptr DemoStep	;@12D3
+	cmp word ptr DemoStep, 200h	;@12D7
 	jne L12E5	;@12DD
-	mov word ptr L0C44, 0	;@12DF
-L12E5:	mov si, word ptr L0C44	;@12E5
-	mov bl, byte ptr L0844[si]	;@12E9
+	mov word ptr DemoStep, 0	;@12DF
+L12E5:	mov si, word ptr DemoStep	;@12E5
+	mov bl, byte ptr MovesCells[si]	;@12E9
 	mov bh, 0	;@12ED
-	mov al, byte ptr L0A44[si]	;@12EF
+	mov al, byte ptr MovesValues[si]	;@12EF
 	cmp bl, 0FFh	;@12F3
 	jne L12FC	;@12F6
 	mov ah, al	;@12F8
 	jmp short L1308	;@12FA
 L12FC:	shr al, 1	;@12FC
-	mov byte ptr L07D2[bx], al	;@12FE
+	mov byte ptr DemoTiles[bx], al	;@12FE
 	cmp al, 8	;@1302
 	jb L12D3	;@1304
 	mov ah, 1	;@1306
@@ -149,9 +149,9 @@ L1308:	call L1D71	;@1308
 	call L1D71	;@1317
 	dec ah	;@131A
 	jne L1308	;@131C
-	call K29AA	;@131E
+	call KeyReady	;@131E
 	je L12D3	;@1321
-	call K29BD	;@1323
+	call ReadKey	;@1323
 	call L13A0	;@1326
 	jmp L12B7	;@1329
 L132B:	push ax	;@132B
@@ -162,28 +162,28 @@ L132B:	push ax	;@132B
 	xor bx, 1CC0h	;@1334
 	xor bx, dx	;@1338
 	mov cx, 28h	;@133A
-L133D:	call K26C3	;@133D
+L133D:	call FillCell	;@133D
 	add bx, 2	;@1340
 	loop L133D	;@1343
 	mov ax, 2222h	;@1345
 	mov bx, dx	;@1348
 	mov cx, 28h	;@134A
-L134D:	call K26C3	;@134D
+L134D:	call FillCell	;@134D
 	add bx, 2	;@1350
 	loop L134D	;@1353
 	mov bx, 0C82h	;@1355
 	mov cx, 26h	;@1358
-L135B:	call K26C3	;@135B
+L135B:	call FillCell	;@135B
 	add bx, 2	;@135E
 	loop L135B	;@1361
 	mov bx, 0C80h	;@1363
 	mov cx, 0Eh	;@1366
-L1369:	call K26C3	;@1369
+L1369:	call FillCell	;@1369
 	add bx, 140h	;@136C
 	loop L1369	;@1370
 	mov bx, 0CCEh	;@1372
 	mov cx, 0Eh	;@1375
-L1378:	call K26C3	;@1378
+L1378:	call FillCell	;@1378
 	add bx, 140h	;@137B
 	loop L1378	;@137F
 	pop cx	;@1381
@@ -221,41 +221,41 @@ L13A6:	call L1385	;@13A6
 	mov dh, 15h	;@13AF
 	mov dl, 3	;@13B1
 	lea si, L0CC6	;@13B3
-	call K2C7E	;@13B7
+	call PrintAt	;@13B7
 	mov dh, 16h	;@13BA
 	mov dl, 0Dh	;@13BC
 	lea si, L0CE9	;@13BE
-	call K2C7E	;@13C2
+	call PrintAt	;@13C2
 	mov dh, 0Bh	;@13C5
 	mov dl, 7	;@13C7
 	lea si, L0D0E	;@13C9
-	call K2C7E	;@13CD
+	call PrintAt	;@13CD
 	mov dh, 0Ch	;@13D0
 	mov dl, 7	;@13D2
 	lea si, L0D29	;@13D4
-	call K2C7E	;@13D8
+	call PrintAt	;@13D8
 	mov dh, 0Fh	;@13DB
 	mov dl, 10h	;@13DD
 	lea si, L0E2F	;@13DF
-	call K2C7E	;@13E3
+	call PrintAt	;@13E3
 	mov dh, 11h	;@13E6
 	mov dl, 0Bh	;@13E8
 	lea si, L0E38	;@13EA
-	call K2C7E	;@13EE
+	call PrintAt	;@13EE
 	mov dh, 12h	;@13F1
 	mov dl, 0Ch	;@13F3
 	lea si, L0E4B	;@13F5
-	call K2C7E	;@13F9
+	call PrintAt	;@13F9
 	mov dh, 13h	;@13FC
 	mov dl, 0Dh	;@13FE
 	lea si, L0E5C	;@1400
-	call K2C7E	;@1404
+	call PrintAt	;@1404
 	mov dh, 0Fh	;@1407
 	mov dl, 17h	;@1409
-	call K25C7	;@140B
+	call SwapCursor	;@140B
 	mov cx, 4	;@140E
 	lea di, L0E83	;@1411
-	lea si, L0E87	;@1415
+	lea si, MainMenu	;@1415
 	call K2AD8	;@1419
 	cmp al, 4Ah	;@141C
 	je L142B	;@141E
@@ -304,21 +304,21 @@ L1493:	call L1385	;@1493
 	mov dh, 15h	;@1496
 	mov dl, 0Fh	;@1498
 	lea si, L11DC	;@149A
-	call K2C7E	;@149E
+	call PrintAt	;@149E
 	call L1CE7	;@14A1
 	ret	;@14A4
 L14A5:	call L1385	;@14A5
 	mov dh, 15h	;@14A8
 	mov dl, 0Bh	;@14AA
 	lea si, L11CD	;@14AC
-	call K2C7E	;@14B0
+	call PrintAt	;@14B0
 	call L1CE7	;@14B3
 	ret	;@14B6
 L14B7:	call L1385	;@14B7
 	mov dh, 15h	;@14BA
 	mov dl, 9	;@14BC
 	lea si, L11B9	;@14BE
-	call K2C7E	;@14C2
+	call PrintAt	;@14C2
 	call L1CE7	;@14C5
 	ret	;@14C8
 CODE ENDS

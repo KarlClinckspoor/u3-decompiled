@@ -3,31 +3,31 @@
 ; ORGANIZE: the party menu: look, form, disperse (14C9-194B).
 CODE SEGMENT BYTE PUBLIC
 ASSUME CS:CODE, DS:CODE, ES:CODE, SS:CODE
-EXTRN K25C1:NEAR
-EXTRN K25C7:NEAR
-EXTRN K25CC:NEAR
-EXTRN K2A18:NEAR
-EXTRN K2A23:NEAR
-EXTRN K2A3C:NEAR
+EXTRN PrintStr:NEAR
+EXTRN SwapCursor:NEAR
+EXTRN PutChar:NEAR
+EXTRN PrintBcdWord:NEAR
+EXTRN PrintBcdByte:NEAR
+EXTRN PrintDigit:NEAR
 EXTRN K2AD8:NEAR
 EXTRN K2BA0:NEAR
-EXTRN K2C7E:NEAR
-EXTRN L01BC:BYTE
-EXTRN L01BE:BYTE
+EXTRN PrintAt:NEAR
+EXTRN PartyBuf:BYTE
+EXTRN PartyLocation:BYTE
 EXTRN L01C3:BYTE
 EXTRN L01C4:BYTE
 EXTRN L01C5:BYTE
 EXTRN L01C6:BYTE
 EXTRN L01CE:BYTE
-EXTRN L02CE:BYTE
-EXTRN L0C5C:BYTE
-EXTRN L0C67:BYTE
+EXTRN Roster:BYTE
+EXTRN FileRosterUlt:BYTE
+EXTRN FilePartyUlt:BYTE
 EXTRN L0CFA:BYTE
 EXTRN L0D01:BYTE
 EXTRN L0D5D:BYTE
-EXTRN L0D61:BYTE
-EXTRN L0DFF:BYTE
-EXTRN L0E1F:BYTE
+EXTRN StatusNames:BYTE
+EXTRN WeaponNames:BYTE
+EXTRN ArmourNames:BYTE
 EXTRN L0E8F:BYTE
 EXTRN L0EA2:BYTE
 EXTRN L0EAA:BYTE
@@ -38,18 +38,18 @@ EXTRN L0EF4:BYTE
 EXTRN L0F0A:BYTE
 EXTRN L0F14:BYTE
 EXTRN L0F59:BYTE
-EXTRN L0F62:BYTE
+EXTRN OrganizeMenu:BYTE
 EXTRN L0F88:BYTE
 EXTRN L0FD1:BYTE
 EXTRN L0FD7:BYTE
 EXTRN L0FDD:BYTE
 EXTRN L0FE3:BYTE
 EXTRN L1045:BYTE
-EXTRN L1048:BYTE
+EXTRN SexNames:BYTE
 EXTRN L106B:BYTE
-EXTRN L1070:BYTE
+EXTRN RaceNames:BYTE
 EXTRN L10D0:BYTE
-EXTRN L10DB:BYTE
+EXTRN ClassNames:BYTE
 EXTRN L10FE:BYTE
 EXTRN L1112:BYTE
 EXTRN L111A:BYTE
@@ -93,45 +93,45 @@ L14CD:	call L1385	;@14CD
 	mov dh, 0Bh	;@14D6
 	mov dl, 0Bh	;@14D8
 	lea si, L0E8F	;@14DA
-	call K2C7E	;@14DE
+	call PrintAt	;@14DE
 	mov dh, 0Dh	;@14E1
 	mov dl, 10h	;@14E3
 	lea si, L0EA2	;@14E5
-	call K2C7E	;@14E9
+	call PrintAt	;@14E9
 	mov dh, 0Fh	;@14EC
 	mov dl, 0Ah	;@14EE
 	lea si, L0EAA	;@14F0
-	call K2C7E	;@14F4
+	call PrintAt	;@14F4
 	mov dh, 10h	;@14F7
 	mov dl, 0Bh	;@14F9
 	lea si, L0EBF	;@14FB
-	call K2C7E	;@14FF
+	call PrintAt	;@14FF
 	mov dh, 11h	;@1502
 	mov dl, 0Dh	;@1504
 	lea si, L0ED2	;@1506
-	call K2C7E	;@150A
+	call PrintAt	;@150A
 	mov dh, 12h	;@150D
 	mov dl, 0Bh	;@150F
 	lea si, L0EE1	;@1511
-	call K2C7E	;@1515
+	call PrintAt	;@1515
 	mov dh, 13h	;@1518
 	mov dl, 0Ah	;@151A
 	lea si, L0EF4	;@151C
-	call K2C7E	;@1520
+	call PrintAt	;@1520
 	mov dh, 14h	;@1523
 	mov dl, 0Bh	;@1525
 	lea si, L0F14	;@1527
-	call K2C7E	;@152B
+	call PrintAt	;@152B
 	mov dh, 15h	;@152E
 	mov dl, 0Fh	;@1530
 	lea si, L0F0A	;@1532
-	call K2C7E	;@1536
+	call PrintAt	;@1536
 	mov dh, 0Dh	;@1539
 	mov dl, 17h	;@153B
-	call K25C7	;@153D
+	call SwapCursor	;@153D
 	mov cx, 9	;@1540
 	lea di, L0F59	;@1543
-	lea si, L0F62	;@1547
+	lea si, OrganizeMenu	;@1547
 	call K2AD8	;@154B
 	cmp al, 45h	;@154E
 	je L156B	;@1550
@@ -176,11 +176,11 @@ L158F:	pushf	;@158F
 	mov dh, 0Fh	;@159E
 	mov dl, 0Ah	;@15A0
 	lea si, L10FE	;@15A2
-	call K2C7E	;@15A6
+	call PrintAt	;@15A6
 	mov dh, 12h	;@15A9
 	mov dl, 10h	;@15AB
 	lea si, L0CFA	;@15AD
-	call K2C7E	;@15B1
+	call PrintAt	;@15B1
 	call L1E0C	;@15B4
 	cmp ah, 0	;@15B7
 	jne L15BF	;@15BA
@@ -199,8 +199,8 @@ L15D6:	call L1385	;@15D6
 	mov dh, 0Bh	;@15DB
 	mov dl, 0Fh	;@15DD
 	lea si, L0CFA	;@15DF
-	call K2C7E	;@15E3
-	call K2A23	;@15E6
+	call PrintAt	;@15E3
+	call PrintBcdByte	;@15E6
 	cmp byte ptr [bx+10h], 0FFh	;@15E9
 	jne L160A	;@15ED
 	mov cx, 4	;@15EF
@@ -217,13 +217,13 @@ L15D6:	call L1385	;@15D6
 L160A:	mov dh, 0Dh	;@160A
 	mov dl, 3	;@160C
 	lea si, L0FD1	;@160E
-	call K2C7E	;@1612
+	call PrintAt	;@1612
 	lea si, [bx]	;@1615
-	call K25C1	;@1617
+	call PrintStr	;@1617
 	mov dh, 0Eh	;@161A
 	mov dl, 3	;@161C
 	lea si, L0FD7	;@161E
-	call K2C7E	;@1622
+	call PrintAt	;@1622
 	mov al, byte ptr [bx+18h]	;@1625
 	lea di, L1045	;@1628
 	mov cx, 3	;@162C
@@ -232,12 +232,12 @@ L160A:	mov dh, 0Dh	;@160A
 	sub si, cx	;@1633
 	dec si	;@1635
 	shl si, 1	;@1636
-	mov si, word ptr L1048[si]	;@1638
-	call K25C1	;@163C
+	mov si, word ptr SexNames[si]	;@1638
+	call PrintStr	;@163C
 	mov dh, 0Fh	;@163F
 	mov dl, 3	;@1641
 	lea si, L0FDD	;@1643
-	call K2C7E	;@1647
+	call PrintAt	;@1647
 	mov al, byte ptr [bx+16h]	;@164A
 	lea di, L106B	;@164D
 	mov cx, 5	;@1651
@@ -246,12 +246,12 @@ L160A:	mov dh, 0Dh	;@160A
 	sub si, cx	;@1658
 	dec si	;@165A
 	shl si, 1	;@165B
-	mov si, word ptr L1070[si]	;@165D
-	call K25C1	;@1661
+	mov si, word ptr RaceNames[si]	;@165D
+	call PrintStr	;@1661
 	mov dh, 10h	;@1664
 	mov dl, 3	;@1666
 	lea si, L0FE3	;@1668
-	call K2C7E	;@166C
+	call PrintAt	;@166C
 	mov al, byte ptr [bx+17h]	;@166F
 	lea di, L10D0	;@1672
 	mov cx, 0Bh	;@1676
@@ -260,12 +260,12 @@ L160A:	mov dh, 0Dh	;@160A
 	sub si, cx	;@167D
 	dec si	;@167F
 	shl si, 1	;@1680
-	mov si, word ptr L10DB[si]	;@1682
-	call K25C1	;@1686
+	mov si, word ptr ClassNames[si]	;@1682
+	call PrintStr	;@1686
 	mov dh, 11h	;@1689
 	mov dl, 1	;@168B
 	lea si, L1112	;@168D
-	call K2C7E	;@1691
+	call PrintAt	;@1691
 	mov al, byte ptr [bx+11h]	;@1694
 	lea di, L0D5D	;@1697
 	mov cx, 4	;@169B
@@ -274,76 +274,76 @@ L160A:	mov dh, 0Dh	;@160A
 	sub si, cx	;@16A2
 	dec si	;@16A4
 	shl si, 1	;@16A5
-	mov si, word ptr L0D61[si]	;@16A7
-	call K25C1	;@16AB
+	mov si, word ptr StatusNames[si]	;@16A7
+	call PrintStr	;@16AB
 	mov dh, 13h	;@16AE
 	mov dl, 1	;@16B0
 	lea si, L111A	;@16B2
-	call K2C7E	;@16B6
+	call PrintAt	;@16B6
 	mov al, byte ptr [bx+30h]	;@16B9
 	mov ah, 0	;@16BC
 	shl ax, 1	;@16BE
 	mov si, ax	;@16C0
-	mov si, word ptr L0DFF[si]	;@16C2
-	call K25C1	;@16C6
+	mov si, word ptr WeaponNames[si]	;@16C2
+	call PrintStr	;@16C6
 	mov dh, 14h	;@16C9
 	mov dl, 1	;@16CB
 	lea si, L1122	;@16CD
-	call K2C7E	;@16D1
+	call PrintAt	;@16D1
 	mov al, byte ptr [bx+28h]	;@16D4
 	mov ah, 0	;@16D7
 	shl ax, 1	;@16D9
 	mov si, ax	;@16DB
-	mov si, word ptr L0E1F[si]	;@16DD
-	call K25C1	;@16E1
+	mov si, word ptr ArmourNames[si]	;@16DD
+	call PrintStr	;@16E1
 	mov dh, 0Dh	;@16E4
 	mov dl, 1Bh	;@16E6
 	lea si, L112A	;@16E8
-	call K2C7E	;@16EC
+	call PrintAt	;@16EC
 	mov al, byte ptr [bx+12h]	;@16EF
-	call K2A23	;@16F2
+	call PrintBcdByte	;@16F2
 	mov dh, 0Eh	;@16F5
 	mov dl, 1Ah	;@16F7
 	lea si, L1134	;@16F9
-	call K2C7E	;@16FD
+	call PrintAt	;@16FD
 	mov al, byte ptr [bx+13h]	;@1700
-	call K2A23	;@1703
+	call PrintBcdByte	;@1703
 	mov dh, 0Fh	;@1706
 	mov dl, 17h	;@1708
 	lea si, L113F	;@170A
-	call K2C7E	;@170E
+	call PrintAt	;@170E
 	mov al, byte ptr [bx+14h]	;@1711
-	call K2A23	;@1714
+	call PrintBcdByte	;@1714
 	mov dh, 10h	;@1717
 	mov dl, 1Dh	;@1719
 	lea si, L114D	;@171B
-	call K2C7E	;@171F
+	call PrintAt	;@171F
 	mov al, byte ptr [bx+15h]	;@1722
-	call K2A23	;@1725
+	call PrintBcdByte	;@1725
 	mov dh, 12h	;@1728
 	mov dl, 17h	;@172A
 	lea si, L1155	;@172C
-	call K2C7E	;@1730
+	call PrintAt	;@1730
 	mov ax, word ptr [bx+1Ah]	;@1733
-	call K2A18	;@1736
+	call PrintBcdWord	;@1736
 	mov dh, 13h	;@1739
 	mov dl, 17h	;@173B
 	lea si, L1161	;@173D
-	call K2C7E	;@1741
+	call PrintAt	;@1741
 	mov ax, word ptr [bx+1Eh]	;@1744
-	call K2A18	;@1747
+	call PrintBcdWord	;@1747
 	mov dh, 14h	;@174A
 	mov dl, 1Dh	;@174C
 	lea si, L116D	;@174E
-	call K2C7E	;@1752
+	call PrintAt	;@1752
 	mov ax, word ptr [bx+21h]	;@1755
-	call K2A18	;@1758
+	call PrintBcdWord	;@1758
 	mov dh, 15h	;@175B
 	mov dl, 1Dh	;@175D
 	lea si, L1173	;@175F
-	call K2C7E	;@1763
+	call PrintAt	;@1763
 	mov ax, word ptr [bx+23h]	;@1766
-	call K2A18	;@1769
+	call PrintBcdWord	;@1769
 L176C:	call L1CE7	;@176C
 	pop es	;@176F
 	pop di	;@1770
@@ -357,12 +357,12 @@ L176C:	call L1CE7	;@176C
 L1778:	mov dh, 15h	;@1778
 	mov dl, 0Eh	;@177A
 	lea si, L0D01	;@177C
-	call K2C7E	;@1780
+	call PrintAt	;@1780
 	jmp L176C	;@1783
 L1785:	mov dh, 15h	;@1785
 	mov dl, 0Dh	;@1787
 	lea si, L0F88	;@1789
-	call K2C7E	;@178D
+	call PrintAt	;@178D
 	jmp L176C	;@1790
 L1792:	pushf	;@1792
 	push bx	;@1793
@@ -373,30 +373,30 @@ L1792:	pushf	;@1792
 	mov dh, 0Dh	;@179A
 	mov dl, 0Dh	;@179C
 	lea si, L1181	;@179E
-	call K2C7E	;@17A2
+	call PrintAt	;@17A2
 	mov al, byte ptr L01C3	;@17A5
 	cmp al, 0	;@17A8
 	je L17BA	;@17AA
 	mov dh, 10h	;@17AC
 	mov dl, 0Dh	;@17AE
 	lea si, L1190	;@17B0
-	call K2C7E	;@17B4
+	call PrintAt	;@17B4
 	jmp L1886	;@17B7
 L17BA:	mov cx, 4	;@17BA
 L17BD:	mov dh, cl	;@17BD
 	add dh, 0Fh	;@17BF
 	mov dl, 0Fh	;@17C2
 	lea si, L1179	;@17C4
-	call K2C7E	;@17C8
+	call PrintAt	;@17C8
 	mov al, cl	;@17CB
-	call K2A3C	;@17CD
+	call PrintDigit	;@17CD
 	mov al, 2Dh	;@17D0
-	call K25CC	;@17D2
+	call PutChar	;@17D2
 	loop L17BD	;@17D5
 L17D7:	mov dh, byte ptr L01C3	;@17D7
 	add dh, 10h	;@17DB
 	mov dl, 18h	;@17DE
-	call K25C7	;@17E0
+	call SwapCursor	;@17E0
 	call L1E0C	;@17E3
 	cmp ah, 14h	;@17E6
 	jbe L17EE	;@17E9
@@ -427,27 +427,27 @@ L1823:	cmp byte ptr L01C3, 0	;@1823
 	mov dh, 15h	;@1832
 	mov dl, 9	;@1834
 	lea si, L11B9	;@1836
-	call K2C7E	;@183A
+	call PrintAt	;@183A
 	call L18AF	;@183D
 	jmp L1886	;@1840
-L1843:	mov byte ptr L01BE, 0	;@1843
-	mov byte ptr L01BC, 3Fh	;@1848
+L1843:	mov byte ptr PartyLocation, 0	;@1843
+	mov byte ptr PartyBuf, 3Fh	;@1848
 	mov byte ptr L01C4, 2Ch	;@184D
 	mov byte ptr L01C5, 14h	;@1852
 	call L1D34	;@1857
-	lea bx, L01BC	;@185A
+	lea bx, PartyBuf	;@185A
 	mov cx, 112h	;@185E
-	lea dx, L0C67	;@1861
+	lea dx, FilePartyUlt	;@1861
 	call K2BA0	;@1865
-	lea dx, L0C5C	;@1868
+	lea dx, FileRosterUlt	;@1868
 	mov cx, 500h	;@186C
-	lea bx, L02CE	;@186F
+	lea bx, Roster	;@186F
 	call K2BA0	;@1873
-	mov byte ptr L01BE, 1	;@1876
+	mov byte ptr PartyLocation, 1	;@1876
 	mov dh, 15h	;@187B
 	mov dl, 10h	;@187D
 	lea si, L11B0	;@187F
-	call K2C7E	;@1883
+	call PrintAt	;@1883
 L1886:	call L1CE7	;@1886
 	pop si	;@1889
 	pop dx	;@188A
@@ -458,13 +458,13 @@ L1886:	call L1CE7	;@1886
 L188F:	mov dh, 15h	;@188F
 	mov dl, 0Dh	;@1891
 	lea si, L0F88	;@1893
-	call K2C7E	;@1897
+	call PrintAt	;@1897
 	call L18AF	;@189A
 	jmp L1886	;@189D
 L189F:	mov dh, 15h	;@189F
 	mov dl, 0Dh	;@18A1
 	lea si, L119F	;@18A3
-	call K2C7E	;@18A7
+	call PrintAt	;@18A7
 	call L18AF	;@18AA
 	jmp L1886	;@18AD
 L18AF:	pushf	;@18AF
@@ -499,7 +499,7 @@ L18DF:	pushf	;@18DF
 	mov dh, 11h	;@18E9
 	mov dl, 0Bh	;@18EB
 	lea si, L11F4	;@18ED
-	call K2C7E	;@18F1
+	call PrintAt	;@18F1
 	cmp byte ptr L01C3, 0	;@18F4
 	je L193E	;@18F9
 	call L1D07	;@18FB
@@ -508,18 +508,18 @@ L18DF:	pushf	;@18DF
 	mov cx, 100h	;@1905
 	mov al, 0	;@1908
 	rep stosb	;@190A
-	lea bx, L01BC	;@190C
+	lea bx, PartyBuf	;@190C
 	mov cx, 112h	;@1910
-	lea dx, L0C67	;@1913
+	lea dx, FilePartyUlt	;@1913
 	call K2BA0	;@1917
-	lea dx, L0C5C	;@191A
+	lea dx, FileRosterUlt	;@191A
 	mov cx, 500h	;@191E
-	lea bx, L02CE	;@1921
+	lea bx, Roster	;@1921
 	call K2BA0	;@1925
 	mov dh, 13h	;@1928
 	mov dl, 0Eh	;@192A
 	lea si, L11E7	;@192C
-	call K2C7E	;@1930
+	call PrintAt	;@1930
 L1933:	call L1CE7	;@1933
 	pop di	;@1936
 	pop si	;@1937
@@ -532,7 +532,7 @@ L1933:	call L1CE7	;@1933
 L193E:	mov dh, 14h	;@193E
 	mov dl, 0Fh	;@1940
 	lea si, L11DC	;@1942
-	call K2C7E	;@1946
+	call PrintAt	;@1946
 	jmp L1933	;@1949
 CODE ENDS
 END

@@ -13,25 +13,25 @@ PUBLIC L00FA
 PUBLIC L00FC
 PUBLIC L00FE
 PUBLIC L01B9
-PUBLIC L01BC
-PUBLIC L01BE
+PUBLIC PartyBuf
+PUBLIC PartyLocation
 PUBLIC L01C3
 PUBLIC L01C4
 PUBLIC L01C5
 PUBLIC L01C6
 PUBLIC L01CE
-PUBLIC L02CE
-PUBLIC L07D2
-PUBLIC L0844
-PUBLIC L0A44
-PUBLIC L0C44
+PUBLIC Roster
+PUBLIC DemoTiles
+PUBLIC MovesCells
+PUBLIC MovesValues
+PUBLIC DemoStep
 PUBLIC L0C46
-PUBLIC L0C51
-PUBLIC L0C5C
-PUBLIC L0C67
-PUBLIC L0C71
-PUBLIC L0C7A
-PUBLIC L0C84
+PUBLIC FileShapesUlt
+PUBLIC FileRosterUlt
+PUBLIC FilePartyUlt
+PUBLIC FileDemoUlt
+PUBLIC FileMovesUlt
+PUBLIC FileCharsetUlt
 PUBLIC L0CA9
 PUBLIC L0CB6
 PUBLIC L0CC6
@@ -41,15 +41,15 @@ PUBLIC L0D01
 PUBLIC L0D0E
 PUBLIC L0D29
 PUBLIC L0D5D
-PUBLIC L0D61
-PUBLIC L0DFF
-PUBLIC L0E1F
+PUBLIC StatusNames
+PUBLIC WeaponNames
+PUBLIC ArmourNames
 PUBLIC L0E2F
 PUBLIC L0E38
 PUBLIC L0E4B
 PUBLIC L0E5C
 PUBLIC L0E83
-PUBLIC L0E87
+PUBLIC MainMenu
 PUBLIC L0E8F
 PUBLIC L0EA2
 PUBLIC L0EAA
@@ -60,7 +60,7 @@ PUBLIC L0EF4
 PUBLIC L0F0A
 PUBLIC L0F14
 PUBLIC L0F59
-PUBLIC L0F62
+PUBLIC OrganizeMenu
 PUBLIC L0F74
 PUBLIC L0F7D
 PUBLIC L0F88
@@ -79,11 +79,11 @@ PUBLIC L100B
 PUBLIC L101C
 PUBLIC L102D
 PUBLIC L1045
-PUBLIC L1048
+PUBLIC SexNames
 PUBLIC L106B
-PUBLIC L1070
+PUBLIC RaceNames
 PUBLIC L10D0
-PUBLIC L10DB
+PUBLIC ClassNames
 PUBLIC L10F8
 PUBLIC L10FA
 PUBLIC L10FE
@@ -110,7 +110,7 @@ PUBLIC L11E7
 PUBLIC L11F4
 PUBLIC L1207
 PUBLIC X0103
-PUBLIC X0109
+PUBLIC ViewTiles
 PUBLIC X01A9
 PUBLIC X01AD
 PUBLIC X01B1
@@ -136,7 +136,7 @@ ORG 100h
 	jmp L120A	;@0100
 X0103 label byte	;@0103
 	db 0h,0h,0h,0h,0h,0h	;@0103
-X0109 label byte	;@0109
+ViewTiles label byte	;@0109
 	db 160 dup (0)	;@0109
 X01A9 label byte	;@01A9
 	db 0h,0h,0h,0h	;@01A9
@@ -148,10 +148,10 @@ X01B5 label byte	;@01B5
 	db 0h,0h,0h,0h	;@01B5
 L01B9 label byte
 	db 0h,0h,0h	;@01B9
-L01BC label byte
+PartyBuf label byte
 	db 0h,0h	;@01BC
 X01BE label byte	;@01BE
-L01BE label byte
+PartyLocation label byte
 	db 0h,0h,0h,0h,0h	;@01BE
 L01C3 label byte
 	db 0h	;@01C3
@@ -170,7 +170,7 @@ L01CE label byte
 	db 48 dup (0)	;@025E
 	db 20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,0FFh,0h	;@028E
 	db 48 dup (0)	;@029E
-L02CE label byte
+Roster label byte
 	db 20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,0FFh,0h	;@02CE
 	db 48 dup (0)	;@02DE
 	db 20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,0FFh,0h	;@030E
@@ -211,27 +211,27 @@ L02CE label byte
 	db 48 dup (0)	;@075E
 	db 20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,0FFh,0h	;@078E
 	db 52 dup (0)	;@079E
-L07D2 label byte
+DemoTiles label byte
 	db 114 dup (0)	;@07D2
-L0844 label byte
+MovesCells label byte
 	db 512 dup (0)	;@0844
-L0A44 label byte
+MovesValues label byte
 	db 512 dup (0)	;@0A44
-L0C44 label byte
+DemoStep label byte
 	db 0FFh,1h	;@0C44
 L0C46 label byte
 	db 45h,58h,4Fh,44h,55h,53h,2Eh,42h,49h,4Eh,0h	;@0C46
-L0C51 label byte
+FileShapesUlt label byte
 	db 53h,48h,41h,50h,45h,53h,2Eh,55h,4Ch,54h,0h	;@0C51
-L0C5C label byte
+FileRosterUlt label byte
 	db 52h,4Fh,53h,54h,45h,52h,2Eh,55h,4Ch,54h,0h	;@0C5C
-L0C67 label byte
+FilePartyUlt label byte
 	db 50h,41h,52h,54h,59h,2Eh,55h,4Ch,54h,0h	;@0C67
-L0C71 label byte
+FileDemoUlt label byte
 	db 44h,45h,4Dh,4Fh,2Eh,55h,4Ch,54h,0h	;@0C71
-L0C7A label byte
+FileMovesUlt label byte
 	db 4Dh,4Fh,56h,45h,53h,2Eh,55h,4Ch,54h,0h	;@0C7A
-L0C84 label byte
+FileCharsetUlt label byte
 	db 43h,48h,41h,52h,53h,45h,54h,2Eh,55h,4Ch,54h,0h,10h,3Ch,49h,6Eh	;@0C84
 	db 73h,65h,72h,74h,20h,53h,63h,65h,6Eh,61h,72h,69h,6Fh,20h,44h,69h	;@0C94
 	db 73h,6Bh,3Eh,11h,0h	;@0CA4
@@ -266,7 +266,7 @@ L0D57 label byte
 	db 41h,73h,68h,65h,73h,0h	;@0D57
 L0D5D label byte
 	db 47h,50h,44h,50h	;@0D5D
-L0D61	dw L0D44	;@0D61
+StatusNames	dw L0D44	;@0D61
 	dw L0D49	;@0D63
 	dw L0D52	;@0D65
 	dw L0D57	;@0D67
@@ -316,7 +316,7 @@ L0DED label byte
 	db 2Bh,32h,20h,43h,68h,61h,69h,6Eh,0h	;@0DED
 L0DF6 label byte
 	db 2Bh,32h,20h,50h,6Ch,61h,74h,65h,0h	;@0DF6
-L0DFF	dw L0D69	;@0DFF
+WeaponNames	dw L0D69	;@0DFF
 	dw L0D6E	;@0E01
 	dw L0D75	;@0E03
 	dw L0D7A	;@0E05
@@ -332,7 +332,7 @@ L0DFF	dw L0D69	;@0DFF
 	dw L0DB9	;@0E19
 	dw L0DC0	;@0E1B
 	dw L0DC7	;@0E1D
-L0E1F	dw L0DCE	;@0E1F
+ArmourNames	dw L0DCE	;@0E1F
 	dw L0DD3	;@0E21
 	dw L0DD9	;@0E23
 	dw L0DE1	;@0E25
@@ -358,7 +358,7 @@ L0E7B label byte
 	db 4Ah,6Fh,75h,72h,6Eh,65h,79h,0h	;@0E7B
 L0E83 label byte
 	db 52h,4Fh,4Ah,1Bh	;@0E83
-L0E87	dw L0E6B	;@0E87
+MainMenu	dw L0E6B	;@0E87
 	dw L0E72	;@0E89
 	dw L0E7B	;@0E8B
 	dw L0E6B	;@0E8D
@@ -402,7 +402,7 @@ L0F54 label byte
 	db 4Ch,6Fh,6Fh,6Bh,0h	;@0F54
 L0F59 label byte
 	db 45h,43h,46h,44h,54h,4Dh,51h,4Ch,1Bh	;@0F59
-L0F62	dw L0F28	;@0F62
+OrganizeMenu	dw L0F28	;@0F62
 	dw L0F30	;@0F64
 	dw L0F37	;@0F66
 	dw L0F3C	;@0F68
@@ -457,7 +457,7 @@ L103F label byte
 	db 4Fh,74h,68h,65h,72h,0h	;@103F
 L1045 label byte
 	db 4Dh,46h,4Fh	;@1045
-L1048	dw L1033	;@1048
+SexNames	dw L1033	;@1048
 	dw L1038	;@104A
 	dw L103F	;@104C
 L104E label byte
@@ -472,7 +472,7 @@ L1065 label byte
 	db 46h,75h,7Ah,7Ah,79h,0h	;@1065
 L106B label byte
 	db 48h,45h,44h,42h,46h	;@106B
-L1070	dw L104E	;@1070
+RaceNames	dw L104E	;@1070
 	dw L1054	;@1072
 	dw L1058	;@1074
 	dw L105E	;@1076
@@ -501,7 +501,7 @@ L10C9 label byte
 	db 52h,61h,6Eh,67h,65h,72h,0h	;@10C9
 L10D0 label byte
 	db 46h,43h,57h,54h,50h,4Ch,42h,44h,49h,41h,52h	;@10D0
-L10DB	dw L107A	;@10DB
+ClassNames	dw L107A	;@10DB
 	dw L1082	;@10DD
 	dw L1089	;@10DF
 	dw L1090	;@10E1

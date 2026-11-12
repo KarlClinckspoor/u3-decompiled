@@ -3,30 +3,30 @@
 ; SHRINE: stats header, shrines, leaving a dungeon (62FD-6B91).
 CODE SEGMENT BYTE PUBLIC
 ASSUME CS:CODE, DS:CODE, ES:CODE, SS:CODE
-EXTRN K0100:BYTE
-EXTRN K25C1:NEAR
-EXTRN K25CC:NEAR
-EXTRN K2B4F:NEAR
-EXTRN K2BF0:NEAR
-EXTRN K2C7E:NEAR
-EXTRN K2C87:NEAR
-EXTRN K2CAA:NEAR
-EXTRN K2D59:NEAR
-EXTRN L0100:BYTE
-EXTRN L12C0:BYTE
-EXTRN L12E0:BYTE
-EXTRN L14BC:BYTE
-EXTRN L14C2:BYTE
-EXTRN L15CC:BYTE
+EXTRN CursorCol:BYTE
+EXTRN PrintStr:NEAR
+EXTRN PutChar:NEAR
+EXTRN ReadNumber:NEAR
+EXTRN LoadFile:NEAR
+EXTRN PrintAt:NEAR
+EXTRN SignStep:NEAR
+EXTRN DrawView:NEAR
+EXTRN Sound:NEAR
+EXTRN MapBuf:BYTE
+EXTRN MonX:BYTE
+EXTRN MonY:BYTE
+EXTRN Location:BYTE
+EXTRN PartyXY:BYTE
+EXTRN PlayerXY:BYTE
 EXTRN L15CD:BYTE
-EXTRN L15CF:BYTE
-EXTRN L15EA:BYTE
+EXTRN DungeonLevel:BYTE
+EXTRN FileSosariaUlt:BYTE
 EXTRN L2097:NEAR
 EXTRN L24C0:BYTE
-EXTRN L24C4:NEAR
-EXTRN L26A9:NEAR
-EXTRN L58C0:BYTE
-EXTRN L58CC:BYTE
+EXTRN StartUp:NEAR
+EXTRN PrintMsg:NEAR
+EXTRN FileShrineImg:BYTE
+EXTRN Facing:BYTE
 EXTRN L58CD:BYTE
 EXTRN L58D2:BYTE
 EXTRN L598B:BYTE
@@ -40,9 +40,9 @@ EXTRN L5ADE:BYTE
 EXTRN L5AED:BYTE
 EXTRN L5B09:BYTE
 EXTRN L5B13:BYTE
-EXTRN L6C14:NEAR
-EXTRN L6C53:NEAR
-EXTRN L6C76:NEAR
+EXTRN IsUp:NEAR
+EXTRN FlushKeys:NEAR
+EXTRN AskPlayer:NEAR
 EXTRN L7176:NEAR
 EXTRN L71C1:NEAR
 EXTRN L7534:NEAR
@@ -68,7 +68,7 @@ PUBLIC L64EF
 PUBLIC L64FA
 PUBLIC L6540
 PUBLIC L654C
-PUBLIC L6556
+PUBLIC NameTbl
 PUBLIC L67BD
 PUBLIC L67C2
 PUBLIC L67C9
@@ -170,22 +170,22 @@ L62FD:	pushf	;@62FD
 	push bx	;@62FF
 	push dx	;@6300
 	push si	;@6301
-	push word ptr K0100	;@6302
+	push word ptr CursorCol	;@6302
 	mov dx, 9	;@6306
 	lea si, L5A4C	;@6309
-	call K2C7E	;@630D
-	mov al, byte ptr L15CF	;@6310
+	call PrintAt	;@630D
+	mov al, byte ptr DungeonLevel	;@6310
 	add al, 31h	;@6313
-	call K25CC	;@6315
+	call PutChar	;@6315
 	mov dx, 1707h	;@6318
 	lea si, L5A52	;@631B
-	call K2C7E	;@631F
-	mov bl, byte ptr L58CC	;@6322
+	call PrintAt	;@631F
+	mov bl, byte ptr Facing	;@6322
 	mov bh, 0	;@6326
 	shl bx, 1	;@6328
 	mov si, word ptr L598B[bx]	;@632A
-	call K25C1	;@632E
-	pop word ptr K0100	;@6331
+	call PrintStr	;@632E
+	pop word ptr CursorCol	;@6331
 	pop si	;@6335
 	pop dx	;@6336
 	pop bx	;@6337
@@ -194,17 +194,17 @@ L62FD:	pushf	;@62FD
 	ret	;@633A
 L633B:	pushf	;@633B
 	push ax	;@633C
-	mov al, byte ptr L15CC	;@633D
-	mov dl, byte ptr L12C0[si]	;@6340
+	mov al, byte ptr PlayerXY	;@633D
+	mov dl, byte ptr MonX[si]	;@6340
 	sub al, dl	;@6344
-	call K2C87	;@6346
+	call SignStep	;@6346
 	mov cl, ah	;@6349
 	add dl, cl	;@634B
 	and dl, 3Fh	;@634D
 	mov al, byte ptr L15CD	;@6350
-	mov dh, byte ptr L12E0[si]	;@6353
+	mov dh, byte ptr MonY[si]	;@6353
 	sub al, dh	;@6357
-	call K2C87	;@6359
+	call SignStep	;@6359
 	mov ch, ah	;@635C
 	add dh, ch	;@635E
 	and dh, 3Fh	;@6360
@@ -217,33 +217,33 @@ L6366:	pushf	;@6366
 	push cx	;@6369
 	push dx	;@636A
 	lea si, L5B13	;@636B
-	call L26A9	;@636F
-	call L6C76	;@6372
+	call PrintMsg	;@636F
+	call AskPlayer	;@6372
 	jne L637A	;@6375
 	jmp L6428	;@6377
 L637A:	dec al	;@637A
 	mov bp, ax	;@637C
-	call L6C14	;@637E
+	call IsUp	;@637E
 	je L6386	;@6381
 	jmp L644A	;@6383
 L6386:	push bx	;@6386
-	lea bx, L24C4	;@6387
+	lea bx, StartUp	;@6387
 	mov cx, 79h	;@638B
-	lea dx, L58C0	;@638E
-	call K2BF0	;@6392
-	call K2CAA	;@6395
-	mov byte ptr L14BC, 4	;@6398
+	lea dx, FileShrineImg	;@638E
+	call LoadFile	;@6392
+	call DrawView	;@6395
+	mov byte ptr Location, 4	;@6398
 	pop bx	;@639D
 	lea si, L5A74	;@639E
-	call L26A9	;@63A2
-	mov al, byte ptr L15CC	;@63A5
+	call PrintMsg	;@63A2
+	mov al, byte ptr PlayerXY	;@63A5
 	and al, 3	;@63A8
 	mov dl, al	;@63AA
 	mov dh, 0	;@63AC
 	mov si, dx	;@63AE
 	shl si, 1	;@63B0
 	mov si, word ptr L5993[si]	;@63B2
-	call L26A9	;@63B6
+	call PrintMsg	;@63B6
 	mov al, byte ptr [bx+16h]	;@63B9
 	mov cx, 5	;@63BC
 	lea di, L58CD	;@63BF
@@ -258,8 +258,8 @@ L6386:	push bx	;@6386
 	xchg bx, dx	;@63D5
 	mov di, dx	;@63D7
 	lea si, L5AD0	;@63D9
-	call L26A9	;@63DD
-	call K2B4F	;@63E0
+	call PrintMsg	;@63DD
+	call ReadNumber	;@63E0
 	cmp al, 0	;@63E3
 	je L6441	;@63E5
 	cmp al, byte ptr [bx+24h]	;@63E7
@@ -278,18 +278,18 @@ L6386:	push bx	;@6386
 L6403:	mov al, cl	;@6403
 L6405:	mov byte ptr [bx+di+12h], al	;@6405
 	lea si, L5B09	;@6408
-	call L26A9	;@640C
+	call PrintMsg	;@640C
 	mov ax, bp	;@640F
 	call L7176	;@6411
 	call L71C1	;@6414
 	mov al, 0FDh	;@6417
 	mov bl, 0D8h	;@6419
 	mov bh, 30h	;@641B
-	call K2D59	;@641D
+	call Sound	;@641D
 	call L71C1	;@6420
 	mov ax, bp	;@6423
 	call L7176	;@6425
-L6428:	mov byte ptr L14BC, 0FFh	;@6428
+L6428:	mov byte ptr Location, 0FFh	;@6428
 	pop dx	;@642D
 	pop cx	;@642E
 	pop bx	;@642F
@@ -297,36 +297,36 @@ L6428:	mov byte ptr L14BC, 0FFh	;@6428
 	popf	;@6431
 	ret	;@6432
 L6433:	lea si, L5AED	;@6433
-	call L26A9	;@6437
+	call PrintMsg	;@6437
 	mov al, 0FFh	;@643A
-	call K2D59	;@643C
+	call Sound	;@643C
 	jmp L6428	;@643F
 L6441:	lea si, L5ADE	;@6441
-	call L26A9	;@6445
+	call PrintMsg	;@6445
 	jmp L6428	;@6448
 L644A:	lea si, L7998	;@644A
-	call L26A9	;@644E
+	call PrintMsg	;@644E
 	mov al, 0FFh	;@6451
-	call K2D59	;@6453
+	call Sound	;@6453
 	jmp L6428	;@6456
 L6458:	push ax	;@6458
 	push bx	;@6459
 	push cx	;@645A
 	push dx	;@645B
 	push si	;@645C
-	mov ax, word ptr L14C2	;@645D
-	mov word ptr L15CC, ax	;@6460
+	mov ax, word ptr PartyXY	;@645D
+	mov word ptr PlayerXY, ax	;@6460
 	mov byte ptr L24C0, 0FFh	;@6463
 	lea si, L5A22	;@6468
-	call L26A9	;@646C
-	mov byte ptr L14BC, 0	;@646F
-	lea bx, L0100	;@6474
+	call PrintMsg	;@646C
+	mov byte ptr Location, 0	;@646F
+	lea bx, MapBuf	;@6474
 	mov cx, 1228h	;@6478
-	lea dx, L15EA	;@647B
-	call K2BF0	;@647F
+	lea dx, FileSosariaUlt	;@647B
+	call LoadFile	;@647F
 	call L2097	;@6482
-	mov byte ptr L15CF, 0	;@6485
-	call L6C53	;@648A
+	mov byte ptr DungeonLevel, 0	;@6485
+	call FlushKeys	;@648A
 	pop si	;@648D
 	pop dx	;@648E
 	pop cx	;@648F
@@ -378,7 +378,7 @@ L654C	dw L762F	;@654C
 	dw L7607	;@6550
 	dw L75A9	;@6552
 	dw L7580	;@6554
-L6556	dw L6666	;@6556
+NameTbl	dw L6666	;@6556
 	dw L666C	;@6558
 	dw L6672	;@655A
 	dw L6678	;@655C

@@ -3,10 +3,10 @@
 ; INTRO: the title animation, sound and the chain load of BOOTUP.BIN (5CDD-6113).
 CODE SEGMENT BYTE PUBLIC
 ASSUME CS:CODE, DS:CODE, ES:CODE, SS:CODE
-EXTRN K0000:BYTE
-EXTRN K0100:BYTE
-EXTRN K0101:BYTE
-EXTRN K0103:BYTE
+EXTRN StackArea:BYTE
+EXTRN CursorCol:BYTE
+EXTRN CursorRow:BYTE
+EXTRN RandState:BYTE
 EXTRN K0105:BYTE
 EXTRN K0107:BYTE
 EXTRN K0109:BYTE
@@ -14,11 +14,11 @@ EXTRN K010B:BYTE
 EXTRN K010D:BYTE
 EXTRN K010F:BYTE
 EXTRN K0111:BYTE
-EXTRN K2670:NEAR
-EXTRN K27C1:NEAR
-EXTRN K29AA:NEAR
-EXTRN K29BD:NEAR
-EXTRN K2BF0:NEAR
+EXTRN DiskCheckStub:NEAR
+EXTRN Random:NEAR
+EXTRN KeyReady:NEAR
+EXTRN ReadKey:NEAR
+EXTRN LoadFile:NEAR
 EXTRN L0000:BYTE
 EXTRN L005C:BYTE
 EXTRN L0068:BYTE
@@ -27,24 +27,24 @@ EXTRN L006C:BYTE
 EXTRN L007C:BYTE
 EXTRN L00FE:BYTE
 EXTRN L0105:BYTE
-EXTRN L0115:BYTE
+EXTRN PictureBuf:BYTE
 EXTRN L4115:BYTE
-EXTRN L4117:BYTE
-EXTRN L432C:BYTE
-EXTRN L432D:BYTE
+EXTRN NamePoints:BYTE
+EXTRN DiskCheckResult:BYTE
+EXTRN AnimFrames:BYTE
 EXTRN L5A2D:BYTE
-EXTRN L5A2F:BYTE
-EXTRN L5A39:BYTE
-EXTRN L5A42:BYTE
-EXTRN L5A4B:BYTE
+EXTRN FileBlankIbm:BYTE
+EXTRN FileExodIbm:BYTE
+EXTRN FileNameDat:BYTE
+EXTRN FileAnimateDat:BYTE
 EXTRN L5A57:BYTE
-EXTRN L5A62:BYTE
+EXTRN RowTbl:BYTE
 EXTRN L5CBA:BYTE
 PUBLIC L5CE0
 L5CDD:	mov al, 1	;@5CDD
 L5CDF:	iret	;@5CDF
 L5CE0:	cld	;@5CE0
-	lea sp, K0000	;@5CE1
+	lea sp, StackArea	;@5CE1
 	add sp, 100h	;@5CE5
 	mov ax, 0	;@5CE9
 	push es	;@5CEC
@@ -72,11 +72,11 @@ L5CE0:	cld	;@5CE0
 	mov word ptr K010D, dx	;@5D30
 	mov word ptr K0105, dx	;@5D34
 	mov word ptr K010B, cx	;@5D38
-	mov word ptr K0103, cx	;@5D3C
-	lea bx, L0115	;@5D40
+	mov word ptr RandState, cx	;@5D3C
+	lea bx, PictureBuf	;@5D40
 	mov cx, 4000h	;@5D44
-	lea dx, L5A2F	;@5D47
-	call K2BF0	;@5D4B
+	lea dx, FileBlankIbm	;@5D47
+	call LoadFile	;@5D4B
 	push es	;@5D4E
 	mov si, bx	;@5D4F
 	mov di, 0	;@5D51
@@ -84,7 +84,7 @@ L5CE0:	cld	;@5CE0
 	shr cx, 1	;@5D58
 	rep movsw	;@5D5A
 	pop es	;@5D5C
-	lea di, L5A62	;@5D5D
+	lea di, RowTbl	;@5D5D
 	mov cx, 64h	;@5D61
 	mov ax, 0	;@5D64
 L5D67:	stosw	;@5D67
@@ -92,20 +92,20 @@ L5D67:	stosw	;@5D67
 	stosw	;@5D6B
 	add ax, 0E050h	;@5D6C
 	loop L5D67	;@5D6F
-	lea bx, L0115	;@5D71
+	lea bx, PictureBuf	;@5D71
 	mov cx, 4000h	;@5D75
-	lea dx, L5A39	;@5D78
-	call K2BF0	;@5D7C
-	lea bx, L4117	;@5D7F
+	lea dx, FileExodIbm	;@5D78
+	call LoadFile	;@5D7C
+	lea bx, NamePoints	;@5D7F
 	mov cx, 215h	;@5D83
-	lea dx, L5A42	;@5D86
-	call K2BF0	;@5D8A
-	call K2670	;@5D8D
-	mov byte ptr L432C, al	;@5D90
-	lea bx, L432D	;@5D93
+	lea dx, FileNameDat	;@5D86
+	call LoadFile	;@5D8A
+	call DiskCheckStub	;@5D8D
+	mov byte ptr DiskCheckResult, al	;@5D90
+	lea bx, AnimFrames	;@5D93
 	mov cx, 1700h	;@5D97
-	lea dx, L5A4B	;@5D9A
-	call K2BF0	;@5D9E
+	lea dx, FileAnimateDat	;@5D9A
+	call LoadFile	;@5D9E
 	call L5E96	;@5DA1
 	mov ax, 2	;@5DA4
 	call L5E5A	;@5DA7
@@ -122,20 +122,20 @@ L5D67:	stosw	;@5D67
 	call L5F30	;@5DC8
 	mov ax, 6	;@5DCB
 	call L5E5A	;@5DCE
-L5DD1:	cmp byte ptr L432C, 0FFh	;@5DD1
+L5DD1:	cmp byte ptr DiskCheckResult, 0FFh	;@5DD1
 	je L5DD1	;@5DD6
 	call L5FF3	;@5DD8
 	mov ax, 4	;@5DDB
 	call L5E5A	;@5DDE
 	call L5EC2	;@5DE1
-	call K29AA	;@5DE4
+	call KeyReady	;@5DE4
 	jne L5E05	;@5DE7
 	in al, 61h	;@5DE9
 	mov ah, al	;@5DEB
 	and al, 0FCh	;@5DED
 	mov dh, 0FFh	;@5DEF
 	mov cx, 400h	;@5DF1
-L5DF4:	call K27C1	;@5DF4
+L5DF4:	call Random	;@5DF4
 L5DF7:	dec dl	;@5DF7
 	jne L5DF7	;@5DF9
 	out 61h, al	;@5DFB
@@ -146,9 +146,9 @@ L5DF7:	dec dl	;@5DF7
 L5E05:	call L5ED8	;@5E05
 	mov ax, 5	;@5E08
 	call L5E5A	;@5E0B
-L5E0E:	call K29AA	;@5E0E
+L5E0E:	call KeyReady	;@5E0E
 	je L5E18	;@5E11
-	call K29BD	;@5E13
+	call ReadKey	;@5E13
 	jmp L5E0E	;@5E16
 L5E18:	mov dx, 100h	;@5E18
 	mov ah, 1Ah	;@5E1B
@@ -173,7 +173,7 @@ L5E18:	mov dx, 100h	;@5E18
 	lea sp, L00FE	;@5E50
 	jmp near ptr L00FE	;@5E54
 L5E57:	jmp near ptr L0000	;@5E57
-L5E5A:	call K29AA	;@5E5A
+L5E5A:	call KeyReady	;@5E5A
 	jne L5E67	;@5E5D
 	mov cx, 0	;@5E5F
 L5E62:	loop L5E62	;@5E62
@@ -182,8 +182,8 @@ L5E62:	loop L5E62	;@5E62
 L5E67:	ret	;@5E67
 L5E68:	push es	;@5E68
 	mov es, word ptr L4115	;@5E69
-	lea bx, L4117	;@5E6D
-	call K29AA	;@5E71
+	lea bx, NamePoints	;@5E6D
+	call KeyReady	;@5E71
 	jne L5E94	;@5E74
 L5E76:	mov cl, byte ptr [bx]	;@5E76
 	test cl, 0FFh	;@5E78
@@ -197,12 +197,12 @@ L5E76:	mov cl, byte ptr [bx]	;@5E76
 	call L5F41	;@5E88
 	mov cx, si	;@5E8B
 L5E8D:	loop L5E8D	;@5E8D
-	call K29AA	;@5E8F
+	call KeyReady	;@5E8F
 	je L5E76	;@5E92
 L5E94:	pop es	;@5E94
 	ret	;@5E95
 L5E96:	mov al, 0	;@5E96
-L5E98:	call K29AA	;@5E98
+L5E98:	call KeyReady	;@5E98
 	jne L5EB1	;@5E9B
 	mov ah, 0FFh	;@5E9D
 	mov cx, 7	;@5E9F
@@ -221,7 +221,7 @@ L5EB1:	mov ah, 0	;@5EB1
 	mov dh, 21h	;@5EBC
 	call L5F6C	;@5EBE
 	ret	;@5EC1
-L5EC2:	call K29AA	;@5EC2
+L5EC2:	call KeyReady	;@5EC2
 	jne L5ED7	;@5EC5
 	mov ah, 0	;@5EC7
 	mov cx, 1Dh	;@5EC9
@@ -231,7 +231,7 @@ L5EC2:	call K29AA	;@5EC2
 	mov dh, 0Bh	;@5ED2
 	call L5F6C	;@5ED4
 L5ED7:	ret	;@5ED7
-L5ED8:	call K29AA	;@5ED8
+L5ED8:	call KeyReady	;@5ED8
 	jne L5EED	;@5EDB
 	mov ah, 0	;@5EDD
 	mov cx, 1Dh	;@5EDF
@@ -242,7 +242,7 @@ L5ED8:	call K29AA	;@5ED8
 	call L5F6C	;@5EEA
 L5EED:	ret	;@5EED
 L5EEE:	mov al, 0	;@5EEE
-L5EF0:	call K29AA	;@5EF0
+L5EF0:	call KeyReady	;@5EF0
 	jne L5F09	;@5EF3
 	mov ah, 0FFh	;@5EF5
 	mov cx, 7	;@5EF7
@@ -261,7 +261,7 @@ L5F09:	mov ah, 0	;@5F09
 	mov dh, 21h	;@5F14
 	call L5F6C	;@5F16
 	ret	;@5F19
-L5F1A:	call K29AA	;@5F1A
+L5F1A:	call KeyReady	;@5F1A
 	jne L5F2F	;@5F1D
 	mov ah, 0	;@5F1F
 	mov cx, 11h	;@5F21
@@ -293,7 +293,7 @@ L5F41:	push ax	;@5F41
 	mov bl, ch	;@5F56
 	mov bh, 0	;@5F58
 	shl bx, 1	;@5F5A
-	mov bx, word ptr L5A62[bx]	;@5F5C
+	mov bx, word ptr RowTbl[bx]	;@5F5C
 	add bl, al	;@5F60
 	adc bh, 0	;@5F62
 	or byte ptr es:[bx], ah	;@5F65
@@ -320,13 +320,13 @@ L5F81:	mov ax, word ptr [bp+2]	;@5F81
 	mov bl, al	;@5F84
 	mov bh, 0	;@5F86
 	shl bx, 1	;@5F88
-	mov si, word ptr L5A62[bx]	;@5F8A
-	add si, offset L0115	;@5F8E
+	mov si, word ptr RowTbl[bx]	;@5F8A
+	add si, offset PictureBuf	;@5F8E
 	add si, word ptr [bp+0Eh]	;@5F92
 	mov bl, ah	;@5F95
 	mov bh, 0	;@5F97
 	shl bx, 1	;@5F99
-	mov di, word ptr L5A62[bx]	;@5F9B
+	mov di, word ptr RowTbl[bx]	;@5F9B
 	add di, word ptr [bp+0Eh]	;@5F9F
 	mov cl, dh	;@5FA2
 L5FA4:	cmp byte ptr [bp+1], 0	;@5FA4
@@ -374,7 +374,7 @@ L5FF0 label byte
 L5FF3:	mov si, 2	;@5FF3
 	mov bx, 2Ah	;@5FF6
 	mov ah, 0	;@5FF9
-L5FFB:	call K29AA	;@5FFB
+L5FFB:	call KeyReady	;@5FFB
 	jne L6023	;@5FFE
 	mov al, byte ptr L5FF0[si]	;@6000
 L6004:	call L6024	;@6004
@@ -412,10 +412,10 @@ L6024:	pushf	;@6024
 	shr bx, 1	;@604B
 	mov dx, bx	;@604D
 	mov si, ax	;@604F
-	lea si, L432D[si]	;@6051
+	lea si, AnimFrames[si]	;@6051
 	mov bx, 150h	;@6055
 	mov ax, 10h	;@6058
-L605B:	mov di, word ptr L5A62[bx]	;@605B
+L605B:	mov di, word ptr RowTbl[bx]	;@605B
 	add bx, 2	;@605F
 	add di, dx	;@6062
 	mov byte ptr es:[di-1], 0	;@6064
@@ -479,8 +479,8 @@ L60D9:	mov ah, 0	;@60D9
 	mov bh, 1	;@60E9
 	mov bl, 1	;@60EB
 	int 10h	;@60ED
-	mov byte ptr K0101, 0	;@60EF
-	mov byte ptr K0100, 0	;@60F4
+	mov byte ptr CursorRow, 0	;@60EF
+	mov byte ptr CursorCol, 0	;@60F4
 	pop bp	;@60F9
 	pop dx	;@60FA
 	pop bx	;@60FB

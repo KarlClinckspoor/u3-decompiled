@@ -1,0 +1,5 @@
+; DUNGEON.DAT names. Scope dungeon.
+L0447 DrawDungeonView  ; the entry (0100 jumps here): BX = position, AL = facing, AH = level
+L0103 ViewPos
+L0105 ViewFacing
+L0106 ViewLevel

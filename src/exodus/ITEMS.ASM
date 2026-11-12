@@ -3,27 +3,27 @@
 ; ITEMS: chests, torches, negate time (58B4-5D83).
 CODE SEGMENT BYTE PUBLIC
 ASSUME CS:CODE, DS:CODE, ES:CODE, SS:CODE
-EXTRN K27C1:NEAR
-EXTRN K29BD:NEAR
-EXTRN K2D59:NEAR
-EXTRN L1280:BYTE
-EXTRN L12A0:BYTE
-EXTRN L1325:BYTE
-EXTRN L14BA:BYTE
-EXTRN L14BC:BYTE
-EXTRN L14C1:BYTE
-EXTRN L14C2:BYTE
-EXTRN L14CC:BYTE
-EXTRN L15CC:BYTE
-EXTRN L15CE:BYTE
-EXTRN L15D0:BYTE
+EXTRN Random:NEAR
+EXTRN ReadKey:NEAR
+EXTRN Sound:NEAR
+EXTRN MonTile:BYTE
+EXTRN MonMove:BYTE
+EXTRN Moon2Phase:BYTE
+EXTRN PartyTile:BYTE
+EXTRN Location:BYTE
+EXTRN PartySize:BYTE
+EXTRN PartyXY:BYTE
+EXTRN Players:BYTE
+EXTRN PlayerXY:BYTE
+EXTRN LightOn:BYTE
+EXTRN TimeStop:BYTE
 EXTRN L16E3:BYTE
-EXTRN L194D:BYTE
-EXTRN L1955:BYTE
-EXTRN L1BD5:NEAR
-EXTRN L26A9:NEAR
-EXTRN L27CD:NEAR
-EXTRN L28DF:NEAR
+EXTRN GateXTbl:BYTE
+EXTRN GateYTbl:BYTE
+EXTRN MainLoop:NEAR
+EXTRN PrintMsg:NEAR
+EXTRN BuildView:NEAR
+EXTRN MapCellAddr:NEAR
 EXTRN L5F9F:NEAR
 EXTRN L5FD4:NEAR
 EXTRN L5FE3:NEAR
@@ -82,23 +82,23 @@ EXTRN L692E:BYTE
 EXTRN L6935:BYTE
 EXTRN L693F:BYTE
 EXTRN L6947:BYTE
-EXTRN L6BFA:NEAR
-EXTRN L6C76:NEAR
+EXTRN PrintName:NEAR
+EXTRN AskPlayer:NEAR
 EXTRN L71C1:NEAR
 EXTRN L79A8:BYTE
 EXTRN L7AEA:NEAR
-EXTRN L7DA8:NEAR
-EXTRN L7DBA:NEAR
-EXTRN L7DDE:NEAR
+EXTRN MsgNoneLeft:NEAR
+EXTRN MsgWhat:NEAR
+EXTRN MsgNotHere:NEAR
 EXTRN L7F96:NEAR
-PUBLIC L58C0
+PUBLIC FileShrineImg
 PUBLIC L58CB
-PUBLIC L58CC
+PUBLIC Facing
 PUBLIC L58CD
 PUBLIC L58D2
-PUBLIC L590B
-PUBLIC L594B
-PUBLIC L596B
+PUBLIC SpellNames
+PUBLIC WizardSpellCmds
+PUBLIC ClericSpellCmds
 PUBLIC L598B
 PUBLIC L5993
 PUBLIC L599B
@@ -135,11 +135,11 @@ PUBLIC L5D4B
 PUBLIC L5D67
 L58B4 label byte
 	db 0h,0h,0h,0h,0h,0h,0h,0h,0h,0h,0h,0h	;@58B4
-L58C0 label byte
+FileShrineImg label byte
 	db 53h,48h,52h,49h,4Eh,45h,2Eh,49h,4Dh,47h,0h	;@58C0
 L58CB label byte
 	db 0h	;@58CB
-L58CC label byte
+Facing label byte
 	db 0h	;@58CC
 L58CD label byte
 	db 48h,45h,44h,42h,46h	;@58CD
@@ -152,7 +152,7 @@ L58EF label byte
 	db 73h,0Ah,44h,65h,73h,74h,72h,6Fh,79h,65h,64h,21h,0Ah,0h	;@58EF
 L58FD label byte
 	db 57h,68h,6Fh,73h,65h,20h,74h,6Fh,72h,63h,68h,3Ah,20h,0h	;@58FD
-L590B	dw L6853	;@590B
+SpellNames	dw L6853	;@590B
 	dw L685A	;@590D
 	dw L6861	;@590F
 	dw L6867	;@5911
@@ -184,7 +184,7 @@ L590B	dw L6853	;@590B
 	dw L6935	;@5945
 	dw L693F	;@5947
 	dw L6947	;@5949
-L594B	dw L5F9F	;@594B
+WizardSpellCmds	dw L5F9F	;@594B
 	dw L5FD4	;@594D
 	dw L5FE3	;@594F
 	dw L5FEE	;@5951
@@ -200,7 +200,7 @@ L594B	dw L5F9F	;@594B
 	dw L60CA	;@5965
 	dw L60FA	;@5967
 	dw L613E	;@5969
-L596B	dw L6153	;@596B
+ClericSpellCmds	dw L6153	;@596B
 	dw L6188	;@596D
 	dw L61DC	;@596F
 	dw L5FE3	;@5971
@@ -287,11 +287,11 @@ L5B13 label byte
 	db 73h,68h,72h,69h,6Eh,65h,21h,0Ah,57h,68h,6Fh,20h,65h,6Eh,74h,65h	;@5B13
 	db 72h,73h,3Fh,20h,0h	;@5B23
 L5B28:	pushf	;@5B28
-	cmp byte ptr L14BC, 80h	;@5B29
+	cmp byte ptr Location, 80h	;@5B29
 	je L5B46	;@5B2E
-	cmp byte ptr L14BC, 3	;@5B30
+	cmp byte ptr Location, 3	;@5B30
 	jne L5B4D	;@5B35
-L5B37:	mov al, byte ptr L14C2	;@5B37
+L5B37:	mov al, byte ptr PartyXY	;@5B37
 	cmp al, byte ptr L16E3	;@5B3A
 	jne L5B4D	;@5B3E
 	mov al, 0FFh	;@5B40
@@ -304,21 +304,21 @@ L5B4D:	mov al, 0	;@5B4D
 	jmp L5B42	;@5B4F
 L5B51:	push ax	;@5B51
 	push bx	;@5B52
-	call L27CD	;@5B53
+	call BuildView	;@5B53
 	call L71C1	;@5B56
-	mov bl, byte ptr L1325	;@5B59
+	mov bl, byte ptr Moon2Phase	;@5B59
 	mov bh, 0	;@5B5D
-	mov al, byte ptr L194D[bx]	;@5B5F
-	mov ah, byte ptr L1955[bx]	;@5B63
-	mov word ptr L15CC, ax	;@5B67
+	mov al, byte ptr GateXTbl[bx]	;@5B5F
+	mov ah, byte ptr GateYTbl[bx]	;@5B63
+	mov word ptr PlayerXY, ax	;@5B67
 	mov bl, 0C0h	;@5B6A
 	mov bh, 20h	;@5B6C
 	mov al, 0FDh	;@5B6E
-	call K2D59	;@5B70
+	call Sound	;@5B70
 	call L71C1	;@5B73
-	call L27CD	;@5B76
+	call BuildView	;@5B76
 	call L71C1	;@5B79
-	call K2D59	;@5B7C
+	call Sound	;@5B7C
 	call L71C1	;@5B7F
 	pop bx	;@5B82
 	pop ax	;@5B83
@@ -348,7 +348,7 @@ L5B85:	pushf	;@5B85
 	je L5BBD	;@5BB9
 	sub al, 80h	;@5BBB
 L5BBD:	mov dh, 0FFh	;@5BBD
-	call K27C1	;@5BBF
+	call Random	;@5BBF
 	cmp dl, al	;@5BC2
 	mov al, 0FFh	;@5BC4
 	jae L5BCA	;@5BC6
@@ -357,17 +357,17 @@ L5BCA:	pop dx	;@5BCA
 	popf	;@5BCB
 	cmp al, 0	;@5BCC
 	ret	;@5BCE
-L5BCF:	call L26A9	;@5BCF
-	cmp byte ptr L14BA, 0Bh	;@5BD2
+L5BCF:	call PrintMsg	;@5BCF
+	cmp byte ptr PartyTile, 0Bh	;@5BD2
 	je L5BDC	;@5BD7
-	jmp L7DBA	;@5BD9
+	jmp MsgWhat	;@5BD9
 L5BDC:	lea si, L58E6	;@5BDC
-	call L26A9	;@5BE0
+	call PrintMsg	;@5BE0
 	call L7AEA	;@5BE3
 	je L5C1D	;@5BE6
 	mov al, 0FBh	;@5BE8
-	call K2D59	;@5BEA
-	mov cx, word ptr L15CC	;@5BED
+	call Sound	;@5BEA
+	mov cx, word ptr PlayerXY	;@5BED
 	mov ax, dx	;@5BF1
 	mov si, 3	;@5BF3
 L5BF6:	add ch, ah	;@5BF6
@@ -379,54 +379,54 @@ L5BF6:	add ch, ah	;@5BF6
 	jne L5C20	;@5C06
 	push ax	;@5C08
 	mov bx, dx	;@5C09
-	call L28DF	;@5C0B
+	call MapCellAddr	;@5C0B
 	mov byte ptr [bx], 0F4h	;@5C0E
-	call L27CD	;@5C11
+	call BuildView	;@5C11
 	mov byte ptr [bx], al	;@5C14
 	pop ax	;@5C16
 	dec si	;@5C17
 	jne L5BF6	;@5C18
-L5C1A:	call L27CD	;@5C1A
-L5C1D:	jmp L1BD5	;@5C1D
+L5C1A:	call BuildView	;@5C1A
+L5C1D:	jmp MainLoop	;@5C1D
 L5C20:	mov di, bx	;@5C20
 	mov bx, dx	;@5C22
-	call L28DF	;@5C24
+	call MapCellAddr	;@5C24
 	mov byte ptr [bx], 0F4h	;@5C27
-	call L27CD	;@5C2A
+	call BuildView	;@5C2A
 	mov ah, al	;@5C2D
 	mov al, 0F7h	;@5C2F
-	call K2D59	;@5C31
+	call Sound	;@5C31
 	mov dh, 0FFh	;@5C34
-	mov al, byte ptr L1280[di]	;@5C36
+	mov al, byte ptr MonTile[di]	;@5C36
 	cmp al, 3Ch	;@5C3A
 	jne L5C45	;@5C3C
-	call K27C1	;@5C3E
+	call Random	;@5C3E
 	shl dl, 1	;@5C41
 	jae L5C6F	;@5C43
-L5C45:	call K27C1	;@5C45
+L5C45:	call Random	;@5C45
 	shl dl, 1	;@5C48
 	jae L5C6F	;@5C4A
-	mov al, byte ptr L1280[di]	;@5C4C
+	mov al, byte ptr MonTile[di]	;@5C4C
 	shr al, 1	;@5C50
 	shr al, 1	;@5C52
 	add al, 1	;@5C54
-	call L6BFA	;@5C56
+	call PrintName	;@5C56
 	lea si, L58EF	;@5C59
-	call L26A9	;@5C5D
+	call PrintMsg	;@5C5D
 	mov al, ah	;@5C60
-	mov cl, byte ptr L12A0[di]	;@5C62
+	mov cl, byte ptr MonMove[di]	;@5C62
 	mov byte ptr [bx], cl	;@5C66
-	mov byte ptr L1280[di], 0	;@5C68
+	mov byte ptr MonTile[di], 0	;@5C68
 	jmp L5C1D	;@5C6D
 L5C6F:	mov byte ptr [bx], ah	;@5C6F
 	jmp L5C1A	;@5C71
-L5C73:	call L26A9	;@5C73
-	call L6C76	;@5C76
+L5C73:	call PrintMsg	;@5C73
+	call AskPlayer	;@5C76
 	je L5CB2	;@5C79
 	mov di, bx	;@5C7B
-	lea bx, L14CC	;@5C7D
+	lea bx, Players	;@5C7D
 	mov si, bx	;@5C81
-	mov cl, byte ptr L14C1	;@5C83
+	mov cl, byte ptr PartySize	;@5C83
 	mov ch, 0	;@5C87
 	mov ax, 0	;@5C89
 L5C8C:	mov dx, word ptr [bx+23h]	;@5C8C
@@ -445,43 +445,43 @@ L5CA5:	mov word ptr [bx+23h], 0	;@5CA5
 	add bx, 40h	;@5CAA
 	loop L5CA5	;@5CAD
 	mov word ptr [di+23h], ax	;@5CAF
-L5CB2:	jmp L1BD5	;@5CB2
+L5CB2:	jmp MainLoop	;@5CB2
 L5CB5:	lea si, L79A8	;@5CB5
-	call L26A9	;@5CB9
+	call PrintMsg	;@5CB9
 	mov al, 0FFh	;@5CBC
-	call K2D59	;@5CBE
+	call Sound	;@5CBE
 	jmp L5CB2	;@5CC1
-L5CC3:	call L26A9	;@5CC3
-	jmp L7DBA	;@5CC6
-L5CC9:	call L26A9	;@5CC9
-	cmp byte ptr L14BC, 1	;@5CCC
+L5CC3:	call PrintMsg	;@5CC3
+	jmp MsgWhat	;@5CC6
+L5CC9:	call PrintMsg	;@5CC9
+	cmp byte ptr Location, 1	;@5CCC
 	jne L5CF2	;@5CD1
 	lea si, L58FD	;@5CD3
-	call L26A9	;@5CD7
-	call L6C76	;@5CDA
+	call PrintMsg	;@5CD7
+	call AskPlayer	;@5CDA
 	je L5CEF	;@5CDD
 	mov al, byte ptr [bx+0Fh]	;@5CDF
 	sub al, 1	;@5CE2
 	das	;@5CE4
 	jb L5CF5	;@5CE5
 	mov byte ptr [bx+0Fh], al	;@5CE7
-	mov byte ptr L15CE, 0FFh	;@5CEA
-L5CEF:	jmp L1BD5	;@5CEF
-L5CF2:	jmp L7DDE	;@5CF2
-L5CF5:	jmp L7DA8	;@5CF5
-L5CF8:	call L26A9	;@5CF8
-	call L6C76	;@5CFB
+	mov byte ptr LightOn, 0FFh	;@5CEA
+L5CEF:	jmp MainLoop	;@5CEF
+L5CF2:	jmp MsgNotHere	;@5CF2
+L5CF5:	jmp MsgNoneLeft	;@5CF5
+L5CF8:	call PrintMsg	;@5CF8
+	call AskPlayer	;@5CFB
 	je L5D10	;@5CFE
 	mov al, byte ptr [bx+27h]	;@5D00
 	sub al, 1	;@5D03
 	das	;@5D05
 	jb L5D13	;@5D06
 	mov byte ptr [bx+27h], al	;@5D08
-	mov byte ptr L15D0, 0Ah	;@5D0B
-L5D10:	jmp L1BD5	;@5D10
-L5D13:	jmp L7DA8	;@5D13
+	mov byte ptr TimeStop, 0Ah	;@5D0B
+L5D10:	jmp MainLoop	;@5D10
+L5D13:	jmp MsgNoneLeft	;@5D13
 L5D16:	pushf	;@5D16
-	call K29BD	;@5D17
+	call ReadKey	;@5D17
 	mov ah, al	;@5D1A
 	cmp ah, 61h	;@5D1C
 	jb L5D29	;@5D1F

@@ -3,39 +3,39 @@
 ; DUNEVENT: dungeon events: fountains, the rod, gremlins (941E-964F).
 CODE SEGMENT BYTE PUBLIC
 ASSUME CS:CODE, DS:CODE, ES:CODE, SS:CODE
-EXTRN K27C1:NEAR
-EXTRN K29AA:NEAR
-EXTRN K29BD:NEAR
-EXTRN K2BF0:NEAR
-EXTRN K2CAA:NEAR
-EXTRN K2D59:NEAR
-EXTRN L0100:BYTE
-EXTRN L1100:BYTE
-EXTRN L14BC:BYTE
-EXTRN L14C1:BYTE
-EXTRN L14CC:BYTE
-EXTRN L15CC:BYTE
-EXTRN L15CE:BYTE
-EXTRN L15CF:BYTE
-EXTRN L24C4:NEAR
-EXTRN L26A9:NEAR
-EXTRN L26F4:NEAR
-EXTRN L28C6:NEAR
-EXTRN L58CC:BYTE
+EXTRN Random:NEAR
+EXTRN KeyReady:NEAR
+EXTRN ReadKey:NEAR
+EXTRN LoadFile:NEAR
+EXTRN DrawView:NEAR
+EXTRN Sound:NEAR
+EXTRN MapBuf:BYTE
+EXTRN MapText:BYTE
+EXTRN Location:BYTE
+EXTRN PartySize:BYTE
+EXTRN Players:BYTE
+EXTRN PlayerXY:BYTE
+EXTRN LightOn:BYTE
+EXTRN DungeonLevel:BYTE
+EXTRN StartUp:NEAR
+EXTRN PrintMsg:NEAR
+EXTRN ScrollMsg:NEAR
+EXTRN ClearView:NEAR
+EXTRN Facing:BYTE
 EXTRN L5B85:NEAR
 EXTRN L64E4:BYTE
 EXTRN L6BC9:NEAR
-EXTRN L6C14:NEAR
-EXTRN L6C53:NEAR
-EXTRN L6C76:NEAR
-EXTRN L6CC3:NEAR
+EXTRN IsUp:NEAR
+EXTRN FlushKeys:NEAR
+EXTRN AskPlayer:NEAR
+EXTRN StatusLine:NEAR
 EXTRN L7176:NEAR
 EXTRN L71C1:NEAR
 EXTRN L82C6:NEAR
 EXTRN L8327:NEAR
-EXTRN L84E4:BYTE
-EXTRN L84EE:BYTE
-EXTRN L84F7:BYTE
+EXTRN FileBrandImg:BYTE
+EXTRN FileTimeImg:BYTE
+EXTRN FileFountainImg:BYTE
 EXTRN L85FD:BYTE
 EXTRN L8639:BYTE
 EXTRN L8649:BYTE
@@ -64,75 +64,75 @@ PUBLIC L95B3
 PUBLIC L960D
 PUBLIC L9630
 L941E:	mov byte ptr [bx], 0	;@941E
-	lea bx, L24C4	;@9421
+	lea bx, StartUp	;@9421
 	mov cx, 79h	;@9425
-	lea dx, L84EE	;@9428
-	call K2BF0	;@942C
-	call K2CAA	;@942F
-	mov byte ptr L14BC, 4	;@9432
+	lea dx, FileTimeImg	;@9428
+	call LoadFile	;@942C
+	call DrawView	;@942F
+	mov byte ptr Location, 4	;@9432
 	lea si, L8649	;@9437
-	call L26A9	;@943B
-	call L6C53	;@943E
-L9441:	call K29AA	;@9441
+	call PrintMsg	;@943B
+	call FlushKeys	;@943E
+L9441:	call KeyReady	;@9441
 	je L9441	;@9444
-	call K29BD	;@9446
-	call L26F4	;@9449
+	call ReadKey	;@9446
+	call ScrollMsg	;@9449
 	call L9630	;@944C
-	mov byte ptr L14BC, 1	;@944F
+	mov byte ptr Location, 1	;@944F
 	jmp L8327	;@9454
-L9457:	lea bx, L24C4	;@9457
+L9457:	lea bx, StartUp	;@9457
 	mov cx, 79h	;@945B
-	lea dx, L84F7	;@945E
-	call K2BF0	;@9462
-	call K2CAA	;@9465
-	mov byte ptr L14BC, 4	;@9468
-	call L6C53	;@946D
+	lea dx, FileFountainImg	;@945E
+	call LoadFile	;@9462
+	call DrawView	;@9465
+	mov byte ptr Location, 4	;@9468
+	call FlushKeys	;@946D
 L9470:	lea si, L86D3	;@9470
-	call L26A9	;@9474
-	call L6C76	;@9477
+	call PrintMsg	;@9474
+	call AskPlayer	;@9477
 	je L94A0	;@947A
 	mov cl, al	;@947C
-	call L6C14	;@947E
+	call IsUp	;@947E
 	jne L9492	;@9481
-	mov al, byte ptr L15CC	;@9483
+	mov al, byte ptr PlayerXY	;@9483
 	and al, 3	;@9486
 	mov ah, 0	;@9488
 	shl ax, 1	;@948A
 	mov si, ax	;@948C
 	jmp word ptr L85FD[si]	;@948E
 L9492:	lea si, L86F2	;@9492
-	call L26A9	;@9496
+	call PrintMsg	;@9496
 	mov al, 0FFh	;@9499
-	call K2D59	;@949B
+	call Sound	;@949B
 	jmp L9470	;@949E
-L94A0:	mov byte ptr L14BC, 1	;@94A0
+L94A0:	mov byte ptr Location, 1	;@94A0
 	call L9630	;@94A5
 	jmp L8327	;@94A8
 L94AB:	lea si, L86FA	;@94AB
-	call L26A9	;@94AF
+	call PrintMsg	;@94AF
 	mov byte ptr [bx+11h], 47h	;@94B2
-	call L6CC3	;@94B6
+	call StatusLine	;@94B6
 	jmp L9470	;@94B9
 L94BB:	lea si, L870C	;@94BB
-	call L26A9	;@94BF
+	call PrintMsg	;@94BF
 	mov byte ptr [bx+11h], 50h	;@94C2
 	dec cl	;@94C6
 	mov al, cl	;@94C8
 	call L7176	;@94CA
 	mov al, 0F7h	;@94CD
-	call K2D59	;@94CF
+	call Sound	;@94CF
 	mov al, cl	;@94D2
 	call L7176	;@94D4
-	call L6CC3	;@94D7
+	call StatusLine	;@94D7
 	jmp L9470	;@94DA
 L94DC:	mov ax, word ptr [bx+1Ch]	;@94DC
 	mov word ptr [bx+1Ah], ax	;@94DF
 	lea si, L871D	;@94E2
-	call L26A9	;@94E6
-	call L6CC3	;@94E9
+	call PrintMsg	;@94E6
+	call StatusLine	;@94E9
 	jmp L9470	;@94EC
 L94EE:	lea si, L872D	;@94EE
-	call L26A9	;@94F2
+	call PrintMsg	;@94F2
 	mov al, 25h	;@94F5
 	call L6BC9	;@94F7
 	call L71C1	;@94FA
@@ -140,42 +140,42 @@ L94EE:	lea si, L872D	;@94EE
 	mov al, cl	;@94FF
 	call L7176	;@9501
 	mov al, 0F7h	;@9504
-	call K2D59	;@9506
+	call Sound	;@9506
 	mov al, cl	;@9509
 	call L7176	;@950B
 	call L71C1	;@950E
-	call L6CC3	;@9511
+	call StatusLine	;@9511
 	jmp L9470	;@9514
 L9517:	lea si, L873F	;@9517
-	call L26A9	;@951B
-	mov byte ptr L15CE, 0	;@951E
-	call L28C6	;@9523
+	call PrintMsg	;@951B
+	mov byte ptr LightOn, 0	;@951E
+	call ClearView	;@9523
 	jmp L8327	;@9526
 L9529:	mov byte ptr [bx], 0	;@9529
 	lea si, L86B8	;@952C
-	call L26A9	;@9530
+	call PrintMsg	;@9530
 	mov al, 0F6h	;@9533
-	call K2D59	;@9535
-	lea bx, L14CC	;@9538
+	call Sound	;@9535
+	lea bx, Players	;@9538
 	call L5B85	;@953C
 	jne L954A	;@953F
 	lea si, L86C9	;@9541
-	call L26A9	;@9545
+	call PrintMsg	;@9545
 	jmp short L954D	;@9548
 L954A:	call L82C6	;@954A
 L954D:	jmp L8327	;@954D
-L9550:	lea bx, L24C4	;@9550
+L9550:	lea bx, StartUp	;@9550
 	mov cx, 79h	;@9554
-	lea dx, L84E4	;@9557
-	call K2BF0	;@955B
-	call K2CAA	;@955E
-	mov byte ptr L14BC, 4	;@9561
+	lea dx, FileBrandImg	;@9557
+	call LoadFile	;@955B
+	call DrawView	;@955E
+	mov byte ptr Location, 4	;@9561
 	lea si, L8759	;@9566
-	call L26A9	;@956A
-	call L6C53	;@956D
-	call L6C76	;@9570
+	call PrintMsg	;@956A
+	call FlushKeys	;@956D
+	call AskPlayer	;@9570
 	je L95A8	;@9573
-	mov ah, byte ptr L15CC	;@9575
+	mov ah, byte ptr PlayerXY	;@9575
 	and ah, 3	;@9579
 	mov cl, ah	;@957C
 	add cl, 4	;@957E
@@ -186,28 +186,28 @@ L9550:	lea bx, L24C4	;@9550
 	call L7176	;@958A
 	mov ah, al	;@958D
 	mov al, 0F7h	;@958F
-	call K2D59	;@9591
+	call Sound	;@9591
 	mov al, ah	;@9594
 	call L7176	;@9596
 	mov al, 50h	;@9599
 	call L6BC9	;@959B
-	call L6CC3	;@959E
+	call StatusLine	;@959E
 	lea si, L8785	;@95A1
-	call L26A9	;@95A5
-L95A8:	mov byte ptr L14BC, 1	;@95A8
+	call PrintMsg	;@95A5
+L95A8:	mov byte ptr Location, 1	;@95A8
 	call L9630	;@95AD
 	jmp L8327	;@95B0
 L95B3:	mov byte ptr [bx], 0	;@95B3
-	mov dh, byte ptr L14C1	;@95B6
-	call K27C1	;@95BA
+	mov dh, byte ptr PartySize	;@95B6
+	call Random	;@95BA
 	mov al, 40h	;@95BD
 	mul dl	;@95BF
 	mov bx, ax	;@95C1
-	lea bx, L14CC[bx]	;@95C3
-	call L6C14	;@95C7
+	lea bx, Players[bx]	;@95C3
+	call IsUp	;@95C7
 	jne L9602	;@95CA
 	lea si, L874E	;@95CC
-	call L26A9	;@95D0
+	call PrintMsg	;@95D0
 	mov ax, word ptr [bx+21h]	;@95D3
 	xchg al, ah	;@95D6
 	sub al, 1	;@95D8
@@ -217,40 +217,40 @@ L95B3:	mov byte ptr [bx], 0	;@95B3
 	jae L9602	;@95E0
 	mov word ptr [bx+21h], 0	;@95E2
 	lea si, L64E4	;@95E7
-	call L26A9	;@95EB
+	call PrintMsg	;@95EB
 	mov al, dl	;@95EE
 	call L7176	;@95F0
 	mov al, 0F7h	;@95F3
-	call K2D59	;@95F5
+	call Sound	;@95F5
 	mov al, dl	;@95F8
 	call L7176	;@95FA
 	mov al, 5	;@95FD
 	call L6BC9	;@95FF
-L9602:	call L6CC3	;@9602
+L9602:	call StatusLine	;@9602
 	mov al, 0FAh	;@9605
-	call K2D59	;@9607
+	call Sound	;@9607
 	jmp L8327	;@960A
 L960D:	mov byte ptr [bx], 0	;@960D
 	lea si, L8639	;@9610
-	call L26A9	;@9614
-	mov bl, byte ptr L15CF	;@9617
+	call PrintMsg	;@9614
+	mov bl, byte ptr DungeonLevel	;@9617
 	mov bh, 0	;@961B
 	shl bx, 1	;@961D
-	mov si, word ptr L1100[bx]	;@961F
-	lea si, L1100[si]	;@9623
-	call L26A9	;@9627
-	call L26F4	;@962A
+	mov si, word ptr MapText[bx]	;@961F
+	lea si, MapText[si]	;@9623
+	call PrintMsg	;@9627
+	call ScrollMsg	;@962A
 	jmp L8327	;@962D
 L9630:	pushf	;@9630
 	push ax	;@9631
 	push bx	;@9632
-	call L28C6	;@9633
-	cmp byte ptr L15CE, 0	;@9636
+	call ClearView	;@9633
+	cmp byte ptr LightOn, 0	;@9636
 	je L964B	;@963B
-	mov al, byte ptr L58CC	;@963D
-	mov ah, byte ptr L15CF	;@9640
-	mov bx, word ptr L15CC	;@9644
-	call near ptr L0100	;@9648
+	mov al, byte ptr Facing	;@963D
+	mov ah, byte ptr DungeonLevel	;@9640
+	mov bx, word ptr PlayerXY	;@9644
+	call near ptr MapBuf	;@9648
 L964B:	pop bx	;@964B
 	pop ax	;@964C
 	popf	;@964D

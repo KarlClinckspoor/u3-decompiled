@@ -7,12 +7,12 @@ ROWTAB EQU 132Ah	; an address in the program this file is loaded into
 CODE SEGMENT BYTE PUBLIC
 ASSUME CS:CODE, DS:CODE, ES:CODE, SS:CODE
 ORG 100h
-	jmp L0447	;@0100
-L0103 label byte
+	jmp DrawDungeonView	;@0100
+ViewPos label byte
 	db 0h,0h	;@0103
-L0105 label byte
+ViewFacing label byte
 	db 0h	;@0105
-L0106 label byte
+ViewLevel label byte
 	db 0h	;@0106
 L0107 label byte
 	db 0h,0FFh,1h,0FFh,0h,1h,0FEh,0FFh,1h,2h,0FEh,0FFh,0h,1h,2h,0FDh	;@0107
@@ -72,12 +72,12 @@ L0247 label byte
 	db 5Bh,3Ch,48h,0FEh,0FFh,0FFh,3h,0h,7Fh,3Ch,48h,0FEh,0FFh,0FFh,3h,0h	;@0417
 	db 34h,3Fh,46h,2h,1h,2h,1h,0h,3Ch,3Fh,46h,2h,1h,1h,1h,0h	;@0427
 	db 44h,3Fh,46h,0FEh,1h,1h,1h,0h,4Ch,3Fh,46h,0FEh,1h,2h,1h,0h	;@0437
-L0447:	pushf	;@0447
+DrawDungeonView:	pushf	;@0447
 	push ax	;@0448
 	push es	;@0449
-	mov word ptr L0103, bx	;@044A
-	mov byte ptr L0105, al	;@044E
-	mov byte ptr L0106, ah	;@0451
+	mov word ptr ViewPos, bx	;@044A
+	mov byte ptr ViewFacing, al	;@044E
+	mov byte ptr ViewLevel, ah	;@0451
 	mov ax, 0B800h	;@0455
 	mov es, ax	;@0458
 	mov al, 0	;@045A
@@ -181,7 +181,7 @@ L0533:	push ax	;@0533
 	mov bh, 0	;@0538
 	mov dl, byte ptr L0107[bx]	;@053A
 	mov dh, byte ptr L0127[bx]	;@053E
-	mov ah, byte ptr L0105	;@0542
+	mov ah, byte ptr ViewFacing	;@0542
 	cmp ah, 0	;@0546
 	je L0553	;@0549
 L054B:	xchg dl, dh	;@054B
@@ -189,7 +189,7 @@ L054B:	xchg dl, dh	;@054B
 	dec ah	;@054F
 	jne L054B	;@0551
 L0553:	mov ah, al	;@0553
-	mov bx, word ptr L0103	;@0555
+	mov bx, word ptr ViewPos	;@0555
 	add bl, dl	;@0559
 	add bh, dh	;@055B
 	and bx, 0F0Fh	;@055D
@@ -258,7 +258,7 @@ L05B5:	push ax	;@05B5
 	mov bl, byte ptr [di+6]	;@05E5
 	mov bh, 0	;@05E8
 	mov di, bx	;@05EA
-	test byte ptr L0105, 1	;@05EC
+	test byte ptr ViewFacing, 1	;@05EC
 	je L05F5	;@05F1
 	inc cl	;@05F3
 L05F5:	call L0789	;@05F5
@@ -557,7 +557,7 @@ L0833:	pushf	;@0833
 	shl bh, 1	;@0838
 	shl bh, 1	;@083A
 	add bl, bh	;@083C
-	mov bh, byte ptr L0106	;@083E
+	mov bh, byte ptr ViewLevel	;@083E
 	lea bx, DMAP[bx]	;@0842
 	mov al, byte ptr [bx]	;@0846
 	popf	;@0848

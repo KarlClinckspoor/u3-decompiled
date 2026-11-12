@@ -23,20 +23,20 @@ PUBLIC L84E0
 PUBLIC L84E1
 PUBLIC L84E2
 PUBLIC L84E3
-PUBLIC L84E4
-PUBLIC L84EE
-PUBLIC L84F7
+PUBLIC FileBrandImg
+PUBLIC FileTimeImg
+PUBLIC FileFountainImg
 PUBLIC L8504
 PUBLIC L8511
 PUBLIC L851E
 PUBLIC L852B
-PUBLIC L8538
+PUBLIC FileConflict
 PUBLIC L8545
 PUBLIC L8552
 PUBLIC L855F
 PUBLIC L856C
-PUBLIC L8579
-PUBLIC L85BB
+PUBLIC CombatKeys
+PUBLIC CombatCmds
 PUBLIC L85FD
 PUBLIC L8605
 PUBLIC L8615
@@ -91,11 +91,11 @@ L84E2 label byte
 	db 0h	;@84E2
 L84E3 label byte
 	db 0h	;@84E3
-L84E4 label byte
+FileBrandImg label byte
 	db 42h,52h,41h,4Eh,44h,2Eh,49h,4Dh,47h,0h	;@84E4
-L84EE label byte
+FileTimeImg label byte
 	db 54h,49h,4Dh,45h,2Eh,49h,4Dh,47h,0h	;@84EE
-L84F7 label byte
+FileFountainImg label byte
 	db 46h,4Fh,55h,4Eh,54h,41h,49h,4Eh,2Eh,49h,4Dh,47h,0h	;@84F7
 L8504 label byte
 	db 43h,4Eh,46h,4Ch,43h,54h,5Fh,41h,2Eh,55h,4Ch,54h,0h	;@8504
@@ -105,7 +105,7 @@ L851E label byte
 	db 43h,4Eh,46h,4Ch,43h,54h,5Fh,43h,2Eh,55h,4Ch,54h,0h	;@851E
 L852B label byte
 	db 43h,4Eh,46h,4Ch,43h,54h,5Fh,46h,2Eh,55h,4Ch,54h,0h	;@852B
-L8538 label byte
+FileConflict label byte
 	db 43h,4Eh,46h,4Ch,43h,54h,5Fh,47h,2Eh,55h,4Ch,54h,0h	;@8538
 L8545 label byte
 	db 43h,4Eh,46h,4Ch,43h,54h,5Fh,4Dh,2Eh,55h,4Ch,54h,0h	;@8545
@@ -115,13 +115,13 @@ L855F label byte
 	db 43h,4Eh,46h,4Ch,43h,54h,5Fh,52h,2Eh,55h,4Ch,54h,0h	;@855F
 L856C label byte
 	db 43h,4Eh,46h,4Ch,43h,54h,5Fh,53h,2Eh,55h,4Ch,54h,0h	;@856C
-L8579 label byte
+CombatKeys label byte
 	db 55h,16h,20h,39h,0h,48h,0h,50h,0h,4Dh,0h,4Bh,56h,2Fh,0h,1Fh	;@8579
 	db 0h,2Fh,52h,13h,5Ah,2Ch,4Eh,31h,43h,2Eh,41h,1Eh,42h,30h,44h,20h	;@8589
 	db 45h,12h,46h,21h,47h,22h,49h,17h,4Bh,25h,50h,19h,51h,10h,53h,1Fh	;@8599
 	db 54h,14h,57h,11h,58h,2Dh,48h,23h,4Ah,24h,4Ch,26h,4Dh,32h,4Fh,18h	;@85A9
 	db 59h,15h	;@85B9
-L85BB	dw L8D8D	;@85BB
+CombatCmds	dw L8D8D	;@85BB
 	dw L8D83	;@85BD
 	dw L8CBE	;@85BF
 	dw L8CC9	;@85C1

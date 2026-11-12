@@ -4,17 +4,17 @@
 CODE SEGMENT BYTE PUBLIC
 ASSUME CS:CODE, DS:CODE, ES:CODE, SS:CODE
 EXTRN K011B:BYTE
-EXTRN K25CC:NEAR
-EXTRN K27C1:NEAR
-EXTRN K29AA:NEAR
-EXTRN K29BD:NEAR
-EXTRN K2A23:NEAR
-EXTRN K2A3C:NEAR
-EXTRN K2BF0:NEAR
-EXTRN K2C87:NEAR
-EXTRN K2CAA:NEAR
-EXTRN K2CC5:NEAR
-EXTRN K2D59:NEAR
+EXTRN PutChar:NEAR
+EXTRN Random:NEAR
+EXTRN KeyReady:NEAR
+EXTRN ReadKey:NEAR
+EXTRN PrintBcdByte:NEAR
+EXTRN PrintDigit:NEAR
+EXTRN LoadFile:NEAR
+EXTRN SignStep:NEAR
+EXTRN DrawView:NEAR
+EXTRN ViewTileAt:NEAR
+EXTRN Sound:NEAR
 EXTRN L0080:BYTE
 EXTRN L0088:BYTE
 EXTRN L0090:BYTE
@@ -23,52 +23,52 @@ EXTRN L00A0:BYTE
 EXTRN L00A4:BYTE
 EXTRN L00A8:BYTE
 EXTRN L00AC:BYTE
-EXTRN L1280:BYTE
-EXTRN L12A0:BYTE
-EXTRN L12C0:BYTE
-EXTRN L12E0:BYTE
-EXTRN L14BA:BYTE
-EXTRN L14BC:BYTE
-EXTRN L14C1:BYTE
-EXTRN L14CC:BYTE
+EXTRN MonTile:BYTE
+EXTRN MonMove:BYTE
+EXTRN MonX:BYTE
+EXTRN MonY:BYTE
+EXTRN PartyTile:BYTE
+EXTRN Location:BYTE
+EXTRN PartySize:BYTE
+EXTRN Players:BYTE
 EXTRN L14DD:BYTE
-EXTRN L15CC:BYTE
+EXTRN PlayerXY:BYTE
 EXTRN L15CD:BYTE
-EXTRN L15D0:BYTE
+EXTRN TimeStop:BYTE
 EXTRN L1719:BYTE
 EXTRN L1B4D:BYTE
 EXTRN L1B54:BYTE
 EXTRN L1B5B:BYTE
 EXTRN L1B61:BYTE
-EXTRN L1BD5:NEAR
+EXTRN MainLoop:NEAR
 EXTRN L2018:NEAR
-EXTRN L24C4:NEAR
+EXTRN StartUp:NEAR
 EXTRN L259D:BYTE
-EXTRN L26A9:NEAR
-EXTRN L26F4:NEAR
-EXTRN L27CD:NEAR
-EXTRN L28DF:NEAR
+EXTRN PrintMsg:NEAR
+EXTRN ScrollMsg:NEAR
+EXTRN BuildView:NEAR
+EXTRN MapCellAddr:NEAR
 EXTRN L58CB:BYTE
 EXTRN L5B28:NEAR
 EXTRN L5D4B:NEAR
 EXTRN L5D83:NEAR
 EXTRN L6BC9:NEAR
-EXTRN L6BFA:NEAR
-EXTRN L6C14:NEAR
+EXTRN PrintName:NEAR
+EXTRN IsUp:NEAR
 EXTRN L6C29:NEAR
-EXTRN L6C53:NEAR
-EXTRN L6CC3:NEAR
+EXTRN FlushKeys:NEAR
+EXTRN StatusLine:NEAR
 EXTRN L6DC1:NEAR
 EXTRN L6FDF:NEAR
 EXTRN L7176:NEAR
 EXTRN L71C1:NEAR
 EXTRN L71ED:NEAR
 EXTRN L7AEA:NEAR
-EXTRN L7DA8:NEAR
-EXTRN L7DBA:NEAR
-EXTRN L7DCC:NEAR
-EXTRN L7DDE:NEAR
-EXTRN L7E02:NEAR
+EXTRN MsgNoneLeft:NEAR
+EXTRN MsgWhat:NEAR
+EXTRN MsgInvalidMove:NEAR
+EXTRN MsgNotHere:NEAR
+EXTRN AddMoves:NEAR
 EXTRN L7E48:NEAR
 EXTRN L7F96:NEAR
 EXTRN L84E0:BYTE
@@ -79,13 +79,13 @@ EXTRN L8504:BYTE
 EXTRN L8511:BYTE
 EXTRN L851E:BYTE
 EXTRN L852B:BYTE
-EXTRN L8538:BYTE
+EXTRN FileConflict:BYTE
 EXTRN L8545:BYTE
 EXTRN L8552:BYTE
 EXTRN L855F:BYTE
 EXTRN L856C:BYTE
-EXTRN L8579:BYTE
-EXTRN L85BB:BYTE
+EXTRN CombatKeys:BYTE
+EXTRN CombatCmds:BYTE
 EXTRN L8605:BYTE
 EXTRN L8615:BYTE
 EXTRN L8625:BYTE
@@ -131,7 +131,7 @@ PUBLIC L8D8D
 PUBLIC L8D9F
 PUBLIC L8E7A
 PUBLIC L8F5A
-L888B:	call L26A9	;@888B
+L888B:	call PrintMsg	;@888B
 	mov byte ptr L84E0, 3Dh	;@888E
 	call L7AEA	;@8893
 	je L88A7	;@8896
@@ -140,14 +140,14 @@ L888B:	call L26A9	;@888B
 	cmp bx, -1	;@889D
 	je L88A4	;@88A0
 	jmp short L88AA	;@88A2
-L88A4:	jmp L7DDE	;@88A4
-L88A7:	jmp L1BD5	;@88A7
-L88AA:	call L27CD	;@88AA
+L88A4:	jmp MsgNotHere	;@88A4
+L88A7:	jmp MainLoop	;@88A7
+L88AA:	call BuildView	;@88AA
 	mov di, bx	;@88AD
-	mov bh, byte ptr L12E0[di]	;@88AF
-	mov bl, byte ptr L12C0[di]	;@88B3
-	call L28DF	;@88B7
-	mov al, byte ptr L12A0[di]	;@88BA
+	mov bh, byte ptr MonY[di]	;@88AF
+	mov bl, byte ptr MonX[di]	;@88B3
+	call MapCellAddr	;@88B7
+	mov al, byte ptr MonMove[di]	;@88BA
 	cmp al, 0	;@88BE
 	je L88CA	;@88C0
 	shr al, 1	;@88C2
@@ -155,18 +155,18 @@ L88AA:	call L27CD	;@88AA
 	and al, 3	;@88C6
 	or al, 24h	;@88C8
 L88CA:	mov byte ptr [bx], al	;@88CA
-	mov al, byte ptr L1280[di]	;@88CC
+	mov al, byte ptr MonTile[di]	;@88CC
 	shr al, 1	;@88D0
 	shr al, 1	;@88D2
 	mov byte ptr L84E2, al	;@88D4
-	mov byte ptr L1280[di], 0	;@88D7
+	mov byte ptr MonTile[di], 0	;@88D7
 	cmp al, 0Fh	;@88DC
 	jne L88EA	;@88DE
-	cmp byte ptr L14BA, 0Bh	;@88E0
+	cmp byte ptr PartyTile, 0Bh	;@88E0
 	je L88EA	;@88E5
 	mov byte ptr [bx], 2Ch	;@88E7
 L88EA:	mov byte ptr L84E3, 0	;@88EA
-	lea bx, L1280	;@88EF
+	lea bx, MonTile	;@88EF
 	mov cx, 20h	;@88F3
 L88F6:	cmp byte ptr [bx], 4Ch	;@88F6
 	je L8900	;@88F9
@@ -176,12 +176,12 @@ L8900:	mov byte ptr L0080[bx], 0C0h	;@8900
 L8905:	inc bx	;@8905
 	loop L88F6	;@8906
 	lea si, L87DC	;@8908
-	call L26A9	;@890C
+	call PrintMsg	;@890C
 	mov al, 0FFh	;@890F
 	call L8AE6	;@8911
-	call L26F4	;@8914
-	call L26F4	;@8917
-	cmp byte ptr L14BC, 1	;@891A
+	call ScrollMsg	;@8914
+	call ScrollMsg	;@8917
+	cmp byte ptr Location, 1	;@891A
 	jne L8928	;@891F
 	lea dx, L851E	;@8921
 	jmp L89BD	;@8925
@@ -189,12 +189,12 @@ L8928:	cmp byte ptr L84E2, 0Fh	;@8928
 	jne L8948	;@892D
 	mov byte ptr L84E2, 17h	;@892F
 	lea dx, L856C	;@8934
-	cmp byte ptr L14BA, 0Bh	;@8938
+	cmp byte ptr PartyTile, 0Bh	;@8938
 	jne L8942	;@893D
 	jmp L89BD	;@893F
 L8942:	lea dx, L8504	;@8942
 	jmp short L89BD	;@8946
-L8948:	cmp byte ptr L14BA, 0Bh	;@8948
+L8948:	cmp byte ptr PartyTile, 0Bh	;@8948
 	jne L8960	;@894D
 	lea dx, L8552	;@894F
 	cmp byte ptr L84E2, 10h	;@8953
@@ -209,12 +209,12 @@ L8960:	cmp byte ptr L84E2, 10h	;@8960
 L8972:	mov al, byte ptr L259D	;@8972
 	cmp al, 9	;@8975
 	jne L8986	;@8977
-	mov bx, word ptr L15CC	;@8979
-	call L28DF	;@897D
+	mov bx, word ptr PlayerXY	;@8979
+	call MapCellAddr	;@897D
 	and al, 3	;@8980
 	jne L8986	;@8982
 	mov al, 8	;@8984
-L8986:	lea dx, L8538	;@8986
+L8986:	lea dx, FileConflict	;@8986
 	cmp al, 1	;@898A
 	je L89BD	;@898C
 	lea dx, L8511	;@898E
@@ -233,24 +233,24 @@ L8986:	lea dx, L8538	;@8986
 	lea dx, L851E	;@89AE
 	cmp byte ptr L84E2, 8	;@89B2
 	je L89BD	;@89B7
-	lea dx, L8538	;@89B9
-L89BD:	lea bx, L24C4	;@89BD
+	lea dx, FileConflict	;@89B9
+L89BD:	lea bx, StartUp	;@89BD
 	mov cx, 0B0h	;@89C1
-	call K2BF0	;@89C4
-	mov al, byte ptr L14BC	;@89C7
+	call LoadFile	;@89C4
+	mov al, byte ptr Location	;@89C7
 	mov byte ptr L58CB, al	;@89CA
-	mov byte ptr L14BC, 80h	;@89CD
-	mov al, byte ptr L14C1	;@89D2
+	mov byte ptr Location, 80h	;@89CD
+	mov al, byte ptr PartySize	;@89D2
 	mov ah, 0	;@89D5
 	mov di, ax	;@89D7
 	dec di	;@89D9
 	mov cx, ax	;@89DA
-	lea di, L24C4[di]	;@89DC
+	lea di, StartUp[di]	;@89DC
 	dec al	;@89E0
 	mov ah, 40h	;@89E2
 	mul ah	;@89E4
 	mov si, ax	;@89E6
-	lea si, L14CC[si]	;@89E8
+	lea si, Players[si]	;@89E8
 L89EC:	cmp byte ptr [si+11h], 47h	;@89EC
 	je L8A04	;@89F0
 	cmp byte ptr [si+11h], 50h	;@89F2
@@ -263,7 +263,7 @@ L8A04:	mov bl, byte ptr L00A0[di]	;@8A04
 	mov al, byte ptr [si+17h]	;@8A0C
 	call L8AC4	;@8A0F
 	mov byte ptr L00AC[di], al	;@8A12
-	call K2CC5	;@8A16
+	call ViewTileAt	;@8A16
 	mov byte ptr L00A8[di], al	;@8A19
 	mov al, byte ptr L00AC[di]	;@8A1D
 	mov byte ptr [bx], al	;@8A21
@@ -271,7 +271,7 @@ L8A23:	sub si, 40h	;@8A23
 	dec di	;@8A26
 	loop L89EC	;@8A27
 	cld	;@8A29
-	lea di, L24C4+98h	;@8A2A
+	lea di, StartUp+98h	;@8A2A
 	mov cx, 8	;@8A2E
 	mov al, 0	;@8A31
 	rep stosb	;@8A33
@@ -288,42 +288,42 @@ L8A23:	sub si, 40h	;@8A23
 L8A54:	mov cx, 8	;@8A54
 	jmp short L8A64	;@8A57
 L8A59:	mov dh, 8	;@8A59
-	call K27C1	;@8A5B
+	call Random	;@8A5B
 	inc dl	;@8A5E
 	mov cl, dl	;@8A60
 	mov ch, 0	;@8A62
 L8A64:	mov dh, 8	;@8A64
-	call K27C1	;@8A66
+	call Random	;@8A66
 	mov bl, dl	;@8A69
 	mov bh, 0	;@8A6B
 	mov si, bx	;@8A6D
-	lea si, L24C4[si]	;@8A6F
+	lea si, StartUp[si]	;@8A6F
 	cmp byte ptr L0098[si], 0	;@8A73
 	jne L8A64	;@8A78
 	mov bl, byte ptr L84E2	;@8A7A
 	and bl, 0Fh	;@8A7E
 	mov dh, byte ptr L8605[bx]	;@8A81
-	call K27C1	;@8A85
+	call Random	;@8A85
 	or dl, 0Fh	;@8A88
 	mov byte ptr L0098[si], dl	;@8A8B
 	mov bh, byte ptr L0088[si]	;@8A8F
 	mov bl, byte ptr L0080[si]	;@8A93
-	call K2CC5	;@8A97
+	call ViewTileAt	;@8A97
 	mov byte ptr L0090[si], al	;@8A9A
 	mov al, byte ptr L84E2	;@8A9E
 	mov byte ptr [bx], al	;@8AA1
 	loop L8A64	;@8AA3
-	call K2CAA	;@8AA5
+	call DrawView	;@8AA5
 	mov al, 0FDh	;@8AA8
 	mov bl, 0F0h	;@8AAA
 	mov bh, 10h	;@8AAC
-	call K2D59	;@8AAE
-	call K2D59	;@8AB1
+	call Sound	;@8AAE
+	call Sound	;@8AB1
 	mov bh, 4	;@8AB4
-	call K2D59	;@8AB6
+	call Sound	;@8AB6
 	mov bh, 10h	;@8AB9
-	call K2D59	;@8ABB
-	call L6C53	;@8ABE
+	call Sound	;@8ABB
+	call FlushKeys	;@8ABE
 	jmp L8B52	;@8AC1
 L8AC4:	pushf	;@8AC4
 	push bx	;@8AC5
@@ -356,12 +356,12 @@ L8AE6:	pushf	;@8AE6
 	sub al, 17h	;@8AF5
 	jb L8B30	;@8AF7
 	push ax	;@8AF9
-	mov ah, byte ptr L15CC	;@8AFA
+	mov ah, byte ptr PlayerXY	;@8AFA
 	shr ah, 1	;@8AFE
 	pop ax	;@8B00
 	rcl al, 1	;@8B01
 	add al, 79h	;@8B03
-	call L6BFA	;@8B05
+	call PrintName	;@8B05
 L8B08:	cmp ah, 0FFh	;@8B08
 	jne L8B2C	;@8B0B
 	cmp al, 2	;@8B0D
@@ -376,7 +376,7 @@ L8B08:	cmp ah, 0FFh	;@8B08
 	cmp al, 83h	;@8B21
 	je L8B29	;@8B23
 	lea si, L87D8	;@8B25
-L8B29:	call L26A9	;@8B29
+L8B29:	call PrintMsg	;@8B29
 L8B2C:	pop si	;@8B2C
 	pop ax	;@8B2D
 	popf	;@8B2E
@@ -385,14 +385,14 @@ L8B30:	mov al, byte ptr L84E2	;@8B30
 	cmp al, 17h	;@8B33
 	je L8B3E	;@8B35
 L8B37:	add al, 1	;@8B37
-	call L6BFA	;@8B39
+	call PrintName	;@8B39
 	jmp L8B08	;@8B3C
 L8B3E:	cmp ah, 0FFh	;@8B3E
 	jne L8B37	;@8B41
 	lea si, L87CF	;@8B43
-	call L26A9	;@8B47
-L8B4A:	call L26F4	;@8B4A
-	call L26F4	;@8B4D
+	call PrintMsg	;@8B47
+L8B4A:	call ScrollMsg	;@8B4A
+	call ScrollMsg	;@8B4D
 	jmp L8B2C	;@8B50
 L8B52:	call L6FDF	;@8B52
 	mov byte ptr L84E1, 0	;@8B55
@@ -403,19 +403,19 @@ L8B5A:	mov al, byte ptr L84E1	;@8B5A
 	dec al	;@8B64
 	mul ah	;@8B66
 	mov bx, ax	;@8B68
-	lea bx, L14CC[bx]	;@8B6A
-	call L6C14	;@8B6E
+	lea bx, Players[bx]	;@8B6A
+	call IsUp	;@8B6E
 	je L8B76	;@8B71
 	jmp L8BFC	;@8B73
 L8B76:	lea si, L87F1	;@8B76
-	call L26A9	;@8B7A
+	call PrintMsg	;@8B7A
 	mov al, byte ptr L84E1	;@8B7D
 	inc al	;@8B80
-	call K2A3C	;@8B82
+	call PrintDigit	;@8B82
 	lea si, L87FD	;@8B85
-	call L26A9	;@8B89
+	call PrintMsg	;@8B89
 L8B8C:	mov al, 10h	;@8B8C
-	call K25CC	;@8B8E
+	call PutChar	;@8B8E
 	mov byte ptr K011B, 2	;@8B91
 	mov ah, 2Ch	;@8B96
 	int 21h	;@8B98
@@ -424,7 +424,7 @@ L8B8C:	mov al, 10h	;@8B8C
 	cmp bl, 3Ch	;@8B9F
 	jb L8BA7	;@8BA2
 	sub bl, 3Ch	;@8BA4
-L8BA7:	call K29AA	;@8BA7
+L8BA7:	call KeyReady	;@8BA7
 	jne L8BD5	;@8BAA
 	mov ah, 2Ch	;@8BAC
 	int 21h	;@8BAE
@@ -432,58 +432,58 @@ L8BA7:	call K29AA	;@8BA7
 	jne L8BA7	;@8BB2
 	mov bl, byte ptr L84E1	;@8BB4
 	mov bh, 0	;@8BB8
-	mov ah, byte ptr L24C4+0ACh[bx]	;@8BBA
-	mov al, byte ptr L24C4+0A4h[bx]	;@8BBE
-	mov bl, byte ptr L24C4+0A0h[bx]	;@8BC2
+	mov ah, byte ptr StartUp+0ACh[bx]	;@8BBA
+	mov al, byte ptr StartUp+0A4h[bx]	;@8BBE
+	mov bl, byte ptr StartUp+0A0h[bx]	;@8BC2
 	mov bh, al	;@8BC6
-	call K2CC5	;@8BC8
+	call ViewTileAt	;@8BC8
 	mov byte ptr [bx], ah	;@8BCB
-	call K2CAA	;@8BCD
+	call DrawView	;@8BCD
 	mov ax, 3920h	;@8BD0
 	jmp short L8BE2	;@8BD3
-L8BD5:	call K29BD	;@8BD5
+L8BD5:	call ReadKey	;@8BD5
 	cmp al, 61h	;@8BD8
 	jb L8BE2	;@8BDA
 	cmp al, 7Ah	;@8BDC
 	ja L8BE2	;@8BDE
 	sub al, 20h	;@8BE0
 L8BE2:	mov cx, 21h	;@8BE2
-	lea di, L8579	;@8BE5
+	lea di, CombatKeys	;@8BE5
 	repne scasw	;@8BE9
 	je L8BF0	;@8BEB
-	jmp L7DBA	;@8BED
+	jmp MsgWhat	;@8BED
 L8BF0:	mov bx, 21h	;@8BF0
 	sub bx, cx	;@8BF3
 	dec bx	;@8BF5
 	shl bx, 1	;@8BF6
-	jmp word ptr L85BB[bx]	;@8BF8
+	jmp word ptr CombatCmds[bx]	;@8BF8
 L8BFC:	mov al, 1	;@8BFC
-	call L7E02	;@8BFE
+	call AddMoves	;@8BFE
 	call L5B28	;@8C01
 	jne L8C0B	;@8C04
-	mov byte ptr L15D0, 0	;@8C06
+	mov byte ptr TimeStop, 0	;@8C06
 L8C0B:	mov al, byte ptr L84E1	;@8C0B
 	inc al	;@8C0E
 	call L71ED	;@8C10
 	mov cx, 8	;@8C13
-	lea di, L24C4+98h	;@8C16
+	lea di, StartUp+98h	;@8C16
 	mov al, 0	;@8C1A
 	repe scasb	;@8C1C
 	je L8C36	;@8C1E
-	call K2CAA	;@8C20
-	call L6CC3	;@8C23
+	call DrawView	;@8C20
+	call StatusLine	;@8C23
 	inc byte ptr L84E1	;@8C26
 	mov al, byte ptr L84E1	;@8C2A
-	cmp al, byte ptr L14C1	;@8C2D
+	cmp al, byte ptr PartySize	;@8C2D
 	jb L8C39	;@8C31
 	jmp L914F	;@8C33
 L8C36:	jmp L8FB6	;@8C36
 L8C39:	jmp L8B5A	;@8C39
-L8C3C:	call L26A9	;@8C3C
+L8C3C:	call PrintMsg	;@8C3C
 	mov bl, byte ptr L84E1	;@8C3F
 	mov bh, 0	;@8C43
 	mov si, bx	;@8C45
-	lea si, L24C4[si]	;@8C47
+	lea si, StartUp[si]	;@8C47
 	mov bh, byte ptr L00A4[si]	;@8C4B
 	mov bl, byte ptr L00A0[si]	;@8C4F
 	mov bp, bx	;@8C53
@@ -494,14 +494,14 @@ L8C3C:	call L26A9	;@8C3C
 	cmp bh, 0Bh	;@8C5E
 	jae L8C93	;@8C61
 	mov cx, bx	;@8C63
-	call K2CC5	;@8C65
+	call ViewTileAt	;@8C65
 	mov ah, al	;@8C68
 	call L8C96	;@8C6A
 	cmp al, 0FFh	;@8C6D
 	je L8C93	;@8C6F
 	mov di, bx	;@8C71
 	mov bx, bp	;@8C73
-	call K2CC5	;@8C75
+	call ViewTileAt	;@8C75
 	mov al, byte ptr L00A8[si]	;@8C78
 	mov byte ptr [bx], al	;@8C7C
 	mov byte ptr L00A8[si], ah	;@8C7E
@@ -510,7 +510,7 @@ L8C3C:	call L26A9	;@8C3C
 	mov byte ptr L00A4[si], ch	;@8C88
 	mov byte ptr L00A0[si], cl	;@8C8C
 	jmp L8BFC	;@8C90
-L8C93:	jmp L7DCC	;@8C93
+L8C93:	jmp MsgInvalidMove	;@8C93
 L8C96:	pushf	;@8C96
 	push cx	;@8C97
 	cmp al, 1	;@8C98
@@ -526,10 +526,10 @@ L8CAA:	pop cx	;@8CAA
 	popf	;@8CAB
 	ret	;@8CAC
 L8CAD:	mov al, 0F6h	;@8CAD
-	call K2D59	;@8CAF
+	call Sound	;@8CAF
 	mov cx, 2000h	;@8CB2
 L8CB5:	loop L8CB5	;@8CB5
-	call K2D59	;@8CB7
+	call Sound	;@8CB7
 	mov al, 0	;@8CBA
 	jmp L8CAA	;@8CBC
 L8CBE:	lea si, L1B4D	;@8CBE
@@ -551,16 +551,16 @@ L8CDF:	lea si, L1B61	;@8CDF
 L8CEA:	lea si, L1719	;@8CEA
 	jmp L2018	;@8CEE
 L8CF1:	lea si, L882E	;@8CF1
-	call L26A9	;@8CF5
+	call PrintMsg	;@8CF5
 	mov al, byte ptr L84E1	;@8CF8
 	mov ah, 40h	;@8CFB
 	mul ah	;@8CFD
 	mov bx, ax	;@8CFF
-	lea bx, L14CC[bx]	;@8D01
+	lea bx, Players[bx]	;@8D01
 	call L7E48	;@8D05
 	jmp L8BFC	;@8D08
 L8D0B:	lea si, L886B	;@8D0B
-	call L26A9	;@8D0F
+	call PrintMsg	;@8D0F
 	mov al, byte ptr L84E1	;@8D12
 	mov dh, al	;@8D15
 	add dh, 31h	;@8D17
@@ -570,59 +570,59 @@ L8D0B:	lea si, L886B	;@8D0B
 	mov ah, 40h	;@8D21
 	mul ah	;@8D23
 	mov di, ax	;@8D25
-	lea di, L14CC[di]	;@8D27
+	lea di, Players[di]	;@8D27
 	call L6DC1	;@8D2B
 	mov al, dh	;@8D2E
 	sub al, 30h	;@8D30
 	call L71ED	;@8D32
 	jmp L8BFC	;@8D35
 L8D38:	lea si, L883F	;@8D38
-	call L26A9	;@8D3C
+	call PrintMsg	;@8D3C
 	mov byte ptr L84E0, 3Ch	;@8D3F
 	mov al, byte ptr L84E1	;@8D44
 	mov ah, 40h	;@8D47
 	mul ah	;@8D49
 	mov bx, ax	;@8D4B
-	lea bx, L14CC[bx]	;@8D4D
+	lea bx, Players[bx]	;@8D4D
 	call L5D83	;@8D51
 	jmp L8BFC	;@8D54
 L8D57:	lea si, L884C	;@8D57
-	call L26A9	;@8D5B
+	call PrintMsg	;@8D5B
 	mov al, byte ptr L84E1	;@8D5E
 	mov ah, 40h	;@8D61
 	mul ah	;@8D63
 	mov bx, ax	;@8D65
-	lea bx, L14CC[bx]	;@8D67
+	lea bx, Players[bx]	;@8D67
 	mov al, byte ptr [bx+27h]	;@8D6B
 	cmp al, 0	;@8D6E
 	je L8D80	;@8D70
 	sub al, 1	;@8D72
 	das	;@8D74
 	mov byte ptr [bx+27h], al	;@8D75
-	mov byte ptr L15D0, 0Ah	;@8D78
+	mov byte ptr TimeStop, 0Ah	;@8D78
 	jmp L8BFC	;@8D7D
-L8D80:	jmp L7DA8	;@8D80
+L8D80:	jmp MsgNoneLeft	;@8D80
 L8D83:	lea si, L8885	;@8D83
-	call L26A9	;@8D87
+	call PrintMsg	;@8D87
 	jmp L8BFC	;@8D8A
 L8D8D:	lea si, L885A	;@8D8D
-	call L26A9	;@8D91
+	call PrintMsg	;@8D91
 	mov al, 0FEh	;@8D94
-	call K2D59	;@8D96
-	call L6C53	;@8D99
+	call Sound	;@8D96
+	call FlushKeys	;@8D99
 	jmp L8B8C	;@8D9C
 L8D9F:	mov byte ptr L84E0, 3Dh	;@8D9F
 	mov al, byte ptr L84E1	;@8DA4
 	mov ah, 40h	;@8DA7
 	mul ah	;@8DA9
 	mov si, ax	;@8DAB
-	lea si, L14CC[si]	;@8DAD
+	lea si, Players[si]	;@8DAD
 	mov al, byte ptr [si+30h]	;@8DB1
 	add al, 41h	;@8DB4
-	call L6BFA	;@8DB6
+	call PrintName	;@8DB6
 	mov di, si	;@8DB9
 	lea si, L8803	;@8DBB
-	call L26A9	;@8DBF
+	call PrintMsg	;@8DBF
 	mov si, di	;@8DC2
 	call L7AEA	;@8DC4
 	je L8E43	;@8DC7
@@ -633,11 +633,11 @@ L8D9F:	mov byte ptr L84E0, 3Dh	;@8D9F
 	add bl, 0E0h	;@8DD3
 	mov bh, 6	;@8DD6
 	mov al, 0FDh	;@8DD8
-	call K2D59	;@8DDA
+	call Sound	;@8DDA
 	mov al, byte ptr [si+30h]	;@8DDD
 	mov bl, byte ptr L84E1	;@8DE0
 	mov bh, 0	;@8DE4
-	lea bx, L24C4[bx]	;@8DE6
+	lea bx, StartUp[bx]	;@8DE6
 	cmp al, 3	;@8DEA
 	je L8E2B	;@8DEC
 	cmp al, 5	;@8DEE
@@ -680,7 +680,7 @@ L8E46:	pushf	;@8E46
 	push si	;@8E48
 	mov cx, 8	;@8E49
 	mov si, 7	;@8E4C
-	lea si, L24C4[si]	;@8E4F
+	lea si, StartUp[si]	;@8E4F
 L8E53:	cmp byte ptr L0098[si], 0	;@8E53
 	je L8E66	;@8E58
 	cmp byte ptr L0080[si], dl	;@8E5A
@@ -694,7 +694,7 @@ L8E6C:	pop si	;@8E6C
 	pop cx	;@8E6D
 	popf	;@8E6E
 	ret	;@8E6F
-L8E70:	lea bx, L24C4	;@8E70
+L8E70:	lea bx, StartUp	;@8E70
 	sub si, bx	;@8E74
 	mov bx, si	;@8E76
 	jmp L8E6C	;@8E78
@@ -708,10 +708,10 @@ L8E7D:	add dh, ch	;@8E7D
 	cmp dl, 0Bh	;@8E86
 	jae L8EA7	;@8E89
 	mov bx, dx	;@8E8B
-	call K2CC5	;@8E8D
+	call ViewTileAt	;@8E8D
 	mov ah, byte ptr L84E0	;@8E90
 	mov byte ptr [bx], ah	;@8E94
-	call K2CAA	;@8E96
+	call DrawView	;@8E96
 	mov byte ptr [bx], al	;@8E99
 	call L8E46	;@8E9B
 	cmp bx, -1	;@8E9E
@@ -720,29 +720,29 @@ L8EA3:	pop dx	;@8EA3
 	pop ax	;@8EA4
 	popf	;@8EA5
 	ret	;@8EA6
-L8EA7:	call K2CAA	;@8EA7
+L8EA7:	call DrawView	;@8EA7
 	mov bx, 0FFFFh	;@8EAA
 	jmp L8EA3	;@8EAD
 L8EAF:	lea si, L8810	;@8EAF
-	call L26A9	;@8EB3
-	call K2CAA	;@8EB6
+	call PrintMsg	;@8EB3
+	call DrawView	;@8EB6
 	jmp L8BFC	;@8EB9
 L8EBC:	mov al, byte ptr L84E1	;@8EBC
 	mov ah, 40h	;@8EBF
 	mul ah	;@8EC1
 	mov di, ax	;@8EC3
-	lea di, L14CC[di]	;@8EC5
+	lea di, Players[di]	;@8EC5
 	call L5B28	;@8EC9
 	jne L8ED6	;@8ECC
 	cmp byte ptr [di+30h], 0Fh	;@8ECE
 	je L8ED6	;@8ED2
 L8ED4:	jmp L8EAF	;@8ED4
 L8ED6:	mov dh, 0FFh	;@8ED6
-	call K27C1	;@8ED8
+	call Random	;@8ED8
 	shl dl, 1	;@8EDB
 	jb L8EF3	;@8EDD
 	mov dh, 63h	;@8EDF
-	call K27C1	;@8EE1
+	call Random	;@8EE1
 	mov al, dl	;@8EE4
 	aam	;@8EE6
 	mov cl, 4	;@8EE8
@@ -753,19 +753,19 @@ L8ED6:	mov dh, 0FFh	;@8ED6
 L8EF3:	mov al, 0	;@8EF3
 	call L8AE6	;@8EF5
 	lea si, L8819	;@8EF8
-	call L26A9	;@8EFC
+	call PrintMsg	;@8EFC
 	mov bp, di	;@8EFF
 	mov di, bx	;@8F01
-	lea di, L24C4[di]	;@8F03
+	lea di, StartUp[di]	;@8F03
 	mov bh, byte ptr L0088[di]	;@8F07
 	mov bl, byte ptr L0080[di]	;@8F0B
-	call K2CC5	;@8F0F
+	call ViewTileAt	;@8F0F
 	mov ah, al	;@8F12
 	mov al, byte ptr L84E0	;@8F14
 	mov byte ptr [bx], al	;@8F17
-	call K2CAA	;@8F19
+	call DrawView	;@8F19
 	mov al, 0F7h	;@8F1C
-	call K2D59	;@8F1E
+	call Sound	;@8F1E
 	mov byte ptr [bx], ah	;@8F21
 	mov bx, bp	;@8F23
 	mov al, byte ptr [bx+12h]	;@8F25
@@ -777,7 +777,7 @@ L8EF3:	mov al, 0	;@8EF3
 	aad	;@8F33
 	or al, 1	;@8F35
 	mov dh, al	;@8F37
-	call K27C1	;@8F39
+	call Random	;@8F39
 	mov al, byte ptr [bx+12h]	;@8F3C
 	shr al, 1	;@8F3F
 	adc dl, al	;@8F41
@@ -788,7 +788,7 @@ L8EF3:	mov al, 0	;@8EF3
 	add al, 4	;@8F4D
 	xchg di, bx	;@8F4F
 	call L8F5A	;@8F51
-	call K2CAA	;@8F54
+	call DrawView	;@8F54
 	jmp L8BFC	;@8F57
 L8F5A:	pushf	;@8F5A
 	push ax	;@8F5B
@@ -803,49 +803,49 @@ L8F5A:	pushf	;@8F5A
 	je L8F74	;@8F70
 	jae L8FB0	;@8F72
 L8F74:	lea si, L8820	;@8F74
-	call L26A9	;@8F78
+	call PrintMsg	;@8F78
 	mov byte ptr L0098[bx], 0	;@8F7B
 	mov ah, byte ptr L0090[bx]	;@8F80
 	mov dh, byte ptr L0088[bx]	;@8F84
 	mov dl, byte ptr L0080[bx]	;@8F88
 	mov bx, dx	;@8F8C
-	call K2CC5	;@8F8E
+	call ViewTileAt	;@8F8E
 	mov byte ptr [bx], ah	;@8F91
 	mov bl, byte ptr L84E2	;@8F93
 	and bl, 0Fh	;@8F97
 	mov bh, 0	;@8F9A
 	mov al, byte ptr L8615[bx]	;@8F9C
 	mov dl, al	;@8FA0
-	call K2A23	;@8FA2
+	call PrintBcdByte	;@8FA2
 	mov bx, di	;@8FA5
 	call L5D4B	;@8FA7
-	call L26F4	;@8FAA
-	call K2CAA	;@8FAD
+	call ScrollMsg	;@8FAA
+	call DrawView	;@8FAD
 L8FB0:	pop si	;@8FB0
 	pop dx	;@8FB1
 	pop bx	;@8FB2
 	pop ax	;@8FB3
 	popf	;@8FB4
 	ret	;@8FB5
-L8FB6:	mov byte ptr L15D0, 0	;@8FB6
+L8FB6:	mov byte ptr TimeStop, 0	;@8FB6
 	lea si, L8872	;@8FBB
-	call L26A9	;@8FBF
-	call L6C53	;@8FC2
+	call PrintMsg	;@8FBF
+	call FlushKeys	;@8FC2
 	mov al, 0FDh	;@8FC5
 	mov bl, 80h	;@8FC7
 	mov bh, 10h	;@8FC9
-	call K2D59	;@8FCB
-	call K2D59	;@8FCE
-	call K2D59	;@8FD1
+	call Sound	;@8FCB
+	call Sound	;@8FCE
+	call Sound	;@8FD1
 	mov bl, 60h	;@8FD4
 	mov bh, 40h	;@8FD6
-	call K2D59	;@8FD8
+	call Sound	;@8FD8
 	mov al, byte ptr L58CB	;@8FDB
-	mov byte ptr L14BC, al	;@8FDE
+	mov byte ptr Location, al	;@8FDE
 	cmp al, 1	;@8FE1
 	je L8FE8	;@8FE3
-	call L27CD	;@8FE5
-L8FE8:	jmp L1BD5	;@8FE8
+	call BuildView	;@8FE5
+L8FE8:	jmp MainLoop	;@8FE8
 L8FEB:	pushf	;@8FEB
 	push bx	;@8FEC
 	cmp byte ptr L84E2, 10h	;@8FED
@@ -879,23 +879,23 @@ L9020:	pushf	;@9020
 	mov bp, sp	;@902B
 	push si	;@902D
 	mov si, 0FFFFh	;@902E
-	lea bx, L14CC	;@9031
+	lea bx, Players	;@9031
 	mov word ptr [bp], bx	;@9035
 	mov bx, 0	;@9038
 	mov ah, 0FFh	;@903B
 L903D:	xchg word ptr [bp], bx	;@903D
-	call L6C14	;@9040
+	call IsUp	;@9040
 	xchg word ptr [bp], bx	;@9043
 	je L904B	;@9046
 	jmp L90DA	;@9048
-L904B:	mov dl, byte ptr L24C4+0A0h[bx]	;@904B
-	sub dl, byte ptr L24C4+80h[di]	;@904F
+L904B:	mov dl, byte ptr StartUp+0A0h[bx]	;@904B
+	sub dl, byte ptr StartUp+80h[di]	;@904F
 	mov cl, dl	;@9053
 	test cl, 0FFh	;@9055
 	jns L905C	;@9058
 	neg cl	;@905A
-L905C:	mov dh, byte ptr L24C4+0A4h[bx]	;@905C
-	sub dh, byte ptr L24C4+88h[di]	;@9060
+L905C:	mov dh, byte ptr StartUp+0A4h[bx]	;@905C
+	sub dh, byte ptr StartUp+88h[di]	;@9060
 	mov ch, dh	;@9064
 	test ch, 0FFh	;@9066
 	jns L906D	;@9069
@@ -912,30 +912,30 @@ L9078:	mov al, cl	;@9078
 	push ax	;@9080
 	push bx	;@9081
 	mov al, dl	;@9082
-	call K2C87	;@9084
+	call SignStep	;@9084
 	mov cl, ah	;@9087
 	mov al, dh	;@9089
-	call K2C87	;@908B
+	call SignStep	;@908B
 	mov ch, ah	;@908E
-	mov dl, byte ptr L24C4+80h[di]	;@9090
-	mov dh, byte ptr L24C4+88h[di]	;@9094
+	mov dl, byte ptr StartUp+80h[di]	;@9090
+	mov dh, byte ptr StartUp+88h[di]	;@9094
 	add dl, cl	;@9098
 	add dh, ch	;@909A
 	mov bx, dx	;@909C
-	call K2CC5	;@909E
+	call ViewTileAt	;@909E
 	call L8FEB	;@90A1
 	cmp al, 0FFh	;@90A4
 	je L90CE	;@90A6
-	mov dl, byte ptr L24C4+80h[di]	;@90A8
+	mov dl, byte ptr StartUp+80h[di]	;@90A8
 	mov bx, dx	;@90AC
-	call K2CC5	;@90AE
+	call ViewTileAt	;@90AE
 	call L8FEB	;@90B1
 	cmp al, 0FFh	;@90B4
 	je L90CE	;@90B6
 	add dl, cl	;@90B8
-	mov dh, byte ptr L24C4+88h[di]	;@90BA
+	mov dh, byte ptr StartUp+88h[di]	;@90BA
 	mov bx, dx	;@90BE
-	call K2CC5	;@90C0
+	call ViewTileAt	;@90C0
 	call L8FEB	;@90C3
 	cmp al, 0FFh	;@90C6
 	je L90CE	;@90C8
@@ -950,7 +950,7 @@ L90CE:	pop bx	;@90CE
 	mov word ptr [bp+4], dx	;@90D7
 L90DA:	inc bx	;@90DA
 	add word ptr [bp], 40h	;@90DB
-	cmp bl, byte ptr L14C1	;@90DF
+	cmp bl, byte ptr PartySize	;@90DF
 	jae L90E8	;@90E3
 	jmp L903D	;@90E5
 L90E8:	mov al, ah	;@90E8
@@ -969,45 +969,45 @@ L90FD:	pushf	;@90FD
 	push bx	;@90FF
 	push dx	;@9100
 	mov al, 0FBh	;@9101
-	call K2D59	;@9103
-	mov dl, byte ptr L24C4+80h[di]	;@9106
-	mov dh, byte ptr L24C4+88h[di]	;@910A
+	call Sound	;@9103
+	mov dl, byte ptr StartUp+80h[di]	;@9106
+	mov dh, byte ptr StartUp+88h[di]	;@910A
 L910E:	add dl, cl	;@910E
 	cmp dl, 0Bh	;@9110
 	jae L9147	;@9113
 	add dh, ch	;@9115
 	cmp dh, 0Bh	;@9117
 	jae L9147	;@911A
-	mov al, byte ptr L14C1	;@911C
+	mov al, byte ptr PartySize	;@911C
 	mov ah, 0	;@911F
 	dec ax	;@9121
 	mov bx, ax	;@9122
-L9124:	cmp dl, byte ptr L24C4+0A0h[bx]	;@9124
+L9124:	cmp dl, byte ptr StartUp+0A0h[bx]	;@9124
 	jne L9135	;@9128
-	cmp dh, byte ptr L24C4+0A4h[bx]	;@912A
+	cmp dh, byte ptr StartUp+0A4h[bx]	;@912A
 	jne L9135	;@912E
 	call L92AF	;@9130
 	jmp short L9147	;@9133
 L9135:	dec bx	;@9135
 	jns L9124	;@9136
 	mov bx, dx	;@9138
-	call K2CC5	;@913A
+	call ViewTileAt	;@913A
 	mov byte ptr [bx], 3Dh	;@913D
-	call K2CAA	;@9140
+	call DrawView	;@9140
 	mov byte ptr [bx], al	;@9143
 	jmp L910E	;@9145
-L9147:	call K2CAA	;@9147
+L9147:	call DrawView	;@9147
 	pop dx	;@914A
 	pop bx	;@914B
 	pop ax	;@914C
 	popf	;@914D
 	ret	;@914E
-L914F:	cmp byte ptr L15D0, 0	;@914F
+L914F:	cmp byte ptr TimeStop, 0	;@914F
 	je L915D	;@9154
-	dec byte ptr L15D0	;@9156
+	dec byte ptr TimeStop	;@9156
 	jmp L9212	;@915A
 L915D:	mov di, 0	;@915D
-L9160:	cmp byte ptr L24C4+98h[di], 0	;@9160
+L9160:	cmp byte ptr StartUp+98h[di], 0	;@9160
 	jne L916A	;@9165
 	jmp L9209	;@9167
 L916A:	call L9020	;@916A
@@ -1020,7 +1020,7 @@ L917C:	cmp bx, -1	;@917C
 	je L9198	;@917F
 	push dx	;@9181
 	mov dh, 0FFh	;@9182
-	call K27C1	;@9184
+	call Random	;@9184
 	shl dl, 1	;@9187
 	pop dx	;@9189
 	jb L9198	;@918A
@@ -1030,7 +1030,7 @@ L917C:	cmp bx, -1	;@917C
 	jmp short L9209	;@9196
 L9198:	push dx	;@9198
 	mov dh, 0C0h	;@9199
-	call K27C1	;@919B
+	call Random	;@919B
 	shl dl, 1	;@919E
 	pop dx	;@91A0
 	jae L91CA	;@91A1
@@ -1055,7 +1055,7 @@ L91CE:	call L9215	;@91CE
 	jmp short L9209	;@91D1
 L91D3:	push dx	;@91D3
 	mov dh, 0FFh	;@91D4
-	call K27C1	;@91D6
+	call Random	;@91D6
 	and dl, 3	;@91D9
 	mov bl, dl	;@91DC
 	pop dx	;@91DE
@@ -1072,7 +1072,7 @@ L91D3:	push dx	;@91D3
 	mov bl, 40h	;@91F4
 	mov bh, 40h	;@91F6
 	mov al, 0FDh	;@91F8
-	call K2D59	;@91FA
+	call Sound	;@91FA
 	call L71C1	;@91FD
 	pop bx	;@9200
 	mov byte ptr L84E0, 3Ch	;@9201
@@ -1084,19 +1084,19 @@ L9209:	inc di	;@9209
 L9212:	jmp L8B52	;@9212
 L9215:	push ax	;@9215
 	push bx	;@9216
-	mov bh, byte ptr L24C4+88h[di]	;@9217
-	mov bl, byte ptr L24C4+80h[di]	;@921B
-	call K2CC5	;@921F
-	mov al, byte ptr L24C4+90h[di]	;@9222
+	mov bh, byte ptr StartUp+88h[di]	;@9217
+	mov bl, byte ptr StartUp+80h[di]	;@921B
+	call ViewTileAt	;@921F
+	mov al, byte ptr StartUp+90h[di]	;@9222
 	mov byte ptr [bx], al	;@9226
-	mov byte ptr L24C4+80h[di], dl	;@9228
-	mov byte ptr L24C4+88h[di], dh	;@922C
+	mov byte ptr StartUp+80h[di], dl	;@9228
+	mov byte ptr StartUp+88h[di], dh	;@922C
 	mov bx, dx	;@9230
-	call K2CC5	;@9232
-	mov byte ptr L24C4+90h[di], al	;@9235
+	call ViewTileAt	;@9232
+	mov byte ptr StartUp+90h[di], al	;@9235
 	mov al, byte ptr L84E2	;@9239
 	mov byte ptr [bx], al	;@923C
-	call K2CAA	;@923E
+	call DrawView	;@923E
 	pop bx	;@9241
 	pop ax	;@9242
 	ret	;@9243
@@ -1116,30 +1116,30 @@ L925B:	cmp al, 17h	;@925B
 	jne L9262	;@925D
 	call L93A2	;@925F
 L9262:	lea si, L87AD	;@9262
-	call L26A9	;@9266
+	call PrintMsg	;@9266
 	mov al, bl	;@9269
 	add al, 31h	;@926B
-	call K25CC	;@926D
+	call PutChar	;@926D
 	mov al, 0F8h	;@9270
-	call K2D59	;@9272
+	call Sound	;@9272
 	mov al, 40h	;@9275
 	mul bl	;@9277
 	mov si, ax	;@9279
-	lea si, L14CC[si]	;@927B
+	lea si, Players[si]	;@927B
 	call L5B28	;@927F
 	jne L928A	;@9282
 	cmp byte ptr [si+28h], 7	;@9284
 	jne L92A1	;@9288
 L928A:	mov dh, byte ptr [si+28h]	;@928A
 	add dh, 10h	;@928D
-	call K27C1	;@9290
+	call Random	;@9290
 	cmp dl, 8	;@9293
 	jb L92A1	;@9296
 	lea si, L87BE	;@9298
-	call L26A9	;@929C
+	call PrintMsg	;@929C
 	jmp short L92AB	;@929F
 L92A1:	lea si, L87C8	;@92A1
-	call L26A9	;@92A5
+	call PrintMsg	;@92A5
 	call L92AF	;@92A8
 L92AB:	pop si	;@92AB
 	pop ax	;@92AC
@@ -1155,7 +1155,7 @@ L92AF:	pushf	;@92AF
 	mov al, 40h	;@92B7
 	mul bl	;@92B9
 	mov bx, ax	;@92BB
-	lea bx, L14CC[bx]	;@92BD
+	lea bx, Players[bx]	;@92BD
 	mov dx, bx	;@92C1
 	mov bl, byte ptr L84E2	;@92C3
 	mov bh, 0	;@92C7
@@ -1168,7 +1168,7 @@ L92AF:	pushf	;@92AF
 	add al, byte ptr [bx+1Dh]	;@92D8
 	or al, 1	;@92DB
 	mov dh, al	;@92DD
-	call K27C1	;@92DF
+	call Random	;@92DF
 	add dl, 1	;@92E2
 	mov al, dl	;@92E5
 	aam	;@92E7
@@ -1183,33 +1183,33 @@ L92AF:	pushf	;@92AF
 	mov ax, si	;@92FC
 	call L7176	;@92FE
 	mov dx, bx	;@9301
-	mov bl, byte ptr L24C4+0A0h[si]	;@9303
-	mov bh, byte ptr L24C4+0A4h[si]	;@9307
-	call K2CC5	;@930B
+	mov bl, byte ptr StartUp+0A0h[si]	;@9303
+	mov bh, byte ptr StartUp+0A4h[si]	;@9307
+	call ViewTileAt	;@930B
 	mov al, byte ptr L84E0	;@930E
 	mov byte ptr [bx], al	;@9311
-	call K2CAA	;@9313
+	call DrawView	;@9313
 	mov al, 0F7h	;@9316
-	call K2D59	;@9318
-	mov al, byte ptr L24C4+0ACh[si]	;@931B
+	call Sound	;@9318
+	mov al, byte ptr StartUp+0ACh[si]	;@931B
 	mov byte ptr [bx], al	;@931F
-	call K2CAA	;@9321
+	call DrawView	;@9321
 	mov ax, si	;@9324
 	call L7176	;@9326
 	mov bx, dx	;@9329
 	cmp byte ptr [bx+11h], 44h	;@932B
 	jne L9356	;@932F
-	mov bl, byte ptr L24C4+0A0h[si]	;@9331
-	mov bh, byte ptr L24C4+0A4h[si]	;@9335
-	call K2CC5	;@9339
-	mov al, byte ptr L24C4+0A8h[si]	;@933C
+	mov bl, byte ptr StartUp+0A0h[si]	;@9331
+	mov bh, byte ptr StartUp+0A4h[si]	;@9335
+	call ViewTileAt	;@9339
+	mov al, byte ptr StartUp+0A8h[si]	;@933C
 	mov byte ptr [bx], al	;@9340
-	mov byte ptr L24C4+0A0h[si], 0FFh	;@9342
-	mov byte ptr L24C4+0A4h[si], 0FFh	;@9347
+	mov byte ptr StartUp+0A0h[si], 0FFh	;@9342
+	mov byte ptr StartUp+0A4h[si], 0FFh	;@9347
 	lea si, L8796	;@934C
-	call L26A9	;@9350
+	call PrintMsg	;@9350
 	call L6C29	;@9353
-L9356:	call L6CC3	;@9356
+L9356:	call StatusLine	;@9356
 	pop si	;@9359
 	pop dx	;@935A
 	pop cx	;@935B
@@ -1222,7 +1222,7 @@ L9360:	pushf	;@9360
 	push dx	;@9362
 	push si	;@9363
 	mov dh, 0FFh	;@9364
-	call K27C1	;@9366
+	call Random	;@9366
 	and dl, 3	;@9369
 	jne L939D	;@936C
 	mov al, 40h	;@936E
@@ -1232,15 +1232,15 @@ L9360:	pushf	;@9360
 	jne L939D	;@9379
 	mov byte ptr L14DD[si], 50h	;@937B
 	lea si, L87AD	;@9380
-	call L26A9	;@9384
+	call PrintMsg	;@9384
 	mov al, bl	;@9387
 	add al, 31h	;@9389
-	call K25CC	;@938B
+	call PutChar	;@938B
 	lea si, L87A1	;@938E
-	call L26A9	;@9392
+	call PrintMsg	;@9392
 	mov al, 0FAh	;@9395
-	call K2D59	;@9397
-	call L6CC3	;@939A
+	call Sound	;@9397
+	call StatusLine	;@939A
 L939D:	pop si	;@939D
 	pop dx	;@939E
 	pop ax	;@939F
@@ -1255,14 +1255,14 @@ L93A2:	pushf	;@93A2
 	mov al, 40h	;@93A8
 	mul bl	;@93AA
 	mov si, ax	;@93AC
-	lea si, L14CC[si]	;@93AE
+	lea si, Players[si]	;@93AE
 	mov di, bx	;@93B2
 	mov dh, 0FFh	;@93B4
-	call K27C1	;@93B6
+	call Random	;@93B6
 	rol dl, 1	;@93B9
 	jb L93DE	;@93BB
 	mov dh, 10h	;@93BD
-	call K27C1	;@93BF
+	call Random	;@93BF
 	cmp dl, 0	;@93C2
 	je L9417	;@93C5
 	mov bx, 30h	;@93C7
@@ -1277,7 +1277,7 @@ L93A2:	pushf	;@93A2
 	mov byte ptr [bx+si], al	;@93DA
 	jmp short L93FD	;@93DC
 L93DE:	mov dh, 8	;@93DE
-	call K27C1	;@93E0
+	call Random	;@93E0
 	cmp dl, 0	;@93E3
 	je L9417	;@93E6
 	mov bx, 28h	;@93E8
@@ -1291,14 +1291,14 @@ L93DE:	mov dh, 8	;@93DE
 	das	;@93FA
 	mov byte ptr [bx+si], al	;@93FB
 L93FD:	lea si, L87AD	;@93FD
-	call L26A9	;@9401
+	call PrintMsg	;@9401
 	mov ax, di	;@9404
 	add al, 31h	;@9406
-	call K25CC	;@9408
+	call PutChar	;@9408
 	lea si, L87B2	;@940B
-	call L26A9	;@940F
+	call PrintMsg	;@940F
 	mov al, 0FAh	;@9412
-	call K2D59	;@9414
+	call Sound	;@9414
 L9417:	pop di	;@9417
 	pop si	;@9418
 	pop dx	;@9419

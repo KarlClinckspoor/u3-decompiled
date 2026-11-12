@@ -3,9 +3,9 @@
 ; EXDATA: map buffer, entry vector, tables and strings (0100-1BD5).
 CODE SEGMENT BYTE PUBLIC
 ASSUME CS:CODE, DS:CODE, ES:CODE, SS:CODE
-EXTRN K25CC:NEAR
-EXTRN K29AA:NEAR
-EXTRN K29BD:NEAR
+EXTRN PutChar:NEAR
+EXTRN KeyReady:NEAR
+EXTRN ReadKey:NEAR
 EXTRN L1C77:NEAR
 EXTRN L1C7D:NEAR
 EXTRN L1C9E:NEAR
@@ -24,8 +24,8 @@ EXTRN L1FD6:NEAR
 EXTRN L2018:NEAR
 EXTRN L2035:NEAR
 EXTRN L2068:NEAR
-EXTRN L24C4:NEAR
-EXTRN L27CD:NEAR
+EXTRN StartUp:NEAR
+EXTRN BuildView:NEAR
 EXTRN L5BCF:NEAR
 EXTRN L5C73:NEAR
 EXTRN L5CC3:NEAR
@@ -35,7 +35,7 @@ EXTRN L6C29:NEAR
 EXTRN L7347:NEAR
 EXTRN L7458:NEAR
 EXTRN L74D5:NEAR
-EXTRN L7DBA:NEAR
+EXTRN MsgWhat:NEAR
 EXTRN L7E33:NEAR
 EXTRN L7EE4:NEAR
 EXTRN L7FC6:NEAR
@@ -49,52 +49,52 @@ PUBLIC L00A0
 PUBLIC L00A4
 PUBLIC L00A8
 PUBLIC L00AC
-PUBLIC L0100
-PUBLIC L0900
+PUBLIC MapBuf
+PUBLIC DungeonMap
 PUBLIC L0E65
-PUBLIC L1100
-PUBLIC L1280
-PUBLIC L12A0
-PUBLIC L12C0
-PUBLIC L12E0
-PUBLIC L1300
-PUBLIC L1320
-PUBLIC L1321
+PUBLIC MapText
+PUBLIC MonTile
+PUBLIC MonMove
+PUBLIC MonX
+PUBLIC MonY
+PUBLIC MonTalk
+PUBLIC GateState
+PUBLIC GatePos
 PUBLIC L1322
 PUBLIC L1323
-PUBLIC L1324
-PUBLIC L1325
-PUBLIC L1326
-PUBLIC L1327
-PUBLIC L132A
-PUBLIC L14BA
-PUBLIC L14BC
-PUBLIC L14BD
+PUBLIC Moon1Phase
+PUBLIC Moon2Phase
+PUBLIC Moon1Count
+PUBLIC Moon2Count
+PUBLIC ScreenRowTbl
+PUBLIC PartyTile
+PUBLIC Location
+PUBLIC MoveCount
 PUBLIC L14BE
 PUBLIC L14BF
 PUBLIC L14C0
-PUBLIC L14C1
-PUBLIC L14C2
-PUBLIC L14C8
-PUBLIC L14C9
-PUBLIC L14CA
-PUBLIC L14CB
-PUBLIC L14CC
+PUBLIC PartySize
+PUBLIC PartyXY
+PUBLIC WeaponFlag1
+PUBLIC ArmourFlag1
+PUBLIC WeaponFlag2
+PUBLIC ArmourFlag2
+PUBLIC Players
 PUBLIC L14DD
 PUBLIC L14E0
 PUBLIC L158C
-PUBLIC L15CC
+PUBLIC PlayerXY
 PUBLIC L15CD
-PUBLIC L15CE
-PUBLIC L15CF
-PUBLIC L15D0
+PUBLIC LightOn
+PUBLIC DungeonLevel
+PUBLIC TimeStop
 PUBLIC L15D1
 PUBLIC L15D2
-PUBLIC L15D4
-PUBLIC L15DE
-PUBLIC L15EA
-PUBLIC L15F6
-PUBLIC L16BB
+PUBLIC FilePartyUlt
+PUBLIC FileDungeonDat
+PUBLIC FileSosariaUlt
+PUBLIC FileAmbrosiaUlt
+PUBLIC MapFileNames
 PUBLIC L16E1
 PUBLIC L16E3
 PUBLIC L1719
@@ -111,8 +111,8 @@ PUBLIC L1813
 PUBLIC L182D
 PUBLIC L185C
 PUBLIC L1869
-PUBLIC L194D
-PUBLIC L1955
+PUBLIC GateXTbl
+PUBLIC GateYTbl
 PUBLIC L195D
 PUBLIC L1965
 PUBLIC L1972
@@ -163,42 +163,42 @@ L00A8 label byte
 ORG 0ACh
 L00AC label byte
 ORG 100h
-L0100 label byte
+MapBuf label byte
 	db 2048 dup (0)	;@0100
-L0900 label byte
+DungeonMap label byte
 	db 1381 dup (0)	;@0900
 L0E65 label byte
 	db 667 dup (0)	;@0E65
-L1100 label byte
+MapText label byte
 	db 384 dup (0)	;@1100
-L1280 label byte
+MonTile label byte
 	db 32 dup (0)	;@1280
-L12A0 label byte
+MonMove label byte
 	db 32 dup (0)	;@12A0
-L12C0 label byte
+MonX label byte
 	db 32 dup (0)	;@12C0
-L12E0 label byte
+MonY label byte
 	db 32 dup (0)	;@12E0
-L1300 label byte
+MonTalk label byte
 	db 32 dup (0)	;@1300
-L1320 label byte
+GateState label byte
 	db 0h	;@1320
-L1321 label byte
+GatePos label byte
 	db 0h	;@1321
 L1322 label byte
 	db 0h	;@1322
 L1323 label byte
 	db 0h	;@1323
-L1324 label byte
+Moon1Phase label byte
 	db 0h	;@1324
-L1325 label byte
+Moon2Phase label byte
 	db 0h	;@1325
-L1326 label byte
+Moon1Count label byte
 	db 0h	;@1326
-L1327 label byte
+Moon2Count label byte
 	db 0h	;@1327
-	dw L24C4	;@1328
-L132A label byte
+	dw StartUp	;@1328
+ScreenRowTbl label byte
 	db 0h,0h,0h,20h,50h,0h,50h,20h,0A0h,0h,0A0h,20h,0F0h,0h,0F0h,20h	;@132A
 	db 40h,1h,40h,21h,90h,1h,90h,21h,0E0h,1h,0E0h,21h,30h,2h,30h,22h	;@133A
 	db 80h,2h,80h,22h,0D0h,2h,0D0h,22h,20h,3h,20h,23h,70h,3h,70h,23h	;@134A
@@ -224,12 +224,12 @@ L132A label byte
 	db 80h,1Bh,80h,3Bh,0D0h,1Bh,0D0h,3Bh,20h,1Ch,20h,3Ch,70h,1Ch,70h,3Ch	;@148A
 	db 0C0h,1Ch,0C0h,3Ch,10h,1Dh,10h,3Dh,60h,1Dh,60h,3Dh,0B0h,1Dh,0B0h,3Dh	;@149A
 	db 0h,1Eh,0h,3Eh,50h,1Eh,50h,3Eh,0A0h,1Eh,0A0h,3Eh,0F0h,1Eh,0F0h,3Eh	;@14AA
-L14BA label byte
+PartyTile label byte
 	db 0h,0h	;@14BA
 X01BE label byte	;@14BC
-L14BC label byte
+Location label byte
 	db 0h	;@14BC
-L14BD label byte
+MoveCount label byte
 	db 0h	;@14BD
 L14BE label byte
 	db 0h	;@14BE
@@ -237,19 +237,19 @@ L14BF label byte
 	db 0h	;@14BF
 L14C0 label byte
 	db 0h	;@14C0
-L14C1 label byte
+PartySize label byte
 	db 0h	;@14C1
-L14C2 label byte
+PartyXY label byte
 	db 0h,0h,0h,0h,0h,0h	;@14C2
-L14C8 label byte
+WeaponFlag1 label byte
 	db 0h	;@14C8
-L14C9 label byte
+ArmourFlag1 label byte
 	db 0h	;@14C9
-L14CA label byte
+WeaponFlag2 label byte
 	db 0h	;@14CA
-L14CB label byte
+ArmourFlag2 label byte
 	db 0h	;@14CB
-L14CC label byte
+Players label byte
 	db 20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,0FFh,0h	;@14CC
 	db 0h	;@14DC
 L14DD label byte
@@ -263,27 +263,27 @@ L14E0 label byte
 L158C label byte
 	db 20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,0FFh,0h	;@158C
 	db 48 dup (0)	;@159C
-L15CC label byte
+PlayerXY label byte
 	db 0h	;@15CC
 L15CD label byte
 	db 0h	;@15CD
-L15CE label byte
+LightOn label byte
 	db 0h	;@15CE
-L15CF label byte
+DungeonLevel label byte
 	db 0h	;@15CF
-L15D0 label byte
+TimeStop label byte
 	db 0h	;@15D0
 L15D1 label byte
 	db 1h	;@15D1
 L15D2 label byte
 	db 0h,0h	;@15D2
-L15D4 label byte
+FilePartyUlt label byte
 	db 50h,41h,52h,54h,59h,2Eh,55h,4Ch,54h,0h	;@15D4
-L15DE label byte
+FileDungeonDat label byte
 	db 44h,55h,4Eh,47h,45h,4Fh,4Eh,2Eh,44h,41h,54h,0h	;@15DE
-L15EA label byte
+FileSosariaUlt label byte
 	db 53h,4Fh,53h,41h,52h,49h,41h,2Eh,55h,4Ch,54h,0h	;@15EA
-L15F6 label byte
+FileAmbrosiaUlt label byte
 	db 41h,4Dh,42h,52h,4Fh,53h,49h,41h,2Eh,55h,4Ch,54h,0h	;@15F6
 L1603 label byte
 	db 42h,52h,49h,54h,49h,53h,48h,2Eh,55h,4Ch,54h,0h	;@1603
@@ -323,7 +323,7 @@ L16A7 label byte
 	db 4Dh,49h,4Eh,45h,2Eh,55h,4Ch,54h,0h	;@16A7
 L16B0 label byte
 	db 44h,41h,52h,44h,49h,4Eh,2Eh,55h,4Ch,54h,0h	;@16B0
-L16BB	dw L1603	;@16BB
+MapFileNames	dw L1603	;@16BB
 	dw L160F	;@16BD
 	dw L161A	;@16BF
 	dw L1622	;@16C1
@@ -410,13 +410,13 @@ L185C label byte
 L1869 label byte
 	db 4Fh,74h,68h,65h,72h,20h,63h,6Fh,6Dh,6Dh,61h,6Eh,64h,21h,0Ah,57h	;@1869
 	db 68h,6Fh,73h,65h,20h,61h,63h,74h,69h,6Fh,6Eh,3Fh,20h,0h	;@1879
-L1887 label byte
+SurfaceKeys label byte
 	db 0h,48h,41h,1Eh,0h,50h,0h,4Dh,0h,4Bh,20h,39h,42h,30h,58h,2Dh	;@1887
 	db 56h,2Fh,0h,1Fh,5Ah,2Ch,45h,12h,4Ch,26h,4Dh,32h,0h,2Fh,4Bh,25h	;@1897
 	db 48h,23h,54h,14h,55h,16h,49h,17h,51h,10h,52h,13h,57h,11h,43h,2Eh	;@18A7
 	db 46h,21h,4Ah,24h,44h,20h,4Eh,31h,47h,22h,50h,19h,53h,1Fh,59h,15h	;@18B7
 	db 4Fh,18h	;@18C7
-L18C9	dw L1B4D	;@18C9
+SurfacePrompts	dw L1B4D	;@18C9
 	dw L17F4	;@18CB
 	dw L1B54	;@18CD
 	dw L1B5B	;@18CF
@@ -449,7 +449,7 @@ L18C9	dw L1B4D	;@18C9
 	dw L1846	;@1905
 	dw L185C	;@1907
 	dw L1869	;@1909
-L190B	dw L1C7D	;@190B
+SurfaceCmds	dw L1C7D	;@190B
 	dw L888B	;@190D
 	dw L1C9E	;@190F
 	dw L1CBF	;@1911
@@ -482,9 +482,9 @@ L190B	dw L1C7D	;@190B
 	dw L1F53	;@1947
 	dw L7458	;@1949
 	dw L74D5	;@194B
-L194D label byte
+GateXTbl label byte
 	db 8h,39h,0Fh,24h,0Fh,0Ch,1Fh,3Ah	;@194D
-L1955 label byte
+GateYTbl label byte
 	db 8h,2Eh,1Bh,3Ah,1Dh,37h,1Fh,1Fh	;@1955
 L195D label byte
 	db 0h,48h,0h,50h,0h,4Dh,0h,4Bh	;@195D
@@ -562,10 +562,10 @@ L1B61 label byte
 	db 57h,65h,73h,74h,0Ah,0h	;@1B61
 L1B67 label byte
 	db 50h,6Ch,65h,61h,73h,65h,20h,77h,61h,69h,74h,2Eh,2Eh,2Eh,0Ah,0h	;@1B67
-L1B77:	call L27CD	;@1B77
+L1B77:	call BuildView	;@1B77
 L1B7A:	call L6C29	;@1B7A
 	mov al, 10h	;@1B7D
-	call K25CC	;@1B7F
+	call PutChar	;@1B7F
 	mov ah, 2Ch	;@1B82
 	int 21h	;@1B84
 	mov bl, dh	;@1B86
@@ -574,7 +574,7 @@ L1B7A:	call L6C29	;@1B7A
 	jb L1B93	;@1B8E
 	sub bl, 3Ch	;@1B90
 L1B93:	call L7347	;@1B93
-	call K29AA	;@1B96
+	call KeyReady	;@1B96
 	jne L1BA8	;@1B99
 	mov ah, 2Ch	;@1B9B
 	int 21h	;@1B9D
@@ -582,7 +582,7 @@ L1B93:	call L7347	;@1B93
 	jne L1B93	;@1BA1
 	mov ax, 3920h	;@1BA3
 	jmp short L1BB5	;@1BA6
-L1BA8:	call K29BD	;@1BA8
+L1BA8:	call ReadKey	;@1BA8
 	cmp al, 61h	;@1BAB
 	jb L1BB5	;@1BAD
 	cmp al, 7Ah	;@1BAF
@@ -590,15 +590,15 @@ L1BA8:	call K29BD	;@1BA8
 	sub al, 20h	;@1BB3
 L1BB5:	mov cx, 21h	;@1BB5
 	mov bx, cx	;@1BB8
-	lea di, L1887	;@1BBA
+	lea di, SurfaceKeys	;@1BBA
 	repne scasw	;@1BBE
 	je L1BC5	;@1BC0
-	jmp L7DBA	;@1BC2
+	jmp MsgWhat	;@1BC2
 L1BC5:	sub bx, cx	;@1BC5
 	dec bx	;@1BC7
 	shl bx, 1	;@1BC8
-	mov si, word ptr L18C9[bx]	;@1BCA
+	mov si, word ptr SurfacePrompts[bx]	;@1BCA
 	mov word ptr L15D2, ax	;@1BCE
-	jmp word ptr L190B[bx]	;@1BD1
+	jmp word ptr SurfaceCmds[bx]	;@1BD1
 CODE ENDS
 END

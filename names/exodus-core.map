@@ -1,0 +1,77 @@
+; EXODUS names established in phases 4-5 (docs/FORMATS.md, docs/MAP.md). Scope exodus.
+L0100 MapBuf           ; 0100-1327: the map file (SOSARIA.ULT ...); in a dungeon DUNGEON.DAT
+L0900 DungeonMap       ; the dungeon file's eight 16 x 16 levels (in a dungeon)
+L1100 MapText          ; town speeches / dungeon messages: offset table + strings
+L1280 MonTile          ; creature slots (32 each): tile
+L12A0 MonMove          ; movement code
+L12C0 MonX
+L12E0 MonY
+L1300 MonTalk          ; talk code (speech number | kind bits; 0C0h = does not talk)
+L1320 GateState        ; moon gate: 3 while open (WORLD)
+L1321 GatePos
+L1324 Moon1Phase       ; 0-7
+L1325 Moon2Phase
+L1326 Moon1Count       ; steps to the next phase (12)
+L1327 Moon2Count       ; (4)
+L132A ScreenRowTbl     ; screen offset of each scan line (DUNGEON.DAT's ROWTAB)
+L14BA PartyTile        ; PARTY.ULT header: the party's tile (3Fh on foot, 0Ah horse, 0Bh frigate)
+L14BC Location         ; 0 Sosaria, 1 dungeon, 0FFh Ambrosia, ...
+L14BD MoveCount        ; 4 bytes BCD
+L14C1 PartySize
+L14C2 PartyXY          ; saved position (x, y)
+L14C8 WeaponFlag1      ; the four flags gating the top weapon/armour menu entries
+L14C9 ArmourFlag1
+L14CA WeaponFlag2
+L14CB ArmourFlag2
+L14CC Players          ; the four 64-byte character records
+L15CC PlayerXY         ; current position: x here, y in the next byte
+L15CE LightOn          ; a torch burns (the dungeon view is drawn)
+L15CF DungeonLevel
+L15D0 TimeStop         ; Negate Time counter
+L15D4 FilePartyUlt
+L15DE FileDungeonDat
+L15EA FileSosariaUlt
+L15F6 FileAmbrosiaUlt
+L16BB MapFileNames     ; pointers to the town, castle and dungeon file names
+L1887 SurfaceKeys      ; command tables: 33 keys, 33 prompts, 33 handlers
+L18C9 SurfacePrompts
+L190B SurfaceCmds
+L194D GateXTbl         ; the eight moon gate positions, by phase
+L1955 GateYTbl
+L1BD5 MainLoop
+L24C4 StartUp          ; start-up code, later the view buffer and the combat file
+L2582 FileCharsetUlt
+L258E FileShapesUlt
+L26A9 PrintMsg         ; print SI in the message window (scrolling, wrapping)
+L26F4 ScrollMsg        ; scroll the message window up a line
+L27CD BuildView        ; fill the 11 x 11 view buffer around the party
+L28C6 ClearView        ; blank the map window
+L28DF MapCellAddr      ; BX = address of the map byte at x = BL, y = BH
+L28F2 DungeonCell      ; AL = the dungeon cell at BX on the current level
+L58C0 FileShrineImg
+L58CC Facing           ; dungeon facing 0-3
+L590B SpellNames
+L594B WizardSpellCmds  ; jump tables of the 16 spells of each kind
+L596B ClericSpellCmds
+L5E89 SpellFlash       ; sound and flash of a spell
+L6556 NameTbl          ; the 136 names: tiles, weapons, armours, spells, monsters
+L6BFA PrintName        ; print name number AL-1
+L6C14 IsUp             ; ZF set when the player at BX is Good or Poisoned
+L6C53 FlushKeys
+L6C76 AskPlayer        ; read 1-4 (Esc), BX = the player's record
+L6CC3 StatusLine
+L7708 DungeonKeys
+L774A DungeonCmds
+L778C DungeonPrompts
+L7DA8 MsgNoneLeft      ; shared exits: message, sound, back to MainLoop
+L7DBA MsgWhat
+L7DCC MsgInvalidMove
+L7DDE MsgNotHere
+L7DF0 MsgIncapacitated
+L7E02 AddMoves         ; add AL to MoveCount (BCD)
+L8579 CombatKeys
+L85BB CombatCmds
+L84E4 FileBrandImg
+L84EE FileTimeImg
+L84F7 FileFountainImg
+L8538 FileConflict     ; "CNFLCT_x.ULT", the letter patched per terrain

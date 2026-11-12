@@ -12,21 +12,21 @@ PUBLIC L006C
 PUBLIC L007C
 PUBLIC L00FE
 PUBLIC L0105
-PUBLIC L0115
+PUBLIC PictureBuf
 PUBLIC L4115
-PUBLIC L4117
-PUBLIC L432C
-PUBLIC L432D
+PUBLIC NamePoints
+PUBLIC DiskCheckResult
+PUBLIC AnimFrames
 PUBLIC L5A2D
-PUBLIC L5A2F
-PUBLIC L5A39
-PUBLIC L5A42
-PUBLIC L5A4B
+PUBLIC FileBlankIbm
+PUBLIC FileExodIbm
+PUBLIC FileNameDat
+PUBLIC FileAnimateDat
 PUBLIC L5A57
-PUBLIC L5A62
+PUBLIC RowTbl
 PUBLIC L5CBA
 PUBLIC X0103
-PUBLIC X0109
+PUBLIC ViewTiles
 PUBLIC X01A9
 PUBLIC X01AD
 PUBLIC X01B1
@@ -34,7 +34,7 @@ PUBLIC X01B5
 PUBLIC X01BE
 ORG 0h
 L0000 label near
-X0109 label byte
+ViewTiles label byte
 X0103 label byte
 ORG 5Ch
 L005C label byte
@@ -66,29 +66,29 @@ ORG 100h
 X01BE label byte	;@0105
 L0105 label byte
 	db 16 dup (0)	;@0105
-L0115 label byte
+PictureBuf label byte
 	db 16384 dup (0)	;@0115
 L4115 label byte
 	db 0h,0B8h	;@4115
-L4117 label byte
+NamePoints label byte
 	db 533 dup (0)	;@4117
-L432C label byte
+DiskCheckResult label byte
 	db 0h	;@432C
-L432D label byte
+AnimFrames label byte
 	db 5888 dup (0)	;@432D
 L5A2D label byte
 	db 0E3h,9Dh	;@5A2D
-L5A2F label byte
+FileBlankIbm label byte
 	db 42h,4Ch,41h,4Eh,4Bh,2Eh,49h,42h,4Dh,0h	;@5A2F
-L5A39 label byte
+FileExodIbm label byte
 	db 45h,58h,4Fh,44h,2Eh,49h,42h,4Dh,0h	;@5A39
-L5A42 label byte
+FileNameDat label byte
 	db 4Eh,41h,4Dh,45h,2Eh,44h,41h,54h,0h	;@5A42
-L5A4B label byte
+FileAnimateDat label byte
 	db 41h,4Eh,49h,4Dh,41h,54h,45h,2Eh,44h,41h,54h,0h	;@5A4B
 L5A57 label byte
 	db 42h,4Fh,4Fh,54h,55h,50h,2Eh,42h,49h,4Eh,0h	;@5A57
-L5A62 label byte
+RowTbl label byte
 	db 600 dup (0)	;@5A62
 L5CBA label byte
 	db 55h,6Eh,61h,62h,6Ch,65h,20h,74h,6Fh,20h,61h,63h,63h,65h,73h,73h	;@5CBA
