@@ -1,0 +1,22 @@
+# types of ULTIMA's data (tools/cdata.py)
+# 300 words, the first 200 used: the screen offset of scan lines 0-199
+RowTbl: u16[300]
+# The labels before 0100 are places in the PSP (Psp[] of u3.h), not data of the program: aliases.
+# PSP:0000 is int 20h (PspInt20); ViewTiles and CombatPlayer are the library's tables ULTIMA does not use
+ViewTiles: alias Psp + 0
+CombatPlayer: alias Psp + 0
+# the PSP's first FCB (5Ch) and its fields: current block (+0Ch), record size (+0Eh), file size (+10h), current record (+20h)
+PspFcb: alias Psp + 0x5C
+FcbCurBlock: alias Psp + 0x68
+FcbRecSize: alias Psp + 0x6A
+FcbFileSize: alias Psp + 0x6C
+FcbCurRec: alias Psp + 0x7C
+# CombatPartyX-CombatPartyTile: library tables ULTIMA does not have, put in the PSP's command tail
+PspSpareA0: alias Psp + 0xA0
+CombatPartyX: alias Psp + 0xA0
+PspSpareA4: alias Psp + 0xA4
+CombatPartyY: alias Psp + 0xA4
+PspSpareA8: alias Psp + 0xA8
+CombatUnderTile: alias Psp + 0xA8
+PspSpareAC: alias Psp + 0xAC
+CombatPartyTile: alias Psp + 0xAC

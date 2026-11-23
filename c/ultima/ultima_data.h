@@ -4,6 +4,21 @@
 #include "../u3.h"
 
 /* UDATA.ASM */
+#define ViewTiles (Psp + 0)
+#define CombatPlayer (Psp + 0)
+#define PspFcb (Psp + 0x5C)
+#define FcbCurBlock (Psp + 0x68)
+#define FcbRecSize (Psp + 0x6A)
+#define FcbFileSize (Psp + 0x6C)
+#define FcbCurRec (Psp + 0x7C)
+#define PspSpareA0 (Psp + 0xA0)
+#define CombatPartyX (Psp + 0xA0)
+#define PspSpareA4 (Psp + 0xA4)
+#define CombatPartyY (Psp + 0xA4)
+#define PspSpareA8 (Psp + 0xA8)
+#define CombatUnderTile (Psp + 0xA8)
+#define PspSpareAC (Psp + 0xAC)
+#define CombatPartyTile (Psp + 0xAC)
 extern u8 Location[16];
 extern u8 PictureBuf[16384];
 extern u8 VideoSeg[2];
@@ -16,7 +31,7 @@ extern u8 FileExodIbm[9];
 extern u8 FileNameDat[9];
 extern u8 FileAnimateDat[12];
 extern u8 FileBootupBin[11];
-extern u8 RowTbl[600];
+extern u16 RowTbl[300];
 extern u8 MsgNoGraphics[35];
 
 /* INTRO.ASM */
