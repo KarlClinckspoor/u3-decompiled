@@ -1,0 +1,70 @@
+# the 8 BCD digits of the move count, low byte first (PrintMoves reads them backwards from MoveCount+3)
+MoveCount: u8[] to PartySize
+MoveCountB1: alias MoveCount + 1
+MoveCountB2: alias MoveCount + 2
+MoveCountB3: alias MoveCount + 3
+# NameNoSpell is a single 00h byte that NameTbl points to: an array, so that the name is a pointer
+NameNoSpell: u8[1]
+# ---- EXDATA: the map file, the party record and the key words (decided by the EXDATA reader) ----
+# MapBuf is the whole map file as loaded (LoadFile 1228h bytes at 0100): the map, the speeches, the 32 creature
+# slots, the whirlpool and the moons. Every label inside it is an alias of a place in MapBuf (the offset is
+# label - 0100h). A one-byte label is `alias u8` (an lvalue: `Moon1Phase = 0`, `MapBuf[..]`), a table is an untyped
+# alias (a `u8 *` into MapBuf: `MonX[si]`). A word access of the assembly (`word ptr WhirlpoolX`, `push word ptr
+# Moon1Phase`) is two byte accesses, or `*(u16 *)&Moon1Phase` where a whole word is saved and restored.
+# MapBuf stops at the label Moon2Count (1227h bytes, 0100-1326); Moon2Count is the 1228h-th byte of the map file
+# and the entry vector `dw StartUp` (1328, no label) follows it.
+MapBuf: u8[] to Moon2Count
+DungeonMap: alias MapBuf + 0x800
+DawnCell: alias u8 MapBuf + 0xD65
+MapText: alias MapBuf + 0x1000
+MonTile: alias MapBuf + 0x1180
+MonUnder: alias MapBuf + 0x11A0
+MonX: alias MapBuf + 0x11C0
+MonY: alias MapBuf + 0x11E0
+MonTalk: alias MapBuf + 0x1200
+WhirlpoolX: alias u8 MapBuf + 0x1220
+WhirlpoolY: alias u8 MapBuf + 0x1221
+WhirlpoolDX: alias u8 MapBuf + 0x1222
+WhirlpoolDY: alias u8 MapBuf + 0x1223
+Moon1Phase: alias u8 MapBuf + 0x1224
+Moon2Phase: alias u8 MapBuf + 0x1225
+Moon1Count: alias u8 MapBuf + 0x1226
+Moon2Count: alias u8 MapBuf + 0x1227
+# The party record is PARTY.ULT as loaded (112h bytes at 14BA: the 18-byte header, then the four 64-byte character
+# records): SaveFile/LoadFile move it as one block. PartyTile is its first byte (PartyTile[0], the party's tile);
+# the other labels are aliases of places in it (offset = label - 14BAh). One-byte labels are `alias u8`
+# (Location, PartySize ...), tables are untyped aliases (a `u8 *`): MoveCount[0-3] (BCD, low byte first),
+# PartyXY[0] x, [1] y (the saved position), [2-5] the four roster numbers (header 0A-0D), Players = the record of
+# slot 0 (`Players[slot * 64 + offset]`), PlrStatus = Players + 11h and PlrInt = Players + 14h (indexed by slot * 40h),
+# Player4 = the fourth record (Players + 0C0h). The record ends where PlayerXY begins.
+PartyTile: u8[] to PlayerXY
+Location: alias u8 PartyTile + 2
+MoveCount: alias PartyTile + 3
+PartySize: alias u8 PartyTile + 7
+PartyXY: alias PartyTile + 8
+ExoticWeaponFound: alias u8 PartyTile + 14
+ExoticArmourFound: alias u8 PartyTile + 15
+ExtraWeaponsOk: alias u8 PartyTile + 16
+ExtraArmoursOk: alias u8 PartyTile + 17
+Players: alias PartyTile + 18
+PlrStatus: alias PartyTile + 35
+PlrInt: alias PartyTile + 38
+Player4: alias PartyTile + 210
+# the x of the party's position is PlayerXY, the y PlayerY (two byte labels): a word access of the assembly
+# (`mov bx, word ptr PlayerXY`) is written as the two bytes (PlayerXY | PlayerY << 8)
+# the key words (ReadKey's AX: the scan code in the high byte, the character in the low one) are words
+LastKey: u16
+SurfaceKeys: u16[33]
+ArrowKeys: u16[4]
+# MapPosTbl: 19 (x, y) pairs of bytes; ExodusCastleX is the x of its second pair
+MapPosTbl: u8[] to MsgPass
+ExodusCastleX: alias MapPosTbl + 2
+# the key words are read as words by the assembly (repne scasw, cmp ax), but the checker only accepts a word table
+# over `dw` data: they stay byte tables (the C writes Rd(&SurfaceKeys[2 * i]) = scan code << 8 | character).
+# These three lines undo the u16 entries above (the last line of a name wins).
+LastKey: u8[2]
+SurfaceKeys: u8[66]
+ArrowKeys: u8[8]
+# CMDTAB: MsgPluralE "e" runs on into MsgPluralS "s" and two line feeds: one string, PrintMsg(MsgPluralS) prints from its second byte
+MsgPluralE: u8[] to MsgConflict
+MsgPluralS: alias MsgPluralE + 1
