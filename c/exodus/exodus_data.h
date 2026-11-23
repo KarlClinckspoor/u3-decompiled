@@ -526,8 +526,8 @@ extern u8 MsgPlrPilfered[12];
 extern u8 MsgFoeMissed[10];
 extern u8 MsgFoeHit[7];
 extern u8 MsgThieves[8];
-extern u8 MsgPluralE;
-extern u8 MsgPluralS[4];
+extern u8 MsgPluralE[5];
+#define MsgPluralS (MsgPluralE + 1)
 extern u8 MsgConflict[21];
 extern u8 MsgPlayerBar[12];
 extern u8 MsgBarEnd[6];

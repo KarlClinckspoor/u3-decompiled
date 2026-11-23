@@ -65,3 +65,6 @@ ExodusCastleX: alias MapPosTbl + 2
 LastKey: u8[2]
 SurfaceKeys: u8[66]
 ArrowKeys: u8[8]
+# CMDTAB: MsgPluralE "e" runs on into MsgPluralS "s" and two line feeds: one string, PrintMsg(MsgPluralS) prints from its second byte
+MsgPluralE: u8[] to MsgConflict
+MsgPluralS: alias MsgPluralE + 1

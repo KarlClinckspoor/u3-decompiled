@@ -181,11 +181,11 @@ u8 MsgFoeHit[] = " Hit!\n";
 /* asm: MsgThieves @87CF */
 u8 MsgThieves[] = "Thieves";
 
-/* asm: MsgPluralE @87D7 */
-u8 MsgPluralE = 0x65;
+/* asm: MsgPluralE @87D7 to: MsgConflict */
+u8 MsgPluralE[] = "es\n\n";
 
-/* asm: MsgPluralS @87D8 */
-u8 MsgPluralS[] = "s\n\n";
+/* asm: MsgPluralS @87D8 check: none */
+enum { MsgPluralS_offset = 1 };   /* MsgPluralS is MsgPluralE + 1: see the object it lies in */
 
 /* asm: MsgConflict @87DC */
 u8 MsgConflict[] = "\n---Conflict!!---\n->";
