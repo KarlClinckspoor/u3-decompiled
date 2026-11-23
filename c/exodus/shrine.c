@@ -15,6 +15,7 @@
 #include "../lib/lib.h"
 #include "exodus_data.h"
 #include "shrine.h"
+#include "bcd.h"
 #include "party.h"
 #include "actions.h"
 
@@ -757,7 +758,7 @@ void EnterShrine(void)
     u16 bp;                                     /* BP = AX after `dec al`: AL = the slot 0-3 (AH is unused) */
     u16 di, dx;
     int race;
-    bool carry;
+    bool cf;
 
     PrintMsg(MsgShrineWho);
     al = AskPlayer(&bx);
@@ -795,16 +796,14 @@ void EnterShrine(void)
         goto Shrine_NoOffer;
     if (al > bx[0x24])                          /* gold in hundreds (BCD) */
         goto Shrine_Cheat;
-    ah = al;                                    /* AH = the offering */
-    /* mov ah, [bx+24h]; xchg al, ah; sub al, ah; das: gold - offering, never below 0 (ja above) */
-    bx[0x24] = ToBcd(BcdVal(bx[0x24]) - BcdVal(ah));    /* pay */
+    ah = al;                                    /* mov ah, [bx+24h]; xchg al, ah: AL = gold, AH = the offering */
+    cf = false;
+    al = SubDas(bx[0x24], ah, &cf);             /* sub al, ah; das: never a borrow (ja above) */
+    bx[0x24] = al;                              /* pay */
     al = bx[di + 0x12];                         /* the stat (record 12h-15h) */
-    {
-        unsigned sum = BcdVal(al) + BcdVal(ah); /* add al, ah; daa */
-        carry = sum > 99;
-        al = ToBcd(sum % 100);
-    }
-    if (carry || al > cl)                       /* jb Shrine_Cap; cmp al, cl; jbe Shrine_Store */
+    cf = false;
+    al = AddDaa(al, ah, &cf);                   /* add al, ah; daa */
+    if (cf || al > cl)                          /* jb Shrine_Cap; cmp al, cl; jbe Shrine_Store */
         al = cl;                                /* Shrine_Cap: at most the race's maximum; gold paid beyond is lost */
     bx[di + 0x12] = al;                         /* Shrine_Store */
     PrintMsg(MsgShazam);

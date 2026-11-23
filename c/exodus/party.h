@@ -6,11 +6,6 @@
 #include "../u3.h"
 #include "exodus_data.h"
 
-/* The BCD arithmetic of the assembly (add/sub + daa/das) is written with these two: a packed BCD
- * byte (two decimal digits) and its value. A convention of the C reading, not an asm routine. */
-static inline unsigned BcdVal(u8 b) { return (b >> 4) * 10 + (b & 15); }
-static inline u8 ToBcd(unsigned v) { return (u8)(((v / 10) << 4) | (v % 10)); }
-
 void SaveGame(void);
 u8 HurtPlayer(u8 al, u8 *bx);               /* AL = BCD damage; returns AL = 0FFh if the player died, else 0 */
 void PrintName(u8 al);
