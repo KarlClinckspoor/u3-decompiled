@@ -1,0 +1,50 @@
+{
+ "ULTIMA": {
+  "matched": 15,
+  "attempt": 0,
+  "open": 0,
+  "aside": 0,
+  "total": 15,
+  "percent": 100.0
+ },
+ "BOOTUP": {
+  "matched": 28,
+  "attempt": 0,
+  "open": 0,
+  "aside": 0,
+  "total": 28,
+  "percent": 100.0
+ },
+ "EXODUS": {
+  "matched": 210,
+  "attempt": 0,
+  "open": 0,
+  "aside": 0,
+  "total": 210,
+  "percent": 100.0
+ },
+ "DUNGEON": {
+  "matched": 9,
+  "attempt": 0,
+  "open": 0,
+  "aside": 0,
+  "total": 9,
+  "percent": 100.0
+ },
+ "LIB": {
+  "matched": 47,
+  "attempt": 0,
+  "open": 0,
+  "aside": 0,
+  "total": 47,
+  "percent": 100.0
+ },
+ "all": {
+  "matched": 309,
+  "attempt": 0,
+  "open": 0,
+  "aside": 0,
+  "total": 309,
+  "percent": 100.0
+ }
+}
