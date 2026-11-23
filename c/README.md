@@ -29,33 +29,45 @@ variables) are anchored too. `python3 tools/ccheck.py --cc gcc` prints the same 
 | scope | module | C file | routines | with C | data labels | with C |
 |---|---|---|---|---|---|---|
 | lib | LIB.INC | `c/lib/lib.c` | 47 | 47 | 40 | 40 |
-| ultima | UDATA.ASM | - | 0 | 0 | 29 | 0 |
-| ultima | INTRO.ASM | - | 15 | 0 | 4 | 0 |
-| bootup | BDATA.ASM | - | 1 | 0 | 166 | 0 |
-| bootup | TITLE.ASM | - | 7 | 0 | 0 | 0 |
-| bootup | ORGANIZE.ASM | - | 5 | 0 | 0 | 0 |
-| bootup | CREATE.ASM | - | 15 | 0 | 0 | 0 |
-| exodus | EXDATA.ASM | - | 1 | 0 | 137 | 0 |
-| exodus | LOOP.ASM | - | 16 | 0 | 0 | 0 |
-| exodus | WORLD.ASM | - | 9 | 0 | 13 | 0 |
-| exodus | VIEW.ASM | - | 10 | 0 | 2 | 0 |
-| exodus | ITEMS.ASM | - | 12 | 0 | 42 | 0 |
-| exodus | MAGIC.ASM | - | 32 | 0 | 0 | 0 |
-| exodus | SHRINE.ASM | - | 4 | 0 | 196 | 0 |
-| exodus | PARTY.ASM | - | 25 | 0 | 3 | 0 |
-| exodus | ACTIONS.ASM | - | 7 | 0 | 73 | 0 |
-| exodus | HAND.ASM | - | 6 | 0 | 0 | 0 |
-| exodus | EQUIP.ASM | - | 11 | 0 | 0 | 0 |
-| exodus | DUNMOVE.ASM | - | 12 | 0 | 0 | 0 |
-| exodus | CMDTAB.ASM | - | 0 | 0 | 61 | 0 |
-| exodus | COMBAT.ASM | - | 33 | 0 | 0 | 0 |
-| exodus | DUNEVENT.ASM | - | 12 | 0 | 0 | 0 |
-| exodus | TEXT.ASM | - | 0 | 0 | 113 | 0 |
-| exodus | ENDING.ASM | - | 5 | 0 | 0 | 0 |
-| exodus | TOWNS.ASM | - | 15 | 0 | 0 | 0 |
-| dungeon | DUNGEON.ASM | - | 9 | 0 | 8 | 0 |
-| | **total** | | **309** | **47** | **887** | **40** |
+| ultima | UDATA.ASM | `c/ultima/udata.c` | 0 | 0 | 29 | 29 |
+| ultima | INTRO.ASM | `c/ultima/intro.c` | 15 | 15 | 4 | 4 |
+| bootup | BDATA.ASM | `c/bootup/bdata.c` | 1 | 1 | 166 | 166 |
+| bootup | TITLE.ASM | `c/bootup/title.c` | 7 | 7 | 0 | 0 |
+| bootup | ORGANIZE.ASM | `c/bootup/organize.c` | 5 | 5 | 0 | 0 |
+| bootup | CREATE.ASM | `c/bootup/create.c` | 15 | 15 | 0 | 0 |
+| exodus | EXDATA.ASM | `c/exodus/exdata.c` | 1 | 1 | 137 | 137 |
+| exodus | LOOP.ASM | `c/exodus/loop.c` | 16 | 16 | 0 | 0 |
+| exodus | WORLD.ASM | `c/exodus/world.c` | 9 | 9 | 13 | 13 |
+| exodus | VIEW.ASM | `c/exodus/view.c` | 10 | 10 | 2 | 2 |
+| exodus | ITEMS.ASM | `c/exodus/items.c` | 12 | 12 | 42 | 42 |
+| exodus | MAGIC.ASM | `c/exodus/magic.c` | 32 | 32 | 0 | 0 |
+| exodus | SHRINE.ASM | `c/exodus/shrine.c` | 4 | 4 | 196 | 196 |
+| exodus | PARTY.ASM | `c/exodus/party.c` | 25 | 25 | 3 | 3 |
+| exodus | ACTIONS.ASM | `c/exodus/actions.c` | 7 | 7 | 73 | 73 |
+| exodus | HAND.ASM | `c/exodus/hand.c` | 6 | 6 | 0 | 0 |
+| exodus | EQUIP.ASM | `c/exodus/equip.c` | 11 | 11 | 0 | 0 |
+| exodus | DUNMOVE.ASM | `c/exodus/dunmove.c` | 12 | 12 | 0 | 0 |
+| exodus | CMDTAB.ASM | `c/exodus/cmdtab.c` | 0 | 0 | 61 | 61 |
+| exodus | COMBAT.ASM | `c/exodus/combat.c` | 33 | 33 | 0 | 0 |
+| exodus | DUNEVENT.ASM | `c/exodus/dunevent.c` | 12 | 12 | 0 | 0 |
+| exodus | TEXT.ASM | `c/exodus/text.c` | 0 | 0 | 113 | 113 |
+| exodus | ENDING.ASM | `c/exodus/ending.c` | 5 | 5 | 0 | 0 |
+| exodus | TOWNS.ASM | `c/exodus/towns.c` | 15 | 15 | 0 | 0 |
+| dungeon | DUNGEON.ASM | `c/dungeon/dungeon.c` | 9 | 9 | 8 | 8 |
+| | **total** | | **309** | **309** | **887** | **887** |
 <!-- /status -->
+
+All 309 routines and all 887 data labels have a C reading and `ccheck.py --cc gcc` ends `ccheck: OK`
+(last run: 309 of 309 routines, 887 of 887 data labels, every file compiles). Shared exits and
+jump targets that other routines enter are anchored as functions of their own, so the files hold a
+few anchors more than there are routines. Not done: the optional test harness (`c/test` in U2).
+
+What the checks do not cover, and the readings flag in comments: the logic; routines that rely on
+flags or on a register the caller left behind (`BUG, as in the original` and "relies on" comments);
+the machine stand-ins that some files declare locally (`LowMem`, `CodeSeg`, `DosGetTime`,
+`BiosScrollUp`, `DosGetSeconds` ...) instead of in `u3.h`; and the prototypes of the modules, which
+are checked only by compiling each file with the headers it includes.
+
 
 ## Rules
 
