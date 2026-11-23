@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 """progress.py: progress card (docs/progress.svg) and numbers (docs/progress.json).
 
-U3 is hand-written assembly: there is no compiler output to match, no C reading, and the sources
-in src/ already rebuild the four files byte for byte (tools/build.py). The work here was symbol
-recovery and readability (docs/PLAN.md, phases 5 and 6), so one tile is one routine of src/ (a
-code label under a ;---- header, as in U2), in the order ULTIMA, BOOTUP, EXODUS, DUNGEON and then
-the shared library (src/LIB.INC, counted once although all three programs link it), and its
-status is:
+U3 is hand-written assembly: there is no compiler output to match, and the sources in src/
+already rebuild the four files byte for byte (tools/build.py). What is left to "decompile" is
+the reading of each routine as C (c/, a reading aid, not byte-matching, as in U2), so one tile is
+one routine of src/ (a code label under a ;---- header), in the order ULTIMA, BOOTUP, EXODUS,
+DUNGEON and then the shared library (src/LIB.INC, counted once although all three programs link
+it), and its status is:
 
-  matched  the routine has a real name and a header comment (what it does, in, out)
-  attempt  reserved (a routine being worked on)
-  open     the routine still has a generated name (Lxxxx, Kxxxx, Xxxxx: docs/NAMING.md)
+  matched  the routine has a C reading: an `/* asm: NAME @ADDR` anchor in c/<program>/*.c
+           (c/lib/ for the library); tools/ccheck.py checks the anchors, data, calls and tables,
+           this script only counts
+  attempt  reserved (a draft that is not anchored yet)
+  open     the routine has no C reading
   aside    reserved for code that is not Ultima III's own: none
 
 The percentage is matched / (matched + attempt + open). The script only reads the sources; the
@@ -29,10 +31,10 @@ PROGRAMS = [('ULTIMA', 'ultima'), ('BOOTUP', 'bootup'), ('EXODUS', 'exodus'), ('
 CAPTION = ('Function map: 1 routine per tile, in order ULTIMA, BOOTUP, EXODUS, DUNGEON, '
            'then the shared library (once), by address')
 COLORS = dict(matched='#2a8c3c', attempt='#b8860b', open='#64748b', aside='#3b5b8a')
-HEADLINE = 'routines named and commented'
-LABELS = dict(matched='Named', attempt='Attempt', open='Open', aside='Aside')
+HEADLINE = 'routines with a C reading'
+LABELS = dict(matched='C reading', attempt='Attempt', open='Open', aside='Aside')
 RULE = re.compile(r'^;-{20,}')
-GENERATED = re.compile(r'^[LKX][0-9A-F]{4}$')     # the names tools/gen.py gave (docs/NAMING.md)
+ANCHOR = re.compile(r'^/\*\s*asm:\s*(\w+)\s*@([0-9A-Fa-f]{4})', re.M)   # as tools/ccheck.py
 TAG = re.compile(r';@([0-9A-F]{4})\s*$')
 
 
@@ -75,16 +77,29 @@ def modules(scope):
     return out
 
 
+def anchored(scope):
+    """Upper-case names anchored in c/SCOPE/*.c (the routines with a C reading)."""
+    names = set()
+    folder = os.path.join(ROOT, 'c', scope)
+    if os.path.isdir(folder):
+        for fn in sorted(os.listdir(folder)):
+            if fn.endswith('.c'):
+                with open(os.path.join(folder, fn), encoding='latin1', newline='') as f:
+                    names |= {m.group(1).upper() for m in ANCHOR.finditer(f.read().replace('\r\n', '\n'))}
+    return names
+
+
 def classify():
     flat = []
-    groups = [(label, modules(s)) for label, s in PROGRAMS]
-    groups.append(('LIB', [os.path.join(SRC, 'LIB.INC')]))
-    for label, files in groups:
+    groups = [(label, s, modules(s)) for label, s in PROGRAMS]
+    groups.append(('LIB', 'lib', [os.path.join(SRC, 'LIB.INC')]))
+    for label, scope, files in groups:
+        done = anchored(scope)
         for path in files:
             rows = sorted((a, n) for n, a in routines(path))
             for a, n in rows:
                 flat.append(dict(program=label, module=os.path.basename(path), addr=a, name=n,
-                                 status='open' if GENERATED.match(n) else 'matched'))
+                                 status='matched' if n.upper() in done else 'open'))
     return flat
 
 
