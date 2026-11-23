@@ -24,10 +24,10 @@ extern Proc Moon2Count[1];
 extern u8 ScreenRowTbl[400];
 extern u8 PartyTile[2];
 extern u8 Location;
-extern u8 MoveCount;
-extern u8 MoveCountB1;
-extern u8 MoveCountB2;
-extern u8 MoveCountB3;
+extern u8 MoveCount[4];
+#define MoveCountB1 (MoveCount + 1)
+#define MoveCountB2 (MoveCount + 2)
+#define MoveCountB3 (MoveCount + 3)
 extern u8 PartySize;
 extern u8 PartyXY[6];
 extern u8 ExoticWeaponFound;
@@ -315,7 +315,7 @@ extern u8 NameDecorp[7];
 extern u8 NameAltair[7];
 extern u8 NameDagMentar[11];
 extern u8 NameNecorp[7];
-extern u8 NameNoSpell;
+extern u8 NameNoSpell[1];
 extern u8 NamePontori[8];
 extern u8 NameApparUnem[11];
 extern u8 NameSanctu[7];

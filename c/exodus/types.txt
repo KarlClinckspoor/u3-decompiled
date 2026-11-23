@@ -1,0 +1,7 @@
+# the 8 BCD digits of the move count, low byte first (PrintMoves reads them backwards from MoveCount+3)
+MoveCount: u8[] to PartySize
+MoveCountB1: alias MoveCount + 1
+MoveCountB2: alias MoveCount + 2
+MoveCountB3: alias MoveCount + 3
+# NameNoSpell is a single 00h byte that NameTbl points to: an array, so that the name is a pointer
+NameNoSpell: u8[1]
