@@ -11,13 +11,13 @@ extern u8 CombatPartyY[4];
 extern u8 CombatUnderTile[4];
 extern u8 CombatPartyTile[4];
 extern u8 DiskCheckResult[3];
-extern u8 PartyBuf[2];
-extern u8 Location[5];
-extern u8 PartySize;
-extern u8 PartyX;
-extern u8 PartyY;
-extern u8 PartyRosterNums[8];
-extern u8 PartyChars[256];
+extern u8 PartyBuf[274];
+#define Location (*(u8 *)(PartyBuf + 2))
+#define PartySize (*(u8 *)(PartyBuf + 7))
+#define PartyX (*(u8 *)(PartyBuf + 8))
+#define PartyY (*(u8 *)(PartyBuf + 9))
+#define PartyRosterNums (PartyBuf + 10)
+#define PartyChars (PartyBuf + 18)
 extern u8 Roster[1284];
 extern u8 DemoTiles[114];
 extern u8 MovesCells[512];

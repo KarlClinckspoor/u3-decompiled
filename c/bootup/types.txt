@@ -1,0 +1,9 @@
+# types of BOOTUP's data (tools/cdata.py)
+# PARTY.ULT is read into PartyBuf for 112h bytes: the 18-byte header and the four records (PartyChars)
+PartyBuf: u8[] to Roster
+Location: alias u8 PartyBuf + 2
+PartySize: alias u8 PartyBuf + 7
+PartyX: alias u8 PartyBuf + 8
+PartyY: alias u8 PartyBuf + 9
+PartyRosterNums: alias PartyBuf + 10
+PartyChars: alias PartyBuf + 18
