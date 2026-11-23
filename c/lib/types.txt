@@ -1,0 +1,14 @@
+# types of the library's data (tools/cdata.py)
+TileGfx: u8[] to CharGfx
+WhirlpoolGfx: alias TileGfx + 768
+FigureGfx: alias TileGfx + 1024
+AltFrameGfx: alias TileGfx + 4096
+# the 128-bit random number, RandState+0 its most significant byte; the eight words are its seeding
+RandState: u8[] to WaterCount
+RandMonthDay: alias RandState + 2
+RandHourMin: alias RandState + 4
+RandSecHund: alias RandState + 6
+RandYear2: alias RandState + 8
+RandMonthDay2: alias RandState + 10
+RandHourMin2: alias RandState + 12
+RandSecHund2: alias RandState + 14
