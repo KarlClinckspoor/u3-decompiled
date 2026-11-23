@@ -7,8 +7,9 @@
  * down, the view is redrawn, then the cell under the party may start a fight or an event
  * (DUNEVENT, through DungeonEventCmds). The movement commands are here too.
  *
- * PlayerXY is the party's x (the low byte) and y (PlayerY) as one word (`mov bx, word ptr
- * PlayerXY`): BL = x, BH = y. Dungeon cells: 00 floor, 01-08 events, 10h ladder up, 20h ladder
+ * PlayerXY is the party's x and PlayerY its y: two byte labels that the assembly also reads and
+ * writes as one word (`mov bx, word ptr PlayerXY`: BL = x, BH = y), written here as two bytes.
+ * Dungeon cells: 00 floor, 01-08 events, 10h ladder up, 20h ladder
  * down, 40h chest, 80h wall, A0h/C0h door kinds.
  *
  * `jmp MainLoop` is the end of the turn. In the C a command returns, except where the routine
@@ -26,12 +27,7 @@
 #include "equip.h"
 #include "items.h"
 #include "shrine.h"
-
-/* from VIEW, not yet read: */
-void PrintMsg(const u8 *si);                    /* SI = the string (saves all) */
-void ClearView(void);
-u8 DungeonCell(u8 bl, u8 bh, u8 **bx);          /* x = BL, y = BH; returns AL = the cell's byte, *bx = its address */
-u8 MapCellAddr(u8 bl, u8 bh, u8 **bx);          /* x = BL, y = BH; returns AL = the byte, *bx = its address in MapBuf */
+#include "view.h"
 
 /* asm: CmdGetChest @8190 */
 void CmdGetChest(const u8 *si)
@@ -44,7 +40,7 @@ void CmdGetChest(const u8 *si)
     u8 bp = al;                                 /* BP = player number 0-3 (AH is whatever AskPlayer kept; only AL is read) */
     u8 *di = bx;                                /* DI = the player's record */
     if (!IsUp(bx)) { MsgIncapacitated(); return; }
-    u8 x = PlayerXY & 0xFF, y = PlayerY;        /* BX = PlayerXY: BL = x, BH = y */
+    u8 x = PlayerXY, y = PlayerY;        /* BX = PlayerXY: BL = x, BH = y */
     u8 *cell;
     if (Location == 1) {                        /* in a dungeon */
         al = DungeonCell(x, y, &cell);
@@ -217,7 +213,7 @@ void DungeonTurnEnd(void)
     PrintLevelHead();
     DrawDungeon();                              /* the 3D view */
     u8 *bx;
-    u8 al = DungeonCell(PlayerXY & 0xFF, PlayerY, &bx);     /* AL = cell under the party, BX = its address */
+    u8 al = DungeonCell(PlayerXY, PlayerY, &bx);     /* AL = cell under the party, BX = its address */
     if (al == 0) {
         u8 dh = 0x82;                           /* Random(82h + level) ... */
         dh += DungeonLevel;
@@ -251,7 +247,7 @@ void CmdKlimb(const u8 *si)
 {
     PrintMsg(si);
     u8 *bx;
-    u8 al = DungeonCell(PlayerXY & 0xFF, PlayerY, &bx);
+    u8 al = DungeonCell(PlayerXY, PlayerY, &bx);
     al &= 0x10;                                 /* ladder up? */
     if (al == 0) {                              /* Klimb_Invalid */
         MsgInvalidMove();
@@ -271,7 +267,7 @@ void CmdDescend(const u8 *si)
 {
     PrintMsg(si);
     u8 *bx;
-    u8 al = DungeonCell(PlayerXY & 0xFF, PlayerY, &bx);
+    u8 al = DungeonCell(PlayerXY, PlayerY, &bx);
     if ((al & 0x80) || (al & 0x20) == 0) {      /* 80h and up: no; ladder down (bit 20h)? */
         MsgInvalidMove();
         DungeonTurnEnd();                       /* its jmp MainLoop with Location = 1 */
@@ -286,7 +282,7 @@ void CmdTurnRight(const u8 *si)
 {
     PrintMsg(si);
     u8 *bx;
-    u8 al = DungeonCell(PlayerXY & 0xFF, PlayerY, &bx);
+    u8 al = DungeonCell(PlayerXY, PlayerY, &bx);
     if (al >= 0xA0) {                           /* door cell: no turning */
         MsgInvalidMove();
         DungeonTurnEnd();                       /* its jmp MainLoop with Location = 1 */
@@ -302,7 +298,7 @@ void CmdTurnLeft(const u8 *si)
 {
     PrintMsg(si);
     u8 *bx;
-    u8 al = DungeonCell(PlayerXY & 0xFF, PlayerY, &bx);
+    u8 al = DungeonCell(PlayerXY, PlayerY, &bx);
     if (al >= 0xA0) {                           /* door cell: no turning */
         MsgInvalidMove();
         DungeonTurnEnd();                       /* its jmp MainLoop with Location = 1 */
@@ -326,7 +322,7 @@ void CmdAdvance(const u8 *si)
 {
     PrintMsg(si);
     u8 bl = Facing;
-    u8 dl = PlayerXY & 0xFF, dh = PlayerY;      /* DX = PlayerXY */
+    u8 dl = PlayerXY, dh = PlayerY;      /* DX = PlayerXY */
     dl += FacingDxTbl[bl];                      /* x step for this facing */
     dh += FacingDyTbl[bl];                      /* y step */
     u16 dx = (u16)(dl | (dh << 8)) & 0x0F0F;    /* the level wraps round */
@@ -337,7 +333,8 @@ void CmdAdvance(const u8 *si)
         DungeonTurnEnd();                       /* its jmp MainLoop with Location = 1 */
         return;
     }
-    PlayerXY = dx;                              /* mov word ptr PlayerXY, dx */
+    PlayerXY = dx & 0xFF;                       /* mov word ptr PlayerXY, dx: x ... */
+    PlayerY = dx >> 8;                          /* ... and y */
     DungeonTurnEnd();
 }
 
@@ -348,7 +345,7 @@ void CmdRetreat(const u8 *si)
     u8 bl = Facing;
     bl += 2;                                    /* the opposite facing */
     bl &= 3;
-    u8 dl = PlayerXY & 0xFF, dh = PlayerY;
+    u8 dl = PlayerXY, dh = PlayerY;
     dl += FacingDxTbl[bl];
     dh += FacingDyTbl[bl];
     u16 dx = (u16)(dl | (dh << 8)) & 0x0F0F;
@@ -359,6 +356,7 @@ void CmdRetreat(const u8 *si)
         DungeonTurnEnd();                       /* its jmp MainLoop with Location = 1 */
         return;
     }
-    PlayerXY = dx;
+    PlayerXY = dx & 0xFF;                       /* mov word ptr PlayerXY, dx */
+    PlayerY = dx >> 8;
     DungeonTurnEnd();
 }

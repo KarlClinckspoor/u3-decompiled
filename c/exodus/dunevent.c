@@ -10,7 +10,7 @@
  *
  * The fountain's effects (FountainCure ... FountainHurt) are entered through FountainCmds with
  * BX = the player's record and CL = the player's number 1-4 as EventFountain left them, and end
- * with `jmp Fountain_Ask`. PlayerXY is the party's x here (a dungeon cell x), low byte.
+ * with `jmp Fountain_Ask`. PlayerXY is the party's x here (a dungeon cell x).
  */
 #include "../u3.h"
 #include "../lib/lib.h"
@@ -21,11 +21,7 @@
 #include "party.h"
 #include "items.h"
 #include "bcd.h"
-
-/* from VIEW, not yet read: */
-void PrintMsg(const u8 *si);                    /* SI = the string (saves all) */
-void ScrollMsg(void);
-void ClearView(void);
+#include "view.h"
 
 /* asm: EventTimeVision @941E */
 void EventTimeVision(u8 *bx)
@@ -75,7 +71,7 @@ void Fountain_Ask(void)
             Sound(0xFF);                        /* buzz sound */
             continue;                           /* jmp Fountain_Ask */
         }
-        al = PlayerXY & 0xFF;                   /* the fountain's x ... */
+        al = PlayerXY;                   /* the fountain's x ... */
         al &= 3;                                /* ... & 3 picks the effect */
         ((void (*)(u8 *, u8))FountainCmds[al])(bx, cl);     /* jmp word ptr FountainCmds[si] */
         return;
@@ -167,7 +163,7 @@ void EventRod(u8 *bx)
     u8 *rec;
     u8 al = AskPlayer(&rec);                    /* 0: Esc; else AL = 1-4, BX = record */
     if (al != 0) {
-        u8 ah = PlayerXY & 0xFF;                /* the rod's x ... */
+        u8 ah = PlayerXY;                /* the rod's x ... */
         ah &= 3;
         u8 cl = ah;
         cl += 4;                                /* ... & 3 + 4: bit 4-7 */
@@ -236,7 +232,7 @@ void DrawDungeon(void)
     if (LightOn != 0) {                         /* no torch: nothing to see */
         u8 al = Facing;
         u8 ah = DungeonLevel;
-        u16 bx = (u16)((PlayerXY & 0xFF) | (PlayerY << 8));     /* mov bx, word ptr PlayerXY */
+        u16 bx = (u16)((PlayerXY) | (PlayerY << 8));     /* mov bx, word ptr PlayerXY */
         /* call near ptr MapBuf: MapBuf (0100) holds DUNGEON.DAT's code here, not a map; its entry
          * (a jump to the code at 0447, c/dungeon/dungeon.c) draws the 3D corridor for AL = facing,
          * AH = level, BX = x, y. */
