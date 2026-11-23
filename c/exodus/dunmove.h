@@ -7,6 +7,9 @@
 #include "../u3.h"
 #include "exodus_data.h"
 
+/* DOS get time (int 21h AH=2Ch), DH = the seconds: a stand-in for the instruction (see u3.h, not defined) */
+u8 DosGetSeconds(void);
+
 void CmdGetChest(const u8 *si);             /* SI = the prompt (also the surface's) */
 u8 TryEvadeTrap(u8 al, u8 *di);             /* AL as the caller left it, DI = the record; returns AL (0 = evaded) */
 void DamageParty(void);

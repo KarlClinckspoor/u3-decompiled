@@ -21,6 +21,8 @@
 #define CmbPlrUnder 0xA8    /* the tile under each player */
 #define CmbPlrTile  0xAC    /* each player's own tile, by class */
 #endif
+/* DOS get time (int 21h AH=2Ch), DH = the seconds: a stand-in for the instruction (see u3.h, not defined) */
+u8 DosGetSeconds(void);
 extern u8 StartUp[];        /* StartUp (WORLD, a code label at 24C4): the view buffer / combat area */
 
 void CmdAttack(const u8 *si);               /* SI = what the main loop left (the command's name) */
