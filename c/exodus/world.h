@@ -19,6 +19,8 @@ u8 MonCanEnter(u16 si, u16 dx, u8 al);
 void MonTurn(void);                         /* jumped to by MainLoop; ends in ReadCommandNoView, never comes back */
 void SpawnMonster(void);
 void MonShoot(u16 si);                      /* SI = creature slot */
-void MoveMonsters(void);
+/* Moves every creature. Returns true when one attacked: the assembly then drops its own frame and MonTurn's and
+ * jumps to FightCreature (which never comes back): the caller must return at once. */
+bool MoveMonsters(void);
 
 #endif
