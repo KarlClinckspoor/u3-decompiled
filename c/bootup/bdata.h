@@ -4,6 +4,10 @@
 #include "../u3.h"
 #include "bootup_data.h"
 
+/* PrintAt / SwapCursor take the cursor as one word: DH = row, DL = column. `mov dh, r / mov dl, c`
+ * before the call is AT(r, c) in the C (not in the assembly: a notation of this reading). */
+#define AT(row, col)  ((u16)(((row) << 8) | (col)))
+
 /* Labels before 0100: places in the program segment prefix (Psp, u3.h), no data of their own. */
 #define PspFcb        (Psp + 0x5C)                  /* the PSP's first FCB */
 #define FcbCurBlock   (*(u16 *)(Psp + 0x68))        /* its current block (word) */
