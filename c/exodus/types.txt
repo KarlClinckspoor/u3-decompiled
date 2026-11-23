@@ -59,3 +59,9 @@ ArrowKeys: u16[4]
 # MapPosTbl: 19 (x, y) pairs of bytes; ExodusCastleX is the x of its second pair
 MapPosTbl: u8[] to MsgPass
 ExodusCastleX: alias MapPosTbl + 2
+# the key words are read as words by the assembly (repne scasw, cmp ax), but the checker only accepts a word table
+# over `dw` data: they stay byte tables (the C writes Rd(&SurfaceKeys[2 * i]) = scan code << 8 | character).
+# These three lines undo the u16 entries above (the last line of a name wins).
+LastKey: u8[2]
+SurfaceKeys: u8[66]
+ArrowKeys: u8[8]
