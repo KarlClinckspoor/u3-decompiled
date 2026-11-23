@@ -4,47 +4,47 @@
 #include "../u3.h"
 
 /* EXDATA.ASM */
-extern u8 MapBuf[2048];
-extern u8 DungeonMap[1381];
-extern u8 DawnCell[667];
-extern u8 MapText[384];
-extern u8 MonTile[32];
-extern u8 MonUnder[32];
-extern u8 MonX[32];
-extern u8 MonY[32];
-extern u8 MonTalk[32];
-extern u8 WhirlpoolX;
-extern u8 WhirlpoolY;
-extern u8 WhirlpoolDX;
-extern u8 WhirlpoolDY;
-extern u8 Moon1Phase;
-extern u8 Moon2Phase;
-extern u8 Moon1Count;
-extern Proc Moon2Count[1];
+extern u8 MapBuf[4647];
+#define DungeonMap (MapBuf + 0x800)
+#define DawnCell (*(u8 *)(MapBuf + 0xD65))
+#define MapText (MapBuf + 0x1000)
+#define MonTile (MapBuf + 0x1180)
+#define MonUnder (MapBuf + 0x11A0)
+#define MonX (MapBuf + 0x11C0)
+#define MonY (MapBuf + 0x11E0)
+#define MonTalk (MapBuf + 0x1200)
+#define WhirlpoolX (*(u8 *)(MapBuf + 0x1220))
+#define WhirlpoolY (*(u8 *)(MapBuf + 0x1221))
+#define WhirlpoolDX (*(u8 *)(MapBuf + 0x1222))
+#define WhirlpoolDY (*(u8 *)(MapBuf + 0x1223))
+#define Moon1Phase (*(u8 *)(MapBuf + 0x1224))
+#define Moon2Phase (*(u8 *)(MapBuf + 0x1225))
+#define Moon1Count (*(u8 *)(MapBuf + 0x1226))
+#define Moon2Count (*(u8 *)(MapBuf + 0x1227))
 extern u8 ScreenRowTbl[400];
-extern u8 PartyTile[2];
-extern u8 Location;
-extern u8 MoveCount[4];
+extern u8 PartyTile[274];
+#define Location (*(u8 *)(PartyTile + 2))
+#define MoveCount (PartyTile + 3)
 #define MoveCountB1 (MoveCount + 1)
 #define MoveCountB2 (MoveCount + 2)
 #define MoveCountB3 (MoveCount + 3)
-extern u8 PartySize;
-extern u8 PartyXY[6];
-extern u8 ExoticWeaponFound;
-extern u8 ExoticArmourFound;
-extern u8 ExtraWeaponsOk;
-extern u8 ExtraArmoursOk;
-extern u8 Players[17];
-extern u8 PlrStatus[3];
-extern u8 PlrInt[172];
-extern u8 Player4[64];
+#define PartySize (*(u8 *)(PartyTile + 7))
+#define PartyXY (PartyTile + 8)
+#define ExoticWeaponFound (*(u8 *)(PartyTile + 14))
+#define ExoticArmourFound (*(u8 *)(PartyTile + 15))
+#define ExtraWeaponsOk (*(u8 *)(PartyTile + 16))
+#define ExtraArmoursOk (*(u8 *)(PartyTile + 17))
+#define Players (PartyTile + 18)
+#define PlrStatus (PartyTile + 35)
+#define PlrInt (PartyTile + 38)
+#define Player4 (PartyTile + 210)
 extern u8 PlayerXY;
 extern u8 PlayerY;
 extern u8 LightOn;
 extern u8 DungeonLevel;
 extern u8 TimeStop;
 extern u8 RideToggle;
-extern u8 LastKey[2];
+extern u16 LastKey;
 extern u8 FilePartyUlt[10];
 extern u8 FileDungeonDat[12];
 extern u8 FileSosariaUlt[12];
@@ -69,8 +69,8 @@ extern u8 FilePerinianUlt[13];
 extern u8 FileMineUlt[9];
 extern u8 FileDardinUlt[11];
 extern const u8 *MapFileNames[19];
-extern u8 MapPosTbl[2];
-extern u8 ExodusCastleX[36];
+extern u8 MapPosTbl[38];
+#define ExodusCastleX (MapPosTbl + 2)
 extern u8 MsgPass[6];
 extern u8 MsgBoard[6];
 extern u8 MsgXit[6];
@@ -98,12 +98,12 @@ extern u8 MsgPeerAtGem[25];
 extern u8 MsgStealChest[22];
 extern u8 MsgYellWhom[13];
 extern u8 MsgOtherCommand[30];
-extern u8 SurfaceKeys[66];
+extern u16 SurfaceKeys[33];
 extern const u8 *SurfacePrompts[33];
 extern Proc SurfaceCmds[33];
 extern u8 GateXTbl[8];
 extern u8 GateYTbl[8];
-extern u8 ArrowKeys[8];
+extern u16 ArrowKeys[4];
 extern u8 SpawnTiles[13];
 extern u8 SpawnMoves[13];
 extern u8 MsgArrow[3];
