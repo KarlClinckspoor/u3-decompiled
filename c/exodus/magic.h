@@ -17,7 +17,7 @@ void Cast_Failed(void);
 void SpellFlash(u8 dl);                     /* DL = the spell's index */
 void HitAllMonsters(u8 al);                 /* AL = damage (0FFh: kills) */
 void HealPlayer(u8 dh, u8 dl);              /* DH = BCD amount; DL = the spell's index (for SpellFlash) */
-void CastDirected(u8 al, u8 dl);            /* AL = damage; DL = the spell's index */
+void CastDirected(u8 al);                   /* AL = damage (the handlers' DL is lost: AskDirection returns the step in DX) */
 void DungeonTeleport(void);
 
 void SpellRepond(u8 *bx, u8 dl);
