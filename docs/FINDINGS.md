@@ -94,7 +94,8 @@ the reasoning). Module and routine names are those of `src/`; addresses are the 
   shape number is wanted (on foot it seems to accept only brush; unverified).
 - **Join gold** clears the gold of all four slots, whatever the party size.
 - **Form the Party** tests the old records for a living member before copying the new ones, so a
-  party of dead characters can be formed and is then refused by Journey Onward.
+  party of dead characters can be formed and is then refused by Journey Onward. A rejected roster
+  number is stored in `PartyRosterNums` before it is checked and stays there (at index PartySize).
 - The shared error exits jump to MainLoop without resetting SP; HandEquip's "A" path leaks 18
   bytes of stack each time (overflow not checked).
 - `MoveWhirlpool` calls `int 15h` with AH = 2Ch where `int 21h` (get time) is meant.
@@ -102,6 +103,23 @@ the reasoning). Module and routine names are those of `src/`; addresses are the 
   spends the turn. BOOTUP's status key string is "GPDP", a typo for "GPDA" (harmless).
 - Random with DH = 0 would hang; DUNGEON.DAT's line routines would loop 65536 times on zero-length
   lines (no table entry asks for one).
+
+Found while writing the C reading (`c/`, where each is marked `BUG, as in the original`); read from
+the code, unverified in play:
+
+- **Temple healing** (TOWNS `TempleHeal`) never looks at the status letter: a dead or ashen
+  character gets maximum hit points (and stays dead or ashes) for 200 g.p. Only hit points above
+  the maximum count as "Not injured!", so a character at full hit points is charged too.
+- **Food running out** (PARTY `SpendFood`): when the BCD food word goes below zero it is set to 0,
+  but the hundredths byte keeps the wrapped result of the subtraction.
+- **PrintName** (PARTY) with AL = 0 prints NameTbl entry 0FFh, past the 136 entries (its header's
+  "entry -1" is not what the code does).
+- **Directed spells** (MAGIC `CastDirected`) lose the spell index: AskDirection returns the step in
+  DX, so `SpellFlash`'s pitch is the step's x and depends on the direction, not the spell.
+- **Steal** (LOOP `CmdSteal`): on a failed theft, one time in four, every guard (shape 18) in the
+  32 creature slots turns hostile, wherever the party is.
+- **The title's demo** (BOOTUP `TitleLoop`): a pause of 0 rounds counts down from 0 to 0FFh and
+  lasts 256 rounds (`dec ah / jne`).
 
 ## Dead code and data
 
